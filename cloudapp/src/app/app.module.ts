@@ -9,11 +9,13 @@ import { MaterialModule, CloudAppTranslateModule, AlertModule } from '@exlibris/
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { MainComponent } from './main/main.component';
+import { BlockComponent } from './block/block.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    MainComponent
+    MainComponent,
+    BlockComponent
   ],
   imports: [
     MaterialModule,
