@@ -1,64 +1,82 @@
-<ng-container 
-  *ngIf="(entities$ | async)?.length > 0; then entities; else noentities"
-  ></ng-container>
-
-
-
-<ng-template #noentities>
-  <a [routerLink]="['block']">Go To User Block</a>
-
-  <h1>Welcome!</h1>
-  <p>Use this sample app to get you started. The app includes the following:</p>
-  <ul>
-    <li>Listens on the <code>entities$</code> Observable</li>
-    <li>Performs an API call using the <code>restService</code> service</li>
-    <li>Updates the object using the <code>restService</code> service</li>
-    <li>Refreshes the page in Alma</li>
-  </ul>
-  <p>Use these building blocks to be on your way to developing your own Cloud App.</p>
-  <div class="highlight">Navigate to a page in Alma to view a list of entities.</div>
-</ng-template>
-
-
-<ng-template #entities>
-
-  <div class="eca-actions">
-    <button mat-flat-button color="secondary" (click)="clear()" [disabled]="!selectedEntity">Clear</button>
-    <button mat-flat-button color="primary" (click)="update(apiResultArea.value)"
-      [disabled]="!apiResult || loading">Update
-    </button>
-  </div>
-  <h1>Entities</h1>
-
-  <mat-card [style.display]="apiResult ? '' : 'none'">
-    <mat-card-header>
-      <mat-card-title>API Result</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <textarea #apiResultArea [value]="apiResult | json"></textarea>
-    </mat-card-content>
-  </mat-card>
-  
-  <mat-card [style.display]="selectedEntity ? '' : 'none'">
-    <mat-card-header>
-      <mat-card-title>Selected Entity</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <pre>{{selectedEntity | json}}</pre>
-    </mat-card-content>
-  </mat-card>  
-  <label id="entities-radio-group-label">Select an entity:</label>
-  <mat-radio-group
-    aria-labelledby="entities-radio-group-label"
-    class="entities-radio-group"
-    [(ngModel)]="selectedEntity"
-    (change)="entitySelected($event)">
-    <mat-radio-button *ngFor="let entity of entities$ | async" [value]="entity">
-      {{entity.description}}
-    </mat-radio-button>
-  </mat-radio-group>
-</ng-template>
-
-<div class="loading-shade" *ngIf="loading">
-  <mat-spinner diameter="50"></mat-spinner>
+<div class="user-header" fxLayout="row">
+  <button mat-flat-button color="secondary" (click)="navigateBack()">
+    <mat-icon>arrow_back_ios</mat-icon>
+    {{ 'General.BackToMenu' | translate }}
+  </button>
+  <span >
+    <mat-icon size="20">account_circle</mat-icon>
+    <div class="user-header-text">   {{currentPrimaryId}} </div>
+  </span>
 </div>
+<br>
+
+<h2> {{'Blocks.CurrentBlockTitle' | translate}}</h2>
+<!-- Current Block -->
+<mat-card>
+  <mat-card-content>
+    <div *ngIf="(currentUserBlocks | json) != ({} | json)" class="warning">
+      {{'Blocks.ExistingBlocks' | translate}}
+    </div>
+    <div *ngIf="(currentUserBlocks | json) == ({} | json)">
+      {{'Blocks.NoBlocks' | translate}}
+    </div>
+   
+  </mat-card-content>
+</mat-card>
+<!-- Double Registration -->
+<h2> {{'Main.Block' | translate}}</h2>
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>
+      {{'Blocks.DoubleRegistrations' | translate}}
+    </mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <div *ngIf="currentUserBlocks['02']">
+      {{'Blocks.CreatedOn' | translate}} {{getDateString(currentUserBlocks['02']['created_date'])}} <br>
+      {{'Blocks.ExpiringOn' | translate}} {{getDateString(currentUserBlocks['02']['expiry_date'])}} <br>
+      {{'Blocks.Note' | translate}}: {{currentUserBlocks['02']['block_note']}}
+    </div>
+    <div *ngIf="!currentUserBlocks['02']">
+      <textarea placeholder="Comment" rows="3"></textarea>
+    </div>
+    <mat-action-row  *ngIf="currentUserBlocks['02']">
+      <button mat-flat-button color="error" (click)="clear()" >{{'Blocks.RemoveBlock' | translate}}</button>
+    </mat-action-row>
+    <mat-action-row  *ngIf="!currentUserBlocks['02']">
+      <button mat-flat-button color="success" (click)="clear()" >{{'Blocks.AddBlock' | translate}}</button>
+    </mat-action-row>
+  </mat-card-content>
+</mat-card>
+
+
+<!-- Wrong Address 03 -->
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>
+      {{'Blocks.WrongAddress' | translate}}
+    </mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <div *ngIf="currentUserBlocks['03']">
+      {{'Blocks.CreatedOn' | translate}} {{getDateString(currentUserBlocks['03']['created_date'])}} <br>
+      {{'Blocks.ExpiringOn' | translate}} {{getDateString(currentUserBlocks['03']['expiry_date'])}} <br>
+      {{'Blocks.Note' | translate}}: {{currentUserBlocks['03']['block_note']}}
+    </div>
+    <div *ngIf="!currentUserBlocks['03']">
+      <textarea placeholder="Comment" rows="3"></textarea>
+    </div>
+    <div  *ngIf="currentUserBlocks['03']">
+      <br>
+      <div class ="warning" *ngIf="currentUser.getIsExternal()">
+        {{'Blocks.address-block-external-info' | translate}}
+      </div>
+      <div class="warning" *ngIf="!currentUser.getIsExternal()">
+        {{'Blocks.address-block-internal-info' | translate}}
+      </div>
+    </div>
+    <mat-action-row  *ngIf="!currentUserBlocks['03']">
+      <button mat-flat-button color="success" (click)="clear()" >{{'Blocks.AddBlock' | translate}}</button>
+    </mat-action-row>
+  </mat-card-content>
+</mat-card>

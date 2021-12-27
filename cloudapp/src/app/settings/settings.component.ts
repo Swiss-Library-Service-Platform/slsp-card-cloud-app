@@ -7,36 +7,35 @@ import { MatRadioChange } from '@angular/material/radio';
 import { Router,ActivatedRoute } from '@angular/router';
 import {Location} from '@angular/common';
 import { LibraryManagementService } from '../services/library-management.service';
-import { User } from '../model/user.model';
 
 @Component({
   selector: 'app-main',
-  templateUrl: './block.component.html',
-  styleUrls: ['./block.component.scss']
+  templateUrl: './settings.component.html',
+  styleUrls: ['./settings.component.scss']
 })
-export class BlockComponent implements OnInit, OnDestroy {
+export class SettingsComponent implements OnInit, OnDestroy {
 
   @Input() primary_id: string;
 
+  selected = 'Lol';
+
   constructor(
-    private _libraryManagementService: LibraryManagementService,
+    private restService: CloudAppRestService,
     private eventsService: CloudAppEventsService,
     private alert: AlertService,
     private _Activatedroute:ActivatedRoute,
-    private _location: Location
+    private _location: Location,
+    private _libraryManagementService: LibraryManagementService
   ) { }
   
   currentPrimaryId: String;
-  currentUser: User = null;
-  currentUserBlocks: Map<String, any>= null;
   subscription;
 
   ngOnInit(): void {
+    console.log("before:" + this.currentPrimaryId);
     this.subscription = this._libraryManagementService.getPrimaryId().subscribe(
       res => {
         this.currentPrimaryId = res;
-        this.currentUser = this._libraryManagementService.user;
-        this.currentUserBlocks = this._libraryManagementService.user.getUserBlock();
       },
       err => {
         console.error(`An error occurred: ${err.message}`);
@@ -48,12 +47,9 @@ export class BlockComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
 
+
   navigateBack(): void {
     this._location.back();
-  }
-
-  getDateString(date: string): String {
-    return new Date(date).toUTCString();
   }
 
 }

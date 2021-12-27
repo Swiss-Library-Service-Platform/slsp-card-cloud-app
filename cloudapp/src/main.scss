@@ -8,4 +8,38 @@
 
 @mixin global-styles {
     /* Add global styles here */
+    .app-loading .spinner .path {
+        stroke: var(--slsp-purple);
+    }
+
+    :root 
+    {
+    --slsp-purple: rgba( 78, 74, 153, 1); // or any global you wish to share with components 
+    }
+
+    .warning {
+        color: red;
+    }
+
+
+    .user-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        .user-header-text {
+            vertical-align: middle;
+        }
+        .mat-icon {
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        span {
+            display: flex;
+            align-items: center;
+        }
+    }
+    .mat-action-row {
+        display: flex;
+        justify-content: end;
+    }
 }

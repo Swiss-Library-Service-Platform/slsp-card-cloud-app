@@ -2,8 +2,33 @@
   *ngIf="(entities$ | async)?.length > 0; then entities; else noentities"
   ></ng-container>
 
+<ng-template #noentities>
+  <h1>Welcome to Swisscovery Library Card Management!</h1>
+  <p>Let's get started with this app:</p>
+  <ul>
+    <li>Search for the user you want to activate</li>
+    <li>Open this Cloud App</li>
+    <li>Select the user and press "Activate"</li>
+  </ul>
+  <div class="highlight">Search for the user you want to activate.</div>
+</ng-template>
 
-<a [routerLink]="['block']">Go To User Block</a>
+<ng-template #entities>
+  <div *ngIf="!selectedEntity">
+    <h1>Users found:</h1>
+    <label id="entities-radio-group-label">Select a user:</label>
+    <mat-radio-group
+      aria-labelledby="entities-radio-group-label"
+      class="entities-radio-group"
+      [(ngModel)]="selectedEntity"
+      (change)="entitySelected($event)">
+      <mat-radio-button *ngFor="let entity of entities$ | async" [value]="entity">
+        {{entity.description}}
+      </mat-radio-button>
+    </mat-radio-group>
+  </div>
+</ng-template>
+
 
 <div class="loading-shade" *ngIf="loading">
   <mat-spinner diameter="50"></mat-spinner>

@@ -1,0 +1,29 @@
+<div class="user-header" fxLayout="row">
+    <button mat-flat-button color="secondary" (click)="navigateBack()">
+      <mat-icon>arrow_back_ios</mat-icon>
+      {{ 'General.BackToMenu' | translate }}
+    </button>
+    <span >
+      <mat-icon size="20">account_circle</mat-icon>
+      <div class="user-header-text">   {{currentPrimaryId}} </div>
+    </span>
+</div>
+
+  <br>
+  <mat-card>
+      <mat-card-header>
+          <mat-card-title>
+            {{ 'Main.LibraryCardNumber' | translate }}
+          </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-form-field>
+            <mat-label></mat-label>
+            <input placeholder="{{'Main.LibraryCardNumber' | translate}}">
+          </mat-form-field>
+      </mat-card-content>
+      <mat-card-action>
+        <button mat-flat-button color="secondary" (click)="clear()" >{{'LibraryCardNumber.Add' | translate}}</button>
+    </mat-card-action>
+  </mat-card>
+  

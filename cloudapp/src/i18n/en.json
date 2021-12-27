@@ -1,0 +1,39 @@
+{
+    "General": {
+        "BackToMenu": "Back"
+    },
+    "Main": {
+        "Block": "User Blocks",
+        "Settings": "User Settings",
+        "LibraryCardNumber": "Library Card Number",
+        "BlockDescription": "Globally blocked user accounts can neither loan, request, nor renew.",
+        "SettingsDescription": "Change the preferred address or the user group of a user",
+        "LibraryCardNumberDescription": "Add a library card number"
+    },
+    "LibraryCardNumber": {
+        "Add": "Add"
+    },
+    "Settings": {
+        "PreferredAddress": "Preferred address",
+        "PreferredAddressDescription": "The preferred address defines the address to which by default invoices and books are sent. User data like addresses can be changed on the SWITCH edu-ID account management page.",
+        "SavePreferredAddress": "Save Preferred Address",
+        "UserGroup": "User Group",
+        "UserGroupDescription": "The ⓘ available user groups depend on the organisation affiliations and your role (e.g. student, staff, faculty) in the organisations.",
+        "SaveUserGroup": "Save User Group"
+    },
+    "Blocks": {
+        "CurrentBlockTitle": "Current Block Status",
+        "NoBlocks": "User has no blocks.",
+        "ExistingBlocks": "Account is blocked!",
+        "AddBlockTitle": "Add a User Block",
+        "DoubleRegistrations": "Double Registration",
+        "WrongAddress": "Wrong Address",
+        "AddBlock": "Add Block",
+        "CreatedOn": "Created on",
+        "ExpiringOn": "Expiring on",
+        "Note": "Note",
+        "RemoveBlock": "Remove Block",
+        "address-block-external-info": "Address blocks added to SWITCH edu-ID accounts are automatically removed when the patron user updates the postal address in their edu-ID account.",
+        "address-block-internal-info": "Address blocks added to institutional accounts are managed by SLSP."
+    }
+}
