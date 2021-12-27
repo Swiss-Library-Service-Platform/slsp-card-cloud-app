@@ -44,6 +44,10 @@ export class BlockComponent implements OnInit, OnDestroy {
     );
   }
 
+  addUserBlock(blockType: String): void {
+    this._libraryManagementService.addUserblock(blockType, "Test");
+  }
+
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }

@@ -76,7 +76,7 @@
       </div>
     </div>
     <mat-action-row  *ngIf="!currentUserBlocks['03']">
-      <button mat-flat-button color="success" (click)="clear()" >{{'Blocks.AddBlock' | translate}}</button>
+      <button mat-flat-button color="success" (click)="addUserBlock('03')" >{{'Blocks.AddBlock' | translate}}</button>
     </mat-action-row>
   </mat-card-content>
 </mat-card>

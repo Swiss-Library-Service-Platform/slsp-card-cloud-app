@@ -13,6 +13,7 @@ import { User } from '../model/user.model';
 export class LibraryManagementService {
 
   public user:User;
+  private userEntity:Entity
   private readonly _primaryid = new BehaviorSubject<String>("");;
 
   constructor(
@@ -32,6 +33,7 @@ export class LibraryManagementService {
     try {
       const user = await this.restService.call<any>(entity.link).toPromise();
       this.user = new User(user);
+      this.userEntity = entity;
       this._setPrimaryId(user.primary_id);
       return true;
     } catch (e: unknown) {
@@ -40,16 +42,46 @@ export class LibraryManagementService {
     }
   }
 
+  addUserblock (blockType: String, comment: String = "") {
 
+    //create User Object
+    this.user.addUserblock(blockType, comment);
+
+    // API Call
+    const requestBody = this.user.userValue;
+    let request: Request = {
+      url: this.userEntity.link, 
+      method: HttpMethod.PUT,
+      requestBody
+    };
+    this.restService.call(request)
+    .subscribe({
+      next: result => {
+        /*
+        this.eventsService.refreshPage().subscribe(
+          ()=>this.alert.success('Success!')
+        );
+        */
+       console.log("done");
+      },
+      error: (e: RestErrorResponse) => {
+       // TODO: this.alert.error('Failed to update data: ' + e.message);
+        console.error(e);
+      }
+    });    
+  }
 
   resetUser(): void {
     this.user = null;
     this._setPrimaryId("");
   }
 
-  setUserBlock() {
-    return true;
+  private tryParseJson(value: any) {
+    try {
+      return JSON.parse(value);
+    } catch (e) {
+      console.error(e);
+    }
+    return undefined;
   }
-
-
 }

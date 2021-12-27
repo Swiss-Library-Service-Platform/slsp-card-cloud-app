@@ -29,8 +29,22 @@ export class User {
         return blocks;
       }
 
-    getIsExternal() {
-        return this.userValue["primary_id"].match(/^\d+\@.*eduid\.ch$/);
+    addUserblock (blockType: String = "SUSPENDED", comment: String = ""): void {
+        //create User Object
+        let blockObject = {};
+        blockObject["segment_type"] = "External";
+        blockObject["block_status"] = "Active";
+        blockObject["block_note"] = comment; //TODO: append IZ
+        blockObject["created_by"] = "" //TODO:
+        blockObject["block_description"] = {};
+        blockObject["block_description"]["value"] = blockType;
+        blockObject["block_type"] = {};
+        blockObject["block_type"]["value"] = "USER";
+        console.log(this.userValue["user_block"]);
+        this.userValue["user_block"].push(blockObject);
+    }
 
+    getIsExternal(): boolean {
+        return this.userValue["primary_id"].match(/^\d+\@.*eduid\.ch$/);
     }
 }
