@@ -1,11 +1,11 @@
 <div class="user-header" fxLayout="row">
   <button mat-flat-button color="secondary" (click)="navigateBack()">
-    <mat-icon>arrow_back_ios</mat-icon>
+    <mat-icon inline=true>arrow_back_ios</mat-icon>
     {{ 'General.BackToMenu' | translate }}
   </button>
   <span >
     <mat-icon size="20">account_circle</mat-icon>
-    <div class="user-header-text">   {{currentPrimaryId}} </div>
+    <div class="user-header-text">   {{currentFullName}} </div>
   </span>
 </div>
 <br>
@@ -38,13 +38,20 @@
       {{'Blocks.Note' | translate}}: {{currentUserBlocks['02']['block_note']}}
     </div>
     <div *ngIf="!currentUserBlocks['02']">
-      <textarea placeholder="Comment" rows="3"></textarea>
+      <mat-form-field appearance="fill">
+        <mat-label>{{'Blocks.Comment' | translate}}</mat-label>
+        <input matInput #first>
+      </mat-form-field>
     </div>
     <mat-action-row  *ngIf="currentUserBlocks['02']">
-      <button mat-flat-button color="error" (click)="clear()" >{{'Blocks.RemoveBlock' | translate}}</button>
+      <button mat-flat-button color="secondary" (click)="clear()" >
+        <mat-icon inline=true>delete</mat-icon>{{'Blocks.RemoveBlock' | translate}}
+      </button>
     </mat-action-row>
     <mat-action-row  *ngIf="!currentUserBlocks['02']">
-      <button mat-flat-button color="success" (click)="clear()" >{{'Blocks.AddBlock' | translate}}</button>
+      <button mat-flat-button class="slsp-purple-button" (click)="clear()" >
+        <mat-icon inline=true>add</mat-icon>{{'Blocks.AddBlock' | translate}}
+      </button>
     </mat-action-row>
   </mat-card-content>
 </mat-card>
@@ -64,7 +71,10 @@
       {{'Blocks.Note' | translate}}: {{currentUserBlocks['03']['block_note']}}
     </div>
     <div *ngIf="!currentUserBlocks['03']">
-      <textarea placeholder="Comment" rows="3"></textarea>
+      <mat-form-field appearance="fill">
+        <mat-label>Comment (optional)</mat-label>
+        <input matInput #first>
+      </mat-form-field>
     </div>
     <div  *ngIf="currentUserBlocks['03']">
       <br>
@@ -76,7 +86,9 @@
       </div>
     </div>
     <mat-action-row  *ngIf="!currentUserBlocks['03']">
-      <button mat-flat-button color="success" (click)="addUserBlock('03')" >{{'Blocks.AddBlock' | translate}}</button>
+      <button mat-flat-button class="slsp-purple-button" (click)="addUserBlock('03')">
+        <mat-icon inline=true>add</mat-icon><span>{{'Blocks.AddBlock' | translate}}</span>
+      </button>
     </mat-action-row>
   </mat-card-content>
 </mat-card>

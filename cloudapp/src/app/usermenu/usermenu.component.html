@@ -1,11 +1,11 @@
 <div class="user-header" fxLayout="row">
     <button mat-flat-button color="secondary" (click)="navigateBack()">
-      <mat-icon>arrow_back_ios</mat-icon>
+      <mat-icon inline=true>arrow_back_ios</mat-icon>
       {{ 'General.BackToMenu' | translate }}
     </button>
     <span >
       <mat-icon size="20">account_circle</mat-icon>
-      <div class="user-header-text">   {{currentPrimaryId}} </div>
+      <div class="user-header-text">   {{currentFullName}} </div>
     </span>
 </div>
 

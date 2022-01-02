@@ -2,5 +2,10 @@
    "id": "slsp-library-card-management",
    "title": "Swisscovery Library Card Management ",
    "subtitle": "First version of the SLSP Swisscovery Library Card Management",
-   "author": "SLSP"
+   "author": "SLSP",
+   "contentSecurity": {
+      "connectSrc": [
+         "https://api-eu.hosted.exlibrisgroup.com/"
+      ]
+   }
 }

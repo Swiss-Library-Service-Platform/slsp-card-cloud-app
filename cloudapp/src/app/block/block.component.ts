@@ -26,17 +26,17 @@ export class BlockComponent implements OnInit, OnDestroy {
     private _location: Location
   ) { }
   
-  currentPrimaryId: String;
+  currentFullName: String;
   currentUser: User = null;
   currentUserBlocks: Map<String, any>= null;
   subscription;
 
   ngOnInit(): void {
-    this.subscription = this._libraryManagementService.getPrimaryId().subscribe(
+    this.subscription = this._libraryManagementService.getUserFullName().subscribe(
       res => {
-        this.currentPrimaryId = res;
+        this.currentFullName = res;
         this.currentUser = this._libraryManagementService.user;
-        this.currentUserBlocks = this._libraryManagementService.user.getUserBlock();
+        this.currentUserBlocks = this._libraryManagementService.user.getUserBlocks();
       },
       err => {
         console.error(`An error occurred: ${err.message}`);

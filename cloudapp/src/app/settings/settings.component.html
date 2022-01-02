@@ -1,14 +1,14 @@
 <div class="user-header" fxLayout="row">
     <button mat-flat-button color="secondary" (click)="navigateBack()">
-      <mat-icon>arrow_back_ios</mat-icon>
+      <mat-icon inline=true>arrow_back_ios</mat-icon>
       {{ 'General.BackToMenu' | translate }}
     </button>
     <span >
       <mat-icon size="20">account_circle</mat-icon>
-      <div class="user-header-text">   {{currentPrimaryId}} </div>
+      <div class="user-header-text"> {{currentFullName}} </div>
     </span>
 </div>
-
+<br>
 <!-- Preferred Address -->
 <mat-card>
     <mat-card-header>
@@ -18,27 +18,47 @@
     </mat-card-header>
     <mat-card-content>
         {{ 'Settings.PreferredAddressDescription' | translate }}
-        <mat-form-field>
-            <mat-label>Choose an address</mat-label>
-            <mat-select [(value)]="selected" placeholder="Mode">
-                <!--
-                <mat-option
-                *ngFor="let option of options2"
-                value="{{ option.id }}">
-              {{ option.name }}
-            </mat-option>
-                -->
-                <mat-option value="Lol">Adresse 1</mat-option>
-            </mat-select>
-        </mat-form-field>
+        <a href="https://eduid.ch/" target="_blank">{{ 'Settings.PreferredAddressDescriptionLink' | translate }}</a>
+        <br>
+        <mat-card class="{{item.preferred == true ? 'mat-card-purple' : '' }}" *ngFor="let item of currentUserAddresses">
+            <mat-card-content>
+                <table>
+                    <tr>
+                        <td class="address-table-desc" style="white-space:nowrap;"> {{ 'Settings.AddressType' | translate }} </td>
+                        <td> 
+                            <span *ngFor="let addresstype of item.address_type; let i = index">
+                                <span *ngIf="i > 0">, </span>
+                                {{addresstype.desc}}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="address-table-desc">
+                            {{ 'Settings.Address' | translate }}
+                        </td>
+                        <td> {{item.line1}}, {{item.postal_code}}, {{item.city}}, {{item.country.desc}} </td>
+                    </tr>
+                    <tr>
+                        <td class="address-table-desc">
+                            {{ 'Settings.Preferred' | translate }}
+                        </td>
+                        <td> 
+                            <span *ngIf="item.preferred">{{ 'General.Yes' | translate }}</span>
+                            <span *ngIf="!item.preferred">{{ 'General.No' | translate }}</span>
+                        </td>
+                    </tr>
+                </table>
+                <br>
+                <mat-action-row>
+                    <button *ngIf="!item.preferred" mat-flat-button (click)="clear()" class="slsp-purple-button">{{ 'Settings.UseAsPreferred' | translate }}</button>
+                </mat-action-row>
+            </mat-card-content>
+        </mat-card>    
     </mat-card-content>
-    <mat-action-row>
-        <button mat-flat-button color="secondary" (click)="clear()" >{{'Settings.SavePreferredAddress' | translate}}</button>
-    </mat-action-row>
 </mat-card>
 
 <!-- User Group -->
-<mat-card>
+<mat-card *ngIf="false"> <!-- only in test env-->
     <mat-card-header>
         <mat-card-title>
             {{ 'Settings.UserGroup' | translate }}

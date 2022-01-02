@@ -36,14 +36,10 @@ export class MainComponent implements OnInit, OnDestroy {
 
   async entitySelected(event: MatRadioChange)  {
     const value = event.value as Entity;
-    console.log(value);
     this.loading = true;
-    console.log("calling new useR");
     await this._libraryManagementService.getUserFromEntity(value);
     this.loading=false
-    console.log("navigating");
     this.router.navigate(['usermenu']);
-
   }
 
   clear() {

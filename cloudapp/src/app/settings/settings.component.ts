@@ -15,7 +15,6 @@ import { LibraryManagementService } from '../services/library-management.service
 })
 export class SettingsComponent implements OnInit, OnDestroy {
 
-  @Input() primary_id: string;
 
   selected = 'Lol';
 
@@ -28,14 +27,16 @@ export class SettingsComponent implements OnInit, OnDestroy {
     private _libraryManagementService: LibraryManagementService
   ) { }
   
-  currentPrimaryId: String;
+  currentFullName: String;
+  currentUserAddresses: Array<Object>;
   subscription;
 
   ngOnInit(): void {
-    console.log("before:" + this.currentPrimaryId);
-    this.subscription = this._libraryManagementService.getPrimaryId().subscribe(
+    this.subscription = this._libraryManagementService.getUserFullName().subscribe(
       res => {
-        this.currentPrimaryId = res;
+        this.currentFullName = res;
+        this.currentUserAddresses = this._libraryManagementService.user.getAddresses();
+        console.log(this.currentUserAddresses);
       },
       err => {
         console.error(`An error occurred: ${err.message}`);

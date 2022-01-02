@@ -15,12 +15,33 @@
     :root 
     {
     --slsp-purple: rgba( 78, 74, 153, 1); // or any global you wish to share with components 
+    --slsp-purple-light: #eeeef7;
     }
 
     .warning {
         color: red;
     }
-
+   
+    textarea,
+    section,
+    .mat-card {
+        margin-bottom: 20px;
+    }
+  
+    .mat-focused .mat-form-field-label {
+        /*change color of label*/
+        color: var(--slsp-purple) !important;
+    }
+      
+    .mat-form-field-underline {
+        /*change color of underline*/
+        background-color: var(--slsp-purple) !important;
+    } 
+      
+    .mat-form-field-ripple {
+       /*change color of underline when focused*/
+       background-color: var(--slsp-purple) !important;;
+    }
 
     .user-header {
         display: flex;
@@ -38,8 +59,35 @@
             align-items: center;
         }
     }
+
     .mat-action-row {
         display: flex;
         justify-content: end;
+    }
+
+    .green-icon {
+        color: green;
+    }
+
+    td {
+        padding: 8px;
+    }
+
+    .mat-flat-button.slsp-purple-button {
+        background-color: var(--slsp-purple) !important;
+        color: white !important;
+        &:hover {
+          background-color: var(--slsp-purple) !important;
+        }
+    }
+
+    button.mat-button .mat-icon,
+    a.mat-button .mat-icon,
+    a.mat-raised-button .mat-icon,
+    button.mat-flat-button .mat-icon,
+    a.mat-stroked-button .mat-icon {
+        vertical-align: top;
+        font-size: 1.25em;
+        padding-right: 4px;
     }
 }

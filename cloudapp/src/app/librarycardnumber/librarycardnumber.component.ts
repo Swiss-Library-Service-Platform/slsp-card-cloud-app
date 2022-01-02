@@ -17,19 +17,22 @@ export class LibrarycardnumberComponent implements OnInit {
     private _libraryManagementService: LibraryManagementService
   ) { }
 
-    currentPrimaryId: String;
+    currentFullName: String;
+    currentLibraryCardNumbers: Array<string>;
     subscription;
   
   ngOnInit(): void {
-    console.log("before:" + this.currentPrimaryId);
-    this.subscription = this._libraryManagementService.getPrimaryId().subscribe(
+    this.subscription = this._libraryManagementService.getUserFullName().subscribe(
       res => {
-        this.currentPrimaryId = res;
+        this.currentFullName = res;
+        this.currentLibraryCardNumbers = this._libraryManagementService.getUserLibraryCardNumbers();
+        console.log(this.currentLibraryCardNumbers);
       },
       err => {
         console.error(`An error occurred: ${err.message}`);
       }
     );
+    
   }
 
   ngOnDestroy(): void {

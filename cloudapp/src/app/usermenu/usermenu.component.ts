@@ -16,14 +16,13 @@ export class UsermenuComponent implements OnInit {
     private _libraryManagementService: LibraryManagementService
   ) { }
 
-  currentPrimaryId: String;
+  currentFullName: String;
   subscription;
 
   ngOnInit(): void {
-    console.log("before:" + this.currentPrimaryId);
-    this.subscription = this._libraryManagementService.getPrimaryId().subscribe(
+    this.subscription = this._libraryManagementService.getUserFullName().subscribe(
       res => {
-        this.currentPrimaryId = res;
+        this.currentFullName = res;
       },
       err => {
         console.error(`An error occurred: ${err.message}`);

@@ -1,29 +1,53 @@
 <div class="user-header" fxLayout="row">
     <button mat-flat-button color="secondary" (click)="navigateBack()">
-      <mat-icon>arrow_back_ios</mat-icon>
+      <mat-icon inline=true>arrow_back_ios</mat-icon>
       {{ 'General.BackToMenu' | translate }}
     </button>
     <span >
       <mat-icon size="20">account_circle</mat-icon>
-      <div class="user-header-text">   {{currentPrimaryId}} </div>
+      <div class="user-header-text">   {{currentFullName}} </div>
     </span>
 </div>
 
   <br>
+<mat-card>
+  <mat-card-header>
+      <mat-card-title>
+        {{ 'LibraryCardNumber.CurrentLibraryCardNumbers'| translate }}
+      </mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    {{'LibraryCardNumber.CurrentLibraryCardNumbersDescription' | translate}}
+    
+    <table>
+      <tr *ngFor="let item of currentLibraryCardNumbers">
+          <td> {{ item }} </td>
+          <td class="table-cell-remove"> 
+            <button mat-flat-button color="secondary" (click)="clear()">
+              <mat-icon inline=true>delete</mat-icon>{{'LibraryCardNumber.Remove' | translate}}
+            </button>
+          </td>
+      </tr>
+    </table>
+  </mat-card-content>
+</mat-card>
+
   <mat-card>
       <mat-card-header>
           <mat-card-title>
-            {{ 'Main.LibraryCardNumber' | translate }}
+            {{ 'LibraryCardNumber.AddLibraryCardNumber'| translate }}
           </mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <mat-form-field>
-            <mat-label></mat-label>
-            <input placeholder="{{'Main.LibraryCardNumber' | translate}}">
-          </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>{{'Main.LibraryCardNumber' | translate}}</mat-label>
+          <input matInput #first>
+        </mat-form-field>
+        <mat-action-row>
+          <button mat-flat-button class="slsp-purple-button" color="secondary" (click)="clear()" >
+            <mat-icon inline=true>add</mat-icon>{{'LibraryCardNumber.Add' | translate}}
+          </button>
+        </mat-action-row>
       </mat-card-content>
-      <mat-card-action>
-        <button mat-flat-button color="secondary" (click)="clear()" >{{'LibraryCardNumber.Add' | translate}}</button>
-    </mat-card-action>
   </mat-card>
   

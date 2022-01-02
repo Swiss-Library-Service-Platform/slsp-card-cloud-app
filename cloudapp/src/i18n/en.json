@@ -1,6 +1,8 @@
 {
     "General": {
-        "BackToMenu": "Back"
+        "BackToMenu": "Back",
+        "Yes": "Yes",
+        "No": "No"
     },
     "Main": {
         "Block": "User Blocks",
@@ -11,15 +13,24 @@
         "LibraryCardNumberDescription": "Add a library card number"
     },
     "LibraryCardNumber": {
-        "Add": "Add"
+        "Add": "Add",
+        "AddLibraryCardNumber": "Add Library Card Number",
+        "CurrentLibraryCardNumbers": "Current Library Card Numbers",
+        "CurrentLibraryCardNumbersDescription":"Current library card numbers and matriculation numbers:",
+        "Remove": "Remove"
     },
     "Settings": {
         "PreferredAddress": "Preferred address",
-        "PreferredAddressDescription": "The preferred address defines the address to which by default invoices and books are sent. User data like addresses can be changed on the SWITCH edu-ID account management page.",
+        "PreferredAddressDescription": "The preferred address defines the address to which by default invoices and books are sent. User data like addresses can be changed on the ",
+        "PreferredAddressDescriptionLink": "SWITCH edu-ID account management page.",
         "SavePreferredAddress": "Save Preferred Address",
         "UserGroup": "User Group",
         "UserGroupDescription": "The ⓘ available user groups depend on the organisation affiliations and your role (e.g. student, staff, faculty) in the organisations.",
-        "SaveUserGroup": "Save User Group"
+        "SaveUserGroup": "Save User Group",
+        "AddressType": "Address Type",
+        "Address": "Address",
+        "Preferred": "Preferred",
+        "UseAsPreferred": "Use as preferred address"
     },
     "Blocks": {
         "CurrentBlockTitle": "Current Block Status",
@@ -34,6 +45,7 @@
         "Note": "Note",
         "RemoveBlock": "Remove Block",
         "address-block-external-info": "Address blocks added to SWITCH edu-ID accounts are automatically removed when the patron user updates the postal address in their edu-ID account.",
-        "address-block-internal-info": "Address blocks added to institutional accounts are managed by SLSP."
+        "address-block-internal-info": "Address blocks added to institutional accounts are managed by SLSP.",
+        "Comment": "Comment (optional)"
     }
 }

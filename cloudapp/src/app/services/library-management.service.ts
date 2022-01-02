@@ -5,7 +5,7 @@ import { Component, OnInit, OnDestroy} from '@angular/core';
 import { CloudAppRestService, CloudAppEventsService, Request, HttpMethod, 
   Entity, RestErrorResponse, AlertService } from '@exlibris/exl-cloudapp-angular-lib';
 import { User } from '../model/user.model';
-
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -15,26 +15,31 @@ export class LibraryManagementService {
   public user:User;
   private userEntity:Entity
   private readonly _primaryid = new BehaviorSubject<String>("");;
+  private readonly _fullname = new BehaviorSubject<String>("");;
 
   constructor(
     private restService: CloudAppRestService,
+    private http: HttpClient
   ) { }
 
   // Expose the observable$ part of the _todos subject (read only stream)
-  getPrimaryId(): Observable<String> {
-    return this._primaryid.asObservable();
+  getUserFullName(): Observable<String> {
+    return this._fullname.asObservable();
   }
 
-  private _setPrimaryId(primary_id: string): void {
-    this._primaryid.next(primary_id);
+  private _setFullName(full_name: string): void {
+    this._fullname.next(full_name);
   }
 
   async getUserFromEntity (entity: Entity) {
+    // TODO: Network zone
+    
     try {
-      const user = await this.restService.call<any>(entity.link).toPromise();
-      this.user = new User(user);
+      const userdata = await this.restService.call<any>(entity.link).toPromise();
+      
+      this.user = new User(userdata);
       this.userEntity = entity;
-      this._setPrimaryId(user.primary_id);
+      this._setFullName(this.user.getFullName());
       return true;
     } catch (e: unknown) {
       //TODO: this.alert.error('Failed to retrieve entity: ' + error.message)
@@ -71,9 +76,12 @@ export class LibraryManagementService {
     });    
   }
 
-  resetUser(): void {
-    this.user = null;
-    this._setPrimaryId("");
+  getUserAddresses() {
+    return this.user.getAddresses();
+  }
+
+  getUserLibraryCardNumbers() {
+    return this.user.getLibraryCardNumbers();
   }
 
   private tryParseJson(value: any) {

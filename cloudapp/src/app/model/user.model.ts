@@ -5,7 +5,7 @@ export class User {
         this.userValue = userValue;
     }
 
-    getUserBlock(blockDescriptionValue: String = ""): Map<String, any> {   
+    getUserBlocks(blockDescriptionValue: String = ""): Map<String, any> {   
         var blocks = new Map<String, any>();
         console.log(this.userValue);
         
@@ -46,5 +46,31 @@ export class User {
 
     getIsExternal(): boolean {
         return this.userValue["primary_id"].match(/^\d+\@.*eduid\.ch$/);
+    }
+
+    getFullName(): string {
+        return this.userValue["full_name"];
+    }
+
+    getAddresses(): Array<Object> {
+        return this.userValue["contact_info"]["address"];
+    }
+
+    getLibraryCardNumbers(): Array<string> {
+        let libraryCardNumbers = [];
+        if (!Array.isArray(this.userValue["user_identifier"]) || this.userValue["user_identifier"].length < 1) {
+            return [];
+        }
+        this.userValue["user_identifier"].forEach((identifier) => {
+            console.log(identifier);
+            if (identifier["id_type"] && identifier["id_type"]["value"] && (
+                identifier["id_type"]["value"] == '01'|| //ALMA_CODE_LIBRARY_CARD_NUMBER
+                identifier["id_type"]["value"] == '02' || //ALMA_CODE_LIBRARY_CARD_NUMBER_NZ
+                identifier["id_type"]["value"] == '03' //ALMA_CODE_LIBRARY_CARD_NUMBER_IZ
+            )) {
+                libraryCardNumbers.push(identifier["value"]);
+            }
+        })
+        return libraryCardNumbers
     }
 }
