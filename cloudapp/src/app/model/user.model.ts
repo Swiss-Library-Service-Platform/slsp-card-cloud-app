@@ -1,4 +1,5 @@
 export class User {
+
     userValue:Object;
 
     constructor(userValue: Object) {
@@ -34,13 +35,12 @@ export class User {
         let blockObject = {};
         blockObject["segment_type"] = "External";
         blockObject["block_status"] = "Active";
-        blockObject["block_note"] = comment; //TODO: append IZ
+        blockObject["block_note"] = comment; //TODO: append IZ / staff user
         blockObject["created_by"] = "" //TODO:
         blockObject["block_description"] = {};
         blockObject["block_description"]["value"] = blockType;
         blockObject["block_type"] = {};
         blockObject["block_type"]["value"] = "USER";
-        console.log(this.userValue["user_block"]);
         this.userValue["user_block"].push(blockObject);
     }
 
@@ -62,7 +62,6 @@ export class User {
             return [];
         }
         this.userValue["user_identifier"].forEach((identifier) => {
-            console.log(identifier);
             if (identifier["id_type"] && identifier["id_type"]["value"] && (
                 identifier["id_type"]["value"] == '01'|| //ALMA_CODE_LIBRARY_CARD_NUMBER
                 identifier["id_type"]["value"] == '02' || //ALMA_CODE_LIBRARY_CARD_NUMBER_NZ
@@ -72,5 +71,38 @@ export class User {
             }
         })
         return libraryCardNumbers
+    }
+
+    addLibraryCardNumber(libraryCardNumber: string): boolean {
+        this.getLibraryCardNumbers().forEach((identifier) => {
+            if (identifier["id_type"] && identifier["id_type"]["value"] &&
+                identifier["id_type"]["value"] == libraryCardNumber) {
+                    
+                return false;
+            }
+        });
+        //create user_identifier Object
+        let identifierObject = {};
+        let currentDate = new Date();
+        identifierObject["value"] = libraryCardNumber;
+        identifierObject["id_type"] = {};
+        identifierObject["id_type"]["value"] = '02'; // ALMA_CODE_LIBRARY_CARD_NUMBER_NZ#
+        identifierObject["status"] = "ACTIVE";
+        identifierObject["segment_type"] = "External";
+        identifierObject["note"] = "Added by XX on " + currentDate.toISOString().split('T')[0]; // currentadminuserprimaryid() from IZ currentIZ()
+        this.userValue["user_identifier"].push(identifierObject);
+
+        if (this.isValidImmatriculationNumber(libraryCardNumber)) {
+            // create matriculation number Object
+            let immatriculationObject = {};
+            // TODO: add immatriculation
+            this.userValue["user_identifier"].push(immatriculationObject);
+        };
+        return true;
+    }
+
+    isValidImmatriculationNumber(immatriculationNumber: string) {
+        //TODO: check if valid
+        return true;
     }
 }

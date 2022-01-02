@@ -84,6 +84,11 @@ export class LibraryManagementService {
     return this.user.getLibraryCardNumbers();
   }
 
+  addUserLibraryCardNumber(libraryCardNumber: string) {
+    this.user.addLibraryCardNumber(libraryCardNumber);
+    // API Call
+  }
+
   private tryParseJson(value: any) {
     try {
       return JSON.parse(value);
