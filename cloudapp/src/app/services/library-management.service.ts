@@ -14,32 +14,32 @@ export class LibraryManagementService {
 
   public user:User;
   private userEntity:Entity
-  private readonly _primaryid = new BehaviorSubject<String>("");;
-  private readonly _fullname = new BehaviorSubject<String>("");;
+  private readonly _userObject = new BehaviorSubject<User>(Object());
 
   constructor(
     private restService: CloudAppRestService,
     private http: HttpClient
   ) { }
 
-  // Expose the observable$ part of the _todos subject (read only stream)
-  getUserFullName(): Observable<String> {
-    return this._fullname.asObservable();
+  getUserObject(): Observable<User> {
+    return this._userObject.asObservable();
   }
 
-  private _setFullName(full_name: string): void {
-    this._fullname.next(full_name);
+  private _setObservableUserObject(user: User): void {
+    this._userObject.next(user);
   }
 
   async getUserFromEntity (entity: Entity) {
     // TODO: Network zone
     
     try {
-      const userdata = await this.restService.call<any>(entity.link).toPromise();
-      
+//      const userdata = await this.restService.call<any>(entity.link).toPromise();
+      const userdata = await this.http.get('https://proxy01.swisscovery.network/almaws/v1').toPromise();
+
+      //proxy01.swisscovery.ch
       this.user = new User(userdata);
       this.userEntity = entity;
-      this._setFullName(this.user.getFullName());
+      this._setObservableUserObject(this.user);
       return true;
     } catch (e: unknown) {
       //TODO: this.alert.error('Failed to retrieve entity: ' + error.message)
@@ -86,8 +86,29 @@ export class LibraryManagementService {
 
   addUserLibraryCardNumber(libraryCardNumber: string) {
     this.user.addLibraryCardNumber(libraryCardNumber);
-    // API Call
+    // CHECK IF ANOTHER USER EXISTS
+
+    // API CALL
+
+    // UPDATE USER
+    this._setObservableUserObject(this.user);
   }
+
+  removeUserLibraryCardNumber(libraryCardNumber: string) {
+    this.user.removeLibraryCardNumber(libraryCardNumber);
+    // API CALL
+
+    // UPDATE USER
+    this._setObservableUserObject(this.user);
+  }
+
+  setUserPreferredAddress(address: Object) {
+    this.user.setPreferredAddress(address);
+    // API CALL
+
+    // UPDATE USER
+    this._setObservableUserObject(this.user);
+  } 
 
   private tryParseJson(value: any) {
     try {

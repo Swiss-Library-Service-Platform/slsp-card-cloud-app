@@ -5,11 +5,10 @@
     </button>
     <span >
       <mat-icon size="20">account_circle</mat-icon>
-      <div class="user-header-text">   {{currentFullName}} </div>
+      <div class="user-header-text"> {{currentFullName}} </div>
     </span>
 </div>
-
-  <br>
+<br>
 <mat-card>
   <mat-card-header>
       <mat-card-title>
@@ -17,18 +16,23 @@
       </mat-card-title>
   </mat-card-header>
   <mat-card-content>
-    {{'LibraryCardNumber.CurrentLibraryCardNumbersDescription' | translate}}
-    
-    <table>
-      <tr *ngFor="let item of currentLibraryCardNumbers">
-          <td> {{ item }} </td>
-          <td class="table-cell-remove"> 
-            <button mat-flat-button color="secondary" (click)="clear()">
-              <mat-icon inline=true>delete</mat-icon>{{'LibraryCardNumber.Remove' | translate}}
-            </button>
-          </td>
-      </tr>
-    </table>
+    <div *ngIf="currentLibraryCardNumbers.length == 0">
+      {{'LibraryCardNumber.NoCurrentLibraryCardNumbers' | translate}}
+    </div>
+    <div *ngIf="currentLibraryCardNumbers.length != 0">
+      {{'LibraryCardNumber.CurrentLibraryCardNumbersDescription' | translate}}
+      <br> <br>
+      <table>
+        <tr *ngFor="let item of currentLibraryCardNumbers">
+            <td> {{ item }} </td>
+            <td class="table-cell-remove"> 
+              <button mat-flat-button color="secondary" (click)="deleteLibraryCardNumber(item)">
+                <mat-icon inline=true>delete</mat-icon>{{'LibraryCardNumber.Remove' | translate}}
+              </button>
+            </td>
+        </tr>
+      </table>
+    </div>
   </mat-card-content>
 </mat-card>
 
@@ -41,13 +45,16 @@
       <mat-card-content>
         <mat-form-field appearance="fill">
           <mat-label>{{'Main.LibraryCardNumber' | translate}}</mat-label>
-          <input matInput #first>
+          <input matInput [(ngModel)]="newLibraryCardNumber">
         </mat-form-field>
         <mat-action-row>
-          <button mat-flat-button class="slsp-purple-button" color="secondary" (click)="clear()" >
+          <button mat-flat-button class="slsp-purple-button" color="secondary" (click)="addLibraryCardNumber()" >
             <mat-icon inline=true>add</mat-icon>{{'LibraryCardNumber.Add' | translate}}
           </button>
         </mat-action-row>
       </mat-card-content>
   </mat-card>
-  
+
+  <div class="loading-shade" *ngIf="loading">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>

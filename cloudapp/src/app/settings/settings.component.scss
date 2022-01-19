@@ -4,3 +4,20 @@
 .address-table-desc {
   font-weight: bold;
 }
+.label-preferred-address{
+  color: var(--slsp-purple);
+  font-weight: bold;
+  vertical-align: middle;
+  .mat-icon {
+      vertical-align: middle;
+      margin-right: 4px;
+  }
+}
+.outer-card {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  .mat-card {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }  
+}

@@ -89,20 +89,60 @@ export class User {
         identifierObject["id_type"]["value"] = '02'; // ALMA_CODE_LIBRARY_CARD_NUMBER_NZ#
         identifierObject["status"] = "ACTIVE";
         identifierObject["segment_type"] = "External";
-        identifierObject["note"] = "Added by XX on " + currentDate.toISOString().split('T')[0]; // currentadminuserprimaryid() from IZ currentIZ()
+        identifierObject["note"] = "Added by XX on " + currentDate.toISOString().split('T')[0]; // TODO: currentadminuserprimaryid() from IZ currentIZ()
         this.userValue["user_identifier"].push(identifierObject);
 
         if (this.isValidImmatriculationNumber(libraryCardNumber)) {
             // create matriculation number Object
             let immatriculationObject = {};
-            // TODO: add immatriculation
+            let dashedMatriculationNumber = this.getDashedMatriculationNumber(libraryCardNumber);
+            let currentDate = new Date();
+            immatriculationObject["value"] = dashedMatriculationNumber;
+            immatriculationObject["id_type"] = {};
+            immatriculationObject["id_type"]["value"] = '02'; // ALMA_CODE_LIBRARY_CARD_NUMBER_NZ#
+            immatriculationObject["status"] = "ACTIVE";
+            immatriculationObject["segment_type"] = "External";
+            immatriculationObject["note"] = "Added by XX on " + currentDate.toISOString().split('T')[0]; // TODO: currentadminuserprimaryid() from IZ currentIZ()
             this.userValue["user_identifier"].push(immatriculationObject);
         };
         return true;
     }
 
+    removeLibraryCardNumber(libraryCardNumber: string): Array<any> {
+        this.userValue["user_identifier"] = this.userValue["user_identifier"].filter(function(identifier) {
+            return identifier["value"] !== libraryCardNumber;
+        });
+        return this.getLibraryCardNumbers();
+    }
+
+
+    getDashedMatriculationNumber(immatriculationNumber: string): string{
+        return immatriculationNumber.replace(/(\d{2})(\d{3})(\d{3})/, "$1-$2-$3");
+    }
+
     isValidImmatriculationNumber(immatriculationNumber: string) {
-        //TODO: check if valid
+        // Must be 8 chars long
+        if (immatriculationNumber.length != 8) {
+            return false;
+        }
+        // Must contain only digits
+        console.log(immatriculationNumber.match(/[^0-9]/));
+        if (immatriculationNumber.match(/[^0-9]/)){
+            return false;
+        }
         return true;
+    }
+
+    setPreferredAddress(address: object) {
+        console.log(this.userValue["contact_info"]["address"]);
+        this.userValue["contact_info"]["address"] = this.userValue["contact_info"]["address"].map((currAddress) => {
+            if (currAddress == address) {
+                currAddress.preferred = true;
+            } else {
+                currAddress.preferred = false;
+            }
+            return currAddress;
+        })
+        console.log(this.userValue["contact_info"]["address"]);
     }
 }

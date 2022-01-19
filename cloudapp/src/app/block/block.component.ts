@@ -32,10 +32,10 @@ export class BlockComponent implements OnInit, OnDestroy {
   subscription;
 
   ngOnInit(): void {
-    this.subscription = this._libraryManagementService.getUserFullName().subscribe(
+    this.subscription = this._libraryManagementService.getUserObject().subscribe(
       res => {
-        this.currentFullName = res;
-        this.currentUser = this._libraryManagementService.user;
+        this.currentFullName = res.getFullName();
+        this.currentUser = res;
         this.currentUserBlocks = this._libraryManagementService.user.getUserBlocks();
       },
       err => {

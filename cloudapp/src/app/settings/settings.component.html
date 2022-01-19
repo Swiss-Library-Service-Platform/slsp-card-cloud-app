@@ -3,14 +3,14 @@
       <mat-icon inline=true>arrow_back_ios</mat-icon>
       {{ 'General.BackToMenu' | translate }}
     </button>
-    <span >
+    <span>
       <mat-icon size="20">account_circle</mat-icon>
       <div class="user-header-text"> {{currentFullName}} </div>
     </span>
 </div>
 <br>
 <!-- Preferred Address -->
-<mat-card>
+<mat-card class="outer-card">
     <mat-card-header>
         <mat-card-title>
             {{ 'Settings.PreferredAddress' | translate }}
@@ -19,7 +19,7 @@
     <mat-card-content>
         {{ 'Settings.PreferredAddressDescription' | translate }}
         <a href="https://eduid.ch/" target="_blank">{{ 'Settings.PreferredAddressDescriptionLink' | translate }}</a>
-        <br>
+        <br><br>
         <mat-card class="{{item.preferred == true ? 'mat-card-purple' : '' }}" *ngFor="let item of currentUserAddresses">
             <mat-card-content>
                 <table>
@@ -38,6 +38,7 @@
                         </td>
                         <td> {{item.line1}}, {{item.postal_code}}, {{item.city}}, {{item.country.desc}} </td>
                     </tr>
+                    <!--
                     <tr>
                         <td class="address-table-desc">
                             {{ 'Settings.Preferred' | translate }}
@@ -47,10 +48,15 @@
                             <span *ngIf="!item.preferred">{{ 'General.No' | translate }}</span>
                         </td>
                     </tr>
+                    -->
                 </table>
                 <br>
                 <mat-action-row>
-                    <button *ngIf="!item.preferred" mat-flat-button (click)="clear()" class="slsp-purple-button">{{ 'Settings.UseAsPreferred' | translate }}</button>
+                    <button *ngIf="!item.preferred" mat-flat-button (click)="changePreferredAddress(item)" class="slsp-purple-button">{{ 'Settings.UseAsPreferred' | translate }}</button>
+                    <span *ngIf="item.preferred" class="label-preferred-address">
+                        <mat-icon size="20">check</mat-icon>
+                        Preferred Address
+                    </span>
                 </mat-action-row>
             </mat-card-content>
         </mat-card>    

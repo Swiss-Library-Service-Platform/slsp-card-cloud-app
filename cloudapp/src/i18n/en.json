@@ -17,6 +17,7 @@
         "AddLibraryCardNumber": "Add Library Card Number",
         "CurrentLibraryCardNumbers": "Current Library Card Numbers",
         "CurrentLibraryCardNumbersDescription":"Current library card numbers and matriculation numbers:",
+        "NoCurrentLibraryCardNumbers":"There are no library card numbers for this user currently.",
         "Remove": "Remove"
     },
     "Settings": {
@@ -46,6 +47,8 @@
         "RemoveBlock": "Remove Block",
         "address-block-external-info": "Address blocks added to SWITCH edu-ID accounts are automatically removed when the patron user updates the postal address in their edu-ID account.",
         "address-block-internal-info": "Address blocks added to institutional accounts are managed by SLSP.",
-        "Comment": "Comment (optional)"
+        "Comment": "Comment (optional)",
+        "DoubleRegistrationsDescription": "This block is used when a patron has two or more accounts. As soon as the patron merges their duplicate SWITCH edu-ID account, the redundant SLSP account is automatically deleted too (or merged with the remaining account in case of open transactions/fees). Then, the global block from the remaining one can be manually removed via the present platform.",
+        "WrongAddressDescription" : "This block is used when a patron user account has a wrong preferred address. Since the preferred address can only be changed in the SWITCH edu-ID account, the block is automatically removed as soon as the system receives an update of the preferred address from SWITCH."
     }
 }

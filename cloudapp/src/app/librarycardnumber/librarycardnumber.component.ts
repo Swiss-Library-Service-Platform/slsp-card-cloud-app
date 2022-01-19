@@ -16,17 +16,17 @@ export class LibrarycardnumberComponent implements OnInit {
     private _location: Location,
     private _libraryManagementService: LibraryManagementService
   ) { }
-
+    loading = false;
     currentFullName: String;
     currentLibraryCardNumbers: Array<string>;
     subscription;
+    newLibraryCardNumber: string;
   
   ngOnInit(): void {
-    this.subscription = this._libraryManagementService.getUserFullName().subscribe(
+    this.subscription = this._libraryManagementService.getUserObject().subscribe(
       res => {
-        this.currentFullName = res;
+        this.currentFullName = res.getFullName();
         this.currentLibraryCardNumbers = this._libraryManagementService.getUserLibraryCardNumbers();
-        console.log(this.currentLibraryCardNumbers);
       },
       err => {
         console.error(`An error occurred: ${err.message}`);
@@ -42,6 +42,19 @@ export class LibrarycardnumberComponent implements OnInit {
 
   navigateBack(): void {
     this._location.back();
+  }
+
+  deleteLibraryCardNumber(libraryCardNumber: string): void {
+    this.loading = true;
+    this._libraryManagementService.removeUserLibraryCardNumber(libraryCardNumber);
+    this.loading = false;
+  }
+
+  addLibraryCardNumber(): void {
+    this.loading = true;
+    this._libraryManagementService.addUserLibraryCardNumber(this.newLibraryCardNumber);
+    this.newLibraryCardNumber == "";
+    this.loading = false;
   }
 
 }

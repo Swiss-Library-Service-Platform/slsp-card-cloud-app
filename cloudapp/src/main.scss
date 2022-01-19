@@ -49,10 +49,12 @@
         justify-content: space-between;
         .user-header-text {
             vertical-align: middle;
+            font-weight: bold;
         }
         .mat-icon {
             vertical-align: middle;
             margin-right: 8px;
+            color: var(--slsp-purple);
         }
         span {
             display: flex;

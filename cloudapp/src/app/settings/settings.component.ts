@@ -32,11 +32,10 @@ export class SettingsComponent implements OnInit, OnDestroy {
   subscription;
 
   ngOnInit(): void {
-    this.subscription = this._libraryManagementService.getUserFullName().subscribe(
+    this.subscription = this._libraryManagementService.getUserObject().subscribe(
       res => {
-        this.currentFullName = res;
+        this.currentFullName = res.getFullName();
         this.currentUserAddresses = this._libraryManagementService.user.getAddresses();
-        console.log(this.currentUserAddresses);
       },
       err => {
         console.error(`An error occurred: ${err.message}`);
@@ -48,6 +47,11 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
 
+  changePreferredAddress(address: Object): void {
+    console.log(address);
+    console.log(this.currentUserAddresses.indexOf(address));
+    this._libraryManagementService.setUserPreferredAddress(address);
+  }
 
   navigateBack(): void {
     this._location.back();

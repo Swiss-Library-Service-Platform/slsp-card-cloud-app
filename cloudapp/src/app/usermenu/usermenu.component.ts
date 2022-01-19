@@ -20,9 +20,9 @@ export class UsermenuComponent implements OnInit {
   subscription;
 
   ngOnInit(): void {
-    this.subscription = this._libraryManagementService.getUserFullName().subscribe(
+    this.subscription = this._libraryManagementService.getUserObject().subscribe(
       res => {
-        this.currentFullName = res;
+        this.currentFullName = res.getFullName();
       },
       err => {
         console.error(`An error occurred: ${err.message}`);
