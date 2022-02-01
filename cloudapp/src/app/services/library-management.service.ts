@@ -15,11 +15,25 @@ export class LibraryManagementService {
   public user:User;
   private userEntity:Entity
   private readonly _userObject = new BehaviorSubject<User>(Object());
+  httpOptions: {};
 
   constructor(
     private restService: CloudAppRestService,
-    private http: HttpClient
+    private http: HttpClient,
+    private eventsService: CloudAppEventsService
   ) { }
+
+  ngOnInit() {
+    this.eventsService.getAuthToken()
+      .subscribe(authToken => {
+        this.httpOptions = {
+          headers: new HttpHeaders({
+            'Authorization': `Bearer ${authToken}`,
+          }), 
+          withCredentials: true
+        };
+      });
+  }
 
   getUserObject(): Observable<User> {
     return this._userObject.asObservable();
@@ -34,7 +48,9 @@ export class LibraryManagementService {
     
     try {
 //      const userdata = await this.restService.call<any>(entity.link).toPromise();
-      const userdata = await this.http.get('https://proxy01.swisscovery.network/almaws/v1').toPromise();
+      
+      // TODO: pass authentication
+      const userdata = await this.http.get('https://proxy02.swisscovery.network/p/api-eu.hosted.exlibrisgroup.com/almaws/v1' + entity.link, this.httpOptions).toPromise();
 
       //proxy01.swisscovery.ch
       this.user = new User(userdata);
