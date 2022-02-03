@@ -3,9 +3,9 @@
     <mat-icon inline=true>arrow_back_ios</mat-icon>
     {{ 'General.BackToMenu' | translate }}
   </button>
-  <span >
+  <span>
     <mat-icon size="20">account_circle</mat-icon>
-    <div class="user-header-text">   {{currentFullName}} </div>
+    <div class="user-header-text"> {{currentFullName}} </div>
   </span>
 </div>
 <br>
@@ -20,7 +20,7 @@
     <div *ngIf="(currentUserBlocks | json) == ({} | json)">
       {{'Blocks.NoBlocks' | translate}}
     </div>
-   
+
   </mat-card-content>
 </mat-card>
 <!-- Double Registration -->
@@ -45,13 +45,13 @@
         <input matInput #first>
       </mat-form-field>
     </div>
-    <mat-action-row  *ngIf="currentUserBlocks['02']">
-      <button mat-flat-button color="secondary" (click)="clear()" >
+    <mat-action-row *ngIf="currentUserBlocks['02']">
+      <button mat-flat-button color="secondary" (click)="clear()">
         <mat-icon inline=true>delete</mat-icon>{{'Blocks.RemoveBlock' | translate}}
       </button>
     </mat-action-row>
-    <mat-action-row  *ngIf="!currentUserBlocks['02']">
-      <button mat-flat-button class="slsp-purple-button" (click)="clear()" >
+    <mat-action-row *ngIf="!currentUserBlocks['02']">
+      <button mat-flat-button class="slsp-purple-button" (click)="clear()">
         <mat-icon inline=true>add</mat-icon>{{'Blocks.AddBlock' | translate}}
       </button>
     </mat-action-row>
@@ -80,16 +80,16 @@
         <input matInput #first>
       </mat-form-field>
     </div>
-    <div  *ngIf="currentUserBlocks['03']">
+    <div *ngIf="currentUserBlocks['03']">
       <br>
-      <div class ="warning" *ngIf="currentUser.getIsExternal()">
+      <div class="warning" *ngIf="currentUser.getIsExternal()">
         {{'Blocks.address-block-external-info' | translate}}
       </div>
       <div class="warning" *ngIf="!currentUser.getIsExternal()">
         {{'Blocks.address-block-internal-info' | translate}}
       </div>
     </div>
-    <mat-action-row  *ngIf="!currentUserBlocks['03']">
+    <mat-action-row *ngIf="!currentUserBlocks['03']">
       <button mat-flat-button class="slsp-purple-button" (click)="addUserBlock('03')">
         <mat-icon inline=true>add</mat-icon><span>{{'Blocks.AddBlock' | translate}}</span>
       </button>

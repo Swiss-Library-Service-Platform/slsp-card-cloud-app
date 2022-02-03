@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
@@ -13,6 +13,7 @@ import { BlockComponent } from './block/block.component';
 import { SettingsComponent } from './settings/settings.component';
 import { LibrarycardnumberComponent } from './librarycardnumber/librarycardnumber.component';
 import { UsermenuComponent } from './usermenu/usermenu.component';
+import { APIInterceptor } from './services/api-interceptor';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,17 @@ import { UsermenuComponent } from './usermenu/usermenu.component';
     CloudAppTranslateModule.forRoot(),
   ],
   providers: [
-    { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'standard' } },
+    { 
+      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+      useValue: {
+        appearance: 'standard'
+      },
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: APIInterceptor,
+      multi: true,
+    }
   ],
   bootstrap: [AppComponent]
 })

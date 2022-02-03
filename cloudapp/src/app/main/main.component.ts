@@ -1,10 +1,12 @@
-import { Observable  } from 'rxjs';
+import { Observable } from 'rxjs';
 import { finalize, tap } from 'rxjs/operators';
-import { Component, OnInit, OnDestroy} from '@angular/core';
-import { CloudAppRestService, CloudAppEventsService, Request, HttpMethod, 
-  Entity, RestErrorResponse, AlertService } from '@exlibris/exl-cloudapp-angular-lib';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import {
+  CloudAppRestService, CloudAppEventsService, Request, HttpMethod,
+  Entity, RestErrorResponse, AlertService
+} from '@exlibris/exl-cloudapp-angular-lib';
 import { MatRadioChange } from '@angular/material/radio';
-import { Router,ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { LibraryManagementService } from '../services/library-management.service';
 
 @Component({
@@ -18,7 +20,7 @@ export class MainComponent implements OnInit, OnDestroy {
   apiResult: any;
 
   entities$: Observable<Entity[]> = this.eventsService.entities$
-  .pipe(tap(() => this.clear()))
+    .pipe(tap(() => this.clear()))
 
   constructor(
     private _libraryManagementService: LibraryManagementService,
@@ -34,12 +36,16 @@ export class MainComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
   }
 
-  async entitySelected(event: MatRadioChange)  {
+  async entitySelected(event: MatRadioChange) {
     const value = event.value as Entity;
     this.loading = true;
-    await this._libraryManagementService.getUserFromEntity(value);
-    this.loading=false
-    this.router.navigate(['usermenu']);
+    const userFound = await this._libraryManagementService.getUserFromEntity(value);
+    this.loading = false
+    if (userFound) {
+      this.router.navigate(['usermenu'])
+    } else {
+      this.clear();
+    }
   }
 
   clear() {
@@ -56,25 +62,25 @@ export class MainComponent implements OnInit, OnDestroy {
 
     this.loading = true;
     let request: Request = {
-      url: this.selectedEntity.link, 
+      url: this.selectedEntity.link,
       method: HttpMethod.PUT,
       requestBody
     };
     // TODO: change to NZ alma (either pass api Key to restService / or don't use restservice and call URL manually)
     this.restService.call(request)
-    .pipe(finalize(()=>this.loading=false))
-    .subscribe({
-      next: result => {
-        this.apiResult = result;
-        this.eventsService.refreshPage().subscribe(
-          ()=>this.alert.success('Success!')
-        );
-      },
-      error: (e: RestErrorResponse) => {
-        this.alert.error('Failed to update data: ' + e.message);
-        console.error(e);
-      }
-    });    
+      .pipe(finalize(() => this.loading = false))
+      .subscribe({
+        next: result => {
+          this.apiResult = result;
+          this.eventsService.refreshPage().subscribe(
+            () => this.alert.success('Success!')
+          );
+        },
+        error: (e: RestErrorResponse) => {
+          this.alert.error('Failed to update data: ' + e.message);
+          console.error(e);
+        }
+      });
   }
 
   private tryParseJson(value: any) {

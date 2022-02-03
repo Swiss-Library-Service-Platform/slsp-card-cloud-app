@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable  } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { finalize, tap } from 'rxjs/operators';
-import { Component, OnInit, OnDestroy} from '@angular/core';
-import { CloudAppRestService, CloudAppEventsService, Request, HttpMethod, 
-  Entity, RestErrorResponse, AlertService } from '@exlibris/exl-cloudapp-angular-lib';
+import {
+  CloudAppRestService, CloudAppEventsService, Request, HttpMethod,
+  Entity, RestErrorResponse, AlertService
+} from '@exlibris/exl-cloudapp-angular-lib';
 import { User } from '../model/user.model';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
@@ -12,27 +13,29 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 })
 export class LibraryManagementService {
 
-  public user:User;
-  private userEntity:Entity
-  private readonly _userObject = new BehaviorSubject<User>(Object());
+  public user: User;
+  private userEntity: Entity
+  private readonly _userObject = new BehaviorSubject<User>(new User());
   httpOptions: {};
 
   constructor(
     private restService: CloudAppRestService,
     private http: HttpClient,
-    private eventsService: CloudAppEventsService
-  ) { }
-
-  ngOnInit() {
+    private eventsService: CloudAppEventsService,
+    private alert: AlertService
+  ) {
     this.eventsService.getAuthToken()
       .subscribe(authToken => {
+        console.log("gotcha");
         this.httpOptions = {
           headers: new HttpHeaders({
             'Authorization': `Bearer ${authToken}`,
-          }), 
+            'Content-Type': 'application/json'
+          }),
           withCredentials: true
         };
       });
+
   }
 
   getUserObject(): Observable<User> {
@@ -43,27 +46,23 @@ export class LibraryManagementService {
     this._userObject.next(user);
   }
 
-  async getUserFromEntity (entity: Entity) {
-    // TODO: Network zone
-    
-    try {
-//      const userdata = await this.restService.call<any>(entity.link).toPromise();
-      
-      // TODO: pass authentication
-      const userdata = await this.http.get('https://proxy02.swisscovery.network/p/api-eu.hosted.exlibrisgroup.com/almaws/v1' + entity.link, this.httpOptions).toPromise();
-
-      //proxy01.swisscovery.ch
-      this.user = new User(userdata);
-      this.userEntity = entity;
-      this._setObservableUserObject(this.user);
-      return true;
-    } catch (e: unknown) {
-      //TODO: this.alert.error('Failed to retrieve entity: ' + error.message)
-      return false;
-    }
+  async getUserFromEntity(entity: Entity) {
+    this.userEntity = entity;
+    return new Promise(resolve => {
+      this.http.get(entity.link, this.httpOptions).subscribe(
+        userdata => {
+          this.user = new User(userdata);
+          this._setObservableUserObject(this.user);
+          resolve(true);
+        },
+        error => {
+          this.alert.error(entity.description + ' was not found in the Network Zone.');
+          resolve(false);
+        });
+    });
   }
 
-  addUserblock (blockType: String, comment: String = "") {
+  addUserblock(blockType: String, comment: String = "") {
 
     //create User Object
     this.user.addUserblock(blockType, comment);
@@ -71,25 +70,25 @@ export class LibraryManagementService {
     // API Call
     const requestBody = this.user.userValue;
     let request: Request = {
-      url: this.userEntity.link, 
+      url: this.userEntity.link,
       method: HttpMethod.PUT,
       requestBody
     };
     this.restService.call(request)
-    .subscribe({
-      next: result => {
-        /*
-        this.eventsService.refreshPage().subscribe(
-          ()=>this.alert.success('Success!')
-        );
-        */
-       console.log("done");
-      },
-      error: (e: RestErrorResponse) => {
-       // TODO: this.alert.error('Failed to update data: ' + e.message);
-        console.error(e);
-      }
-    });    
+      .subscribe({
+        next: result => {
+          /*
+          this.eventsService.refreshPage().subscribe(
+            ()=>this.alert.success('Success!')
+          );
+          */
+          console.log("done");
+        },
+        error: (e: RestErrorResponse) => {
+          // TODO: this.alert.error('Failed to update data: ' + e.message);
+          console.error(e);
+        }
+      });
   }
 
   getUserAddresses() {
@@ -100,14 +99,29 @@ export class LibraryManagementService {
     return this.user.getLibraryCardNumbers();
   }
 
-  addUserLibraryCardNumber(libraryCardNumber: string) {
-    this.user.addLibraryCardNumber(libraryCardNumber);
-    // CHECK IF ANOTHER USER EXISTS
-
+  async addUserLibraryCardNumber(libraryCardNumber: string) {
+    // ADD NUMBER TO USER OBJECT
+    const isAdded = this.user.addLibraryCardNumber(libraryCardNumber);
+    if (!isAdded) return false;
     // API CALL
 
-    // UPDATE USER
-    this._setObservableUserObject(this.user);
+    const apiSuccess = await new Promise(resolve => {
+      console.log(this.httpOptions);
+      this.http.put(this.userEntity.link, this.user.userValue, this.httpOptions).subscribe(
+        userdata => {
+          // UPDATE USER
+          this.user = new User(userdata);
+          this._setObservableUserObject(this.user);
+          resolve(true);
+        },
+        error => {
+          this.alert.error('Could not update');
+          resolve(false);
+        },
+        () => console.log("HTTP Observable completed...")
+      );
+    });
+    return apiSuccess;
   }
 
   removeUserLibraryCardNumber(libraryCardNumber: string) {
@@ -124,7 +138,7 @@ export class LibraryManagementService {
 
     // UPDATE USER
     this._setObservableUserObject(this.user);
-  } 
+  }
 
   private tryParseJson(value: any) {
     try {

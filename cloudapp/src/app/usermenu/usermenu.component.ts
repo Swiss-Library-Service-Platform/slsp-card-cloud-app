@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Router,ActivatedRoute } from '@angular/router';
-import {Location} from '@angular/common';
+import { Router, ActivatedRoute } from '@angular/router';
+import { Location } from '@angular/common';
 import { LibraryManagementService } from '../services/library-management.service';
 
 @Component({
@@ -11,7 +11,7 @@ import { LibraryManagementService } from '../services/library-management.service
 export class UsermenuComponent implements OnInit {
 
   constructor(
-    private _Activatedroute:ActivatedRoute,
+    private _Activatedroute: ActivatedRoute,
     private _location: Location,
     private _libraryManagementService: LibraryManagementService
   ) { }

@@ -19,7 +19,7 @@
     }
 
     .warning {
-        color: red;
+        color: #963031;
     }
    
     textarea,
@@ -80,6 +80,9 @@
         color: white !important;
         &:hover {
           background-color: var(--slsp-purple) !important;
+        }
+        &.mat-button-disabled {
+            background-color: #ADA9BB !important;
         }
     }
 

@@ -1,17 +1,19 @@
+import { Librarycardnumber } from "./librarycardnumber.model";
+
 export class User {
 
-    userValue:Object;
+    userValue: Object;
 
-    constructor(userValue: Object) {
+    constructor(userValue: Object = {}) {
         this.userValue = userValue;
     }
 
-    getUserBlocks(blockDescriptionValue: String = ""): Map<String, any> {   
+    getUserBlocks(blockDescriptionValue: String = ""): Map<String, any> {
         var blocks = new Map<String, any>();
         console.log(this.userValue);
-        
+
         if (!this.userValue["user_block"] || this.userValue["user_blok"]) return blocks;
-    
+
         for (let userblock of this.userValue["user_block"]) {
             // Block is not active
             if (userblock["block_status"].toUpperCase() !== "ACTIVE") continue;
@@ -28,9 +30,9 @@ export class User {
             blocks[userblock["block_description"]["value"]] = userblock;
         }
         return blocks;
-      }
+    }
 
-    addUserblock (blockType: String = "SUSPENDED", comment: String = ""): void {
+    addUserblock(blockType: String = "SUSPENDED", comment: String = ""): void {
         //create User Object
         let blockObject = {};
         blockObject["segment_type"] = "External";
@@ -63,7 +65,7 @@ export class User {
         }
         this.userValue["user_identifier"].forEach((identifier) => {
             if (identifier["id_type"] && identifier["id_type"]["value"] && (
-                identifier["id_type"]["value"] == '01'|| //ALMA_CODE_LIBRARY_CARD_NUMBER
+                identifier["id_type"]["value"] == '01' || //ALMA_CODE_LIBRARY_CARD_NUMBER
                 identifier["id_type"]["value"] == '02' || //ALMA_CODE_LIBRARY_CARD_NUMBER_NZ
                 identifier["id_type"]["value"] == '03' //ALMA_CODE_LIBRARY_CARD_NUMBER_IZ
             )) {
@@ -77,7 +79,6 @@ export class User {
         this.getLibraryCardNumbers().forEach((identifier) => {
             if (identifier["id_type"] && identifier["id_type"]["value"] &&
                 identifier["id_type"]["value"] == libraryCardNumber) {
-                    
                 return false;
             }
         });
@@ -92,7 +93,7 @@ export class User {
         identifierObject["note"] = "Added by XX on " + currentDate.toISOString().split('T')[0]; // TODO: currentadminuserprimaryid() from IZ currentIZ()
         this.userValue["user_identifier"].push(identifierObject);
 
-        if (this.isValidImmatriculationNumber(libraryCardNumber)) {
+        if (Librarycardnumber.isValidImmatriculationNumber(libraryCardNumber)) {
             // create matriculation number Object
             let immatriculationObject = {};
             let dashedMatriculationNumber = this.getDashedMatriculationNumber(libraryCardNumber);
@@ -109,29 +110,18 @@ export class User {
     }
 
     removeLibraryCardNumber(libraryCardNumber: string): Array<any> {
-        this.userValue["user_identifier"] = this.userValue["user_identifier"].filter(function(identifier) {
+        this.userValue["user_identifier"] = this.userValue["user_identifier"].filter(function (identifier) {
             return identifier["value"] !== libraryCardNumber;
         });
         return this.getLibraryCardNumbers();
     }
 
 
-    getDashedMatriculationNumber(immatriculationNumber: string): string{
+    getDashedMatriculationNumber(immatriculationNumber: string): string {
         return immatriculationNumber.replace(/(\d{2})(\d{3})(\d{3})/, "$1-$2-$3");
     }
 
-    isValidImmatriculationNumber(immatriculationNumber: string) {
-        // Must be 8 chars long
-        if (immatriculationNumber.length != 8) {
-            return false;
-        }
-        // Must contain only digits
-        console.log(immatriculationNumber.match(/[^0-9]/));
-        if (immatriculationNumber.match(/[^0-9]/)){
-            return false;
-        }
-        return true;
-    }
+
 
     setPreferredAddress(address: object) {
         console.log(this.userValue["contact_info"]["address"]);
