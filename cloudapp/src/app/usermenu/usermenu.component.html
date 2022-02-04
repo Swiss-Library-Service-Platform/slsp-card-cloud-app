@@ -1,47 +1,60 @@
 <div class="user-header" fxLayout="row">
     <button mat-flat-button color="secondary" (click)="navigateBack()">
-      <mat-icon inline=true>arrow_back_ios</mat-icon>
-      {{ 'General.BackToMenu' | translate }}
+        <mat-icon inline=true>arrow_back_ios</mat-icon>
+        {{ 'General.BackToMenu' | translate }}
     </button>
-    <span >
-      <mat-icon size="20">account_circle</mat-icon>
-      <div class="user-header-text">   {{currentFullName}} </div>
+    <span>
+        <mat-icon size="20">account_circle</mat-icon>
+        <div class="user-header-text"> {{currentFullName}} </div>
     </span>
 </div>
+<br>
+<mat-tab-group mat-stretch-tabs>
+    <mat-tab label="Library Card">
+        <app-librarycardnumber></app-librarycardnumber>
+    </mat-tab>
+    <mat-tab label="Settings">
+        <app-settings>
 
+        </app-settings>
+    </mat-tab>
+    <mat-tab label="Blocks">
+        <app-block></app-block>
+    </mat-tab>
+</mat-tab-group>
 
-<div>
+<div hidden>
     <!-- Library Card Number -->
     <mat-card [routerLink]="['/librarycardnumber']">
         <mat-card-header>
-        <mat-card-title>
-            {{'Main.LibraryCardNumber' | translate}}
-        </mat-card-title>
+            <mat-card-title>
+                {{'Main.LibraryCardNumber' | translate}}
+            </mat-card-title>
         </mat-card-header>
         <mat-card-content>
-        {{'Main.LibraryCardNumberDescription' | translate}}
+            {{'Main.LibraryCardNumberDescription' | translate}}
         </mat-card-content>
     </mat-card>
     <!-- Settings -->
     <mat-card [routerLink]="['/settings']">
         <mat-card-header>
-        <mat-card-title>
-            {{'Main.Settings' | translate}}
-        </mat-card-title>
+            <mat-card-title>
+                {{'Main.Settings' | translate}}
+            </mat-card-title>
         </mat-card-header>
         <mat-card-content>
-        {{'Main.SettingsDescription' | translate}}
+            {{'Main.SettingsDescription' | translate}}
         </mat-card-content>
     </mat-card>
     <!-- User Block -->
     <mat-card [routerLink]="['/block']">
         <mat-card-header>
-        <mat-card-title>
-            {{'Main.Block' | translate}}
-        </mat-card-title>
+            <mat-card-title>
+                {{'Main.Block' | translate}}
+            </mat-card-title>
         </mat-card-header>
         <mat-card-content>
-        {{'Main.BlockDescription' | translate}}
+            {{'Main.BlockDescription' | translate}}
         </mat-card-content>
     </mat-card>
 </div>

@@ -109,11 +109,12 @@ export class User {
         return true;
     }
 
-    removeLibraryCardNumber(libraryCardNumber: string): Array<any> {
+    removeLibraryCardNumber(libraryCardNumber: string): Boolean {
+        let initialCount = this.userValue["user_identifier"].length;
         this.userValue["user_identifier"] = this.userValue["user_identifier"].filter(function (identifier) {
             return identifier["value"] !== libraryCardNumber;
         });
-        return this.getLibraryCardNumbers();
+        return initialCount != this.userValue["user_identifier"].length;
     }
 
 

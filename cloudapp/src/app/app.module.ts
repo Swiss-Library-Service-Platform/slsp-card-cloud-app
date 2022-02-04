@@ -14,6 +14,7 @@ import { SettingsComponent } from './settings/settings.component';
 import { LibrarycardnumberComponent } from './librarycardnumber/librarycardnumber.component';
 import { UsermenuComponent } from './usermenu/usermenu.component';
 import { APIInterceptor } from './services/api-interceptor';
+import { ConfirmationdialogComponent } from './confirmationdialog/confirmationdialog.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { APIInterceptor } from './services/api-interceptor';
     BlockComponent,
     SettingsComponent,
     LibrarycardnumberComponent,
-    UsermenuComponent
+    UsermenuComponent,
+    ConfirmationdialogComponent,
   ],
   imports: [
     MaterialModule,
@@ -32,11 +34,11 @@ import { APIInterceptor } from './services/api-interceptor';
     HttpClientModule,
     AlertModule,
     FormsModule,
-    ReactiveFormsModule,     
+    ReactiveFormsModule,
     CloudAppTranslateModule.forRoot(),
   ],
   providers: [
-    { 
+    {
       provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
       useValue: {
         appearance: 'standard'
@@ -48,6 +50,7 @@ import { APIInterceptor } from './services/api-interceptor';
       multi: true,
     }
   ],
+  entryComponents: [ConfirmationdialogComponent],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

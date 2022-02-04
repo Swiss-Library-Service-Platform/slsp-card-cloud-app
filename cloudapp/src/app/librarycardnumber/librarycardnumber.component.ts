@@ -5,6 +5,8 @@ import { LibraryManagementService } from '../services/library-management.service
 import { User } from '../model/user.model';
 import { AlertService } from '@exlibris/exl-cloudapp-angular-lib';
 import { Librarycardnumber } from '../model/librarycardnumber.model';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { ConfirmationdialogComponent } from '../confirmationdialog/confirmationdialog.component';
 
 @Component({
   selector: 'app-librarycardnumber',
@@ -19,12 +21,14 @@ export class LibrarycardnumberComponent implements OnInit {
     private _location: Location,
     private _libraryManagementService: LibraryManagementService,
     private alert: AlertService,
+    private dialog: MatDialog
   ) { }
   loading = false;
   currentFullName: String;
   currentLibraryCardNumbers: Array<string>;
   subscription;
   newLibraryCardNumber: string = '';
+  dialogRef: MatDialogRef<ConfirmationdialogComponent>;
 
   ngOnInit(): void {
     this.subscription = this._libraryManagementService.getUserObject().subscribe(
@@ -47,10 +51,26 @@ export class LibrarycardnumberComponent implements OnInit {
     this._location.back();
   }
 
-  deleteLibraryCardNumber(libraryCardNumber: string): void {
-    this.loading = true;
-    this._libraryManagementService.removeUserLibraryCardNumber(libraryCardNumber);
-    this.loading = false;
+  async deleteLibraryCardNumber(libraryCardNumber: string): Promise<void> {
+    this.dialogRef = this.dialog.open(ConfirmationdialogComponent, {
+      disableClose: false
+    });
+    this.dialogRef.componentInstance.confirmMessage = "Are you sure you want to remove this number?"
+
+    this.dialogRef.afterClosed().subscribe(async result => {
+      if (result) {
+        this.loading = true;
+        const isRemoved = await this._libraryManagementService.removeUserLibraryCardNumber(libraryCardNumber);
+        if (!isRemoved) {
+          this.alert.error("Library card number could not be removed.");
+        } else {
+          this.alert.success("Library card successfully removed.");
+        }
+        this.loading = false;
+      }
+      this.dialogRef = null;
+    });
+
   }
 
   async addLibraryCardNumber(): Promise<void> {
@@ -60,6 +80,7 @@ export class LibrarycardnumberComponent implements OnInit {
       this.alert.error("Library card number is probably not valid.", { autoClose: true });
     } else {
       this.newLibraryCardNumber = '';
+      this.alert.success("Library card successfully added.");
     }
     this.loading = false;
   }

@@ -7,6 +7,7 @@
 }
 
 @mixin global-styles {
+
     /* Add global styles here */
     .app-loading .spinner .path {
         stroke: var(--slsp-purple);
@@ -16,15 +17,26 @@
     {
     --slsp-purple: rgba( 78, 74, 153, 1); // or any global you wish to share with components 
     --slsp-purple-light: #eeeef7;
+    --slsp-purple-transparent: rgba(78, 74, 153, 0.1);
+    }
+
+    .loading-shade {
+        //background: var(--slsp-purple-transparent) !important;
+    }
+
+    cloudapp-alert {
+        position: absolute;
+        width: 100%;
+        z-index: 99;
     }
 
     .warning {
         color: #963031;
+        font-weight: bold;
     }
    
-    textarea,
-    section,
     .mat-card {
+        margin: 1px;
         margin-bottom: 20px;
     }
   
@@ -59,6 +71,7 @@
         span {
             display: flex;
             align-items: center;
+            margin-right: 5px;
         }
     }
 
@@ -86,6 +99,8 @@
         }
     }
 
+    
+
     button.mat-button .mat-icon,
     a.mat-button .mat-icon,
     a.mat-raised-button .mat-icon,
@@ -95,4 +110,45 @@
         font-size: 1.25em;
         padding-right: 4px;
     }
+
+    .mat-flat-button.info-button .mat-icon {
+        vertical-align: middle;
+    }
+
+    .mat-tab-group.mat-primary .mat-ink-bar {
+        border-radius: 5px;
+        height: 5px;
+        background-color: var(--slsp-purple) !important;
+    }
+    .mat-tab-labels {
+        background-color: var(--slsp-purple-light);
+        border-radius: 5px;
+    }
+
+    .confirm-button {
+        color: white !important;
+        background-color: var(--slsp-purple) !important;
+    }
+
+
+    .mat-card-with-info {
+        .mat-card-header-text {
+            width: 100% ;
+            margin-right: 0px;
+            
+            .mat-card-title {
+                display: flex;
+                align-items: baseline;
+                justify-content: space-between;
+        
+                button {
+                    padding: 0px;
+                }
+                .mat-icon {
+                    color: #5e5e5e;
+                }
+            }
+        }
+    }
+
 }

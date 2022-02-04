@@ -1,6 +1,5 @@
-<ng-container 
-  *ngIf="(entities$ | async)?.length > 0; then entities; else noentities"
-  ></ng-container>
+<ng-container *ngIf="(entities$ | async)?.length > 0; then entities; else noentities"></ng-container>
+
 
 <ng-template #noentities>
   <h1>Welcome to Swisscovery Library Card Management!</h1>
@@ -16,11 +15,8 @@
 <ng-template #entities>
   <div *ngIf="!selectedEntity">
     <label id="entities-radio-group-label">Select a user:</label>
-    <mat-radio-group
-      aria-labelledby="entities-radio-group-label"
-      class="entities-radio-group"
-      [(ngModel)]="selectedEntity"
-      (change)="entitySelected($event)">
+    <mat-radio-group aria-labelledby="entities-radio-group-label" class="entities-radio-group"
+      [(ngModel)]="selectedEntity" (change)="entitySelected($event)">
       <mat-radio-button *ngFor="let entity of entities$ | async" [value]="entity">
         {{entity.description}}
       </mat-radio-button>

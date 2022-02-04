@@ -1,18 +1,21 @@
-import { Observable  } from 'rxjs';
+import { Observable } from 'rxjs';
 import { finalize, tap } from 'rxjs/operators';
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
-import { CloudAppRestService, CloudAppEventsService, Request, HttpMethod, 
-  Entity, RestErrorResponse, AlertService } from '@exlibris/exl-cloudapp-angular-lib';
+import {
+  CloudAppRestService, CloudAppEventsService, Request, HttpMethod,
+  Entity, RestErrorResponse, AlertService
+} from '@exlibris/exl-cloudapp-angular-lib';
 import { MatRadioChange } from '@angular/material/radio';
-import { Router,ActivatedRoute } from '@angular/router';
-import {Location} from '@angular/common';
+import { Router, ActivatedRoute } from '@angular/router';
+import { Location } from '@angular/common';
 import { LibraryManagementService } from '../services/library-management.service';
 import { User } from '../model/user.model';
+import { ElementRef, ViewChild } from '@angular/core';
 
 @Component({
-  selector: 'app-main',
+  selector: 'app-block',
   templateUrl: './block.component.html',
-  styleUrls: ['./block.component.scss']
+  styleUrls: ['block.component.scss']
 })
 export class BlockComponent implements OnInit, OnDestroy {
 
@@ -22,14 +25,15 @@ export class BlockComponent implements OnInit, OnDestroy {
     private _libraryManagementService: LibraryManagementService,
     private eventsService: CloudAppEventsService,
     private alert: AlertService,
-    private _Activatedroute:ActivatedRoute,
+    private _Activatedroute: ActivatedRoute,
     private _location: Location
   ) { }
-  
   currentFullName: String;
   currentUser: User = null;
-  currentUserBlocks: Map<String, any>= null;
+  currentUserBlocks: Map<String, any> = null;
   subscription;
+  collapsedDouble: Boolean = true;
+  collapsedWrong: Boolean = true;
 
   ngOnInit(): void {
     this.subscription = this._libraryManagementService.getUserObject().subscribe(

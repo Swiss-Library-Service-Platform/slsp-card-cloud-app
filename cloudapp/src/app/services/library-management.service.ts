@@ -56,7 +56,14 @@ export class LibraryManagementService {
           resolve(true);
         },
         error => {
-          this.alert.error(entity.description + ' was not found in the Network Zone.');
+
+          console.log(error);
+          if (error.status == 400) {
+            this.alert.error(entity.description + ' was not found in the Network Zone.');
+
+          } else {
+            this.alert.error('Service temporarily unavailable');
+          }
           resolve(false);
         });
     });
@@ -99,37 +106,20 @@ export class LibraryManagementService {
     return this.user.getLibraryCardNumbers();
   }
 
-  async addUserLibraryCardNumber(libraryCardNumber: string) {
+  async addUserLibraryCardNumber(libraryCardNumber: string): Promise<Boolean> {
     // ADD NUMBER TO USER OBJECT
     const isAdded = this.user.addLibraryCardNumber(libraryCardNumber);
     if (!isAdded) return false;
     // API CALL
-
-    const apiSuccess = await new Promise(resolve => {
-      console.log(this.httpOptions);
-      this.http.put(this.userEntity.link, this.user.userValue, this.httpOptions).subscribe(
-        userdata => {
-          // UPDATE USER
-          this.user = new User(userdata);
-          this._setObservableUserObject(this.user);
-          resolve(true);
-        },
-        error => {
-          this.alert.error('Could not update');
-          resolve(false);
-        },
-        () => console.log("HTTP Observable completed...")
-      );
-    });
-    return apiSuccess;
+    return this.updateUser();
   }
 
-  removeUserLibraryCardNumber(libraryCardNumber: string) {
-    this.user.removeLibraryCardNumber(libraryCardNumber);
+  async removeUserLibraryCardNumber(libraryCardNumber: string): Promise<Boolean> {
+    // REMOVE NUMBER FROM USER OBJECT
+    const isRemoved = this.user.removeLibraryCardNumber(libraryCardNumber);
+    if (!isRemoved) return false;
     // API CALL
-
-    // UPDATE USER
-    this._setObservableUserObject(this.user);
+    return this.updateUser();
   }
 
   setUserPreferredAddress(address: Object) {
@@ -147,5 +137,23 @@ export class LibraryManagementService {
       console.error(e);
     }
     return undefined;
+  }
+
+  async updateUser(): Promise<Boolean> {
+    return new Promise(resolve => {
+      console.log(this.httpOptions);
+      this.http.put(this.userEntity.link, this.user.userValue, this.httpOptions).subscribe(
+        userdata => {
+          // UPDATE USER
+          this.user = new User(userdata);
+          this._setObservableUserObject(this.user);
+          resolve(true);
+        },
+        error => {
+          resolve(false);
+        },
+        () => console.log("HTTP Observable completed...")
+      );
+    });
   }
 }
