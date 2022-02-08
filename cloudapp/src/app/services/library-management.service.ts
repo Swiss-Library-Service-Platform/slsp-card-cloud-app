@@ -19,14 +19,12 @@ export class LibraryManagementService {
   httpOptions: {};
 
   constructor(
-    private restService: CloudAppRestService,
     private http: HttpClient,
     private eventsService: CloudAppEventsService,
     private alert: AlertService
   ) {
     this.eventsService.getAuthToken()
       .subscribe(authToken => {
-        console.log("gotcha");
         this.httpOptions = {
           headers: new HttpHeaders({
             'Authorization': `Bearer ${authToken}`,
@@ -35,7 +33,6 @@ export class LibraryManagementService {
           withCredentials: true
         };
       });
-
   }
 
   getUserObject(): Observable<User> {
@@ -44,6 +41,18 @@ export class LibraryManagementService {
 
   private _setObservableUserObject(user: User): void {
     this._userObject.next(user);
+  }
+
+  getUserAddresses() {
+    return this.user.getAddresses();
+  }
+
+  getUserLibraryCardNumbers() {
+    return this.user.getLibraryCardNumbers();
+  }
+
+  getUserMatriculationNumber() {
+    return this.user.getMatriculationNumber();
   }
 
   async getUserFromEntity(entity: Entity) {
@@ -56,11 +65,8 @@ export class LibraryManagementService {
           resolve(true);
         },
         error => {
-
-          console.log(error);
           if (error.status == 400) {
             this.alert.error(entity.description + ' was not found in the Network Zone.');
-
           } else {
             this.alert.error('Service temporarily unavailable');
           }
@@ -69,41 +75,18 @@ export class LibraryManagementService {
     });
   }
 
-  addUserblock(blockType: String, comment: String = "") {
-
-    //create User Object
-    this.user.addUserblock(blockType, comment);
-
-    // API Call
-    const requestBody = this.user.userValue;
-    let request: Request = {
-      url: this.userEntity.link,
-      method: HttpMethod.PUT,
-      requestBody
-    };
-    this.restService.call(request)
-      .subscribe({
-        next: result => {
-          /*
-          this.eventsService.refreshPage().subscribe(
-            ()=>this.alert.success('Success!')
-          );
-          */
-          console.log("done");
-        },
-        error: (e: RestErrorResponse) => {
-          // TODO: this.alert.error('Failed to update data: ' + e.message);
-          console.error(e);
-        }
-      });
+  addUserblock(blockType: String, comment: String = ""): Promise<Boolean> {
+    // ADD USER BLOCK
+    this.user.addBlock(blockType, comment);
+    // API CALL
+    return this.updateUser();
   }
 
-  getUserAddresses() {
-    return this.user.getAddresses();
-  }
-
-  getUserLibraryCardNumbers() {
-    return this.user.getLibraryCardNumbers();
+  removeUserblock(blockType: String): Promise<Boolean> {
+    // REMOVE USER BLOCK
+    this.user.removeBlock(blockType);
+    // API CALL
+    return this.updateUser();
   }
 
   async addUserLibraryCardNumber(libraryCardNumber: string): Promise<Boolean> {
@@ -122,21 +105,13 @@ export class LibraryManagementService {
     return this.updateUser();
   }
 
-  setUserPreferredAddress(address: Object) {
-    this.user.setPreferredAddress(address);
+  async setUserPreferredAddress(address: Object): Promise<Boolean> {
+    // SET PREFERRED ADDRESS
+    const isChanged = this.user.setPreferredAddress(address);
     // API CALL
-
+    if (!isChanged) return false;
     // UPDATE USER
-    this._setObservableUserObject(this.user);
-  }
-
-  private tryParseJson(value: any) {
-    try {
-      return JSON.parse(value);
-    } catch (e) {
-      console.error(e);
-    }
-    return undefined;
+    return this.updateUser();
   }
 
   async updateUser(): Promise<Boolean> {
@@ -150,9 +125,11 @@ export class LibraryManagementService {
           resolve(true);
         },
         error => {
+          console.log(error);
+          // RESTORE OLD USER ENTITY
+          this.getUserFromEntity(this.userEntity);
           resolve(false);
         },
-        () => console.log("HTTP Observable completed...")
       );
     });
   }

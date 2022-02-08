@@ -1,0 +1,15 @@
+mat-action-row {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem; 
+}
+
+.mat-action-row-single {
+    justify-content: flex-end;
+}
+
+mat-form-field-wrapper {
+    padding-bottom: 1rem;
+}

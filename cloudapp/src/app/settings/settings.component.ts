@@ -17,12 +17,7 @@ import { LibraryManagementService } from '../services/library-management.service
 })
 export class SettingsComponent implements OnInit, OnDestroy {
 
-
-  selected = 'Lol';
-
   constructor(
-    private restService: CloudAppRestService,
-    private eventsService: CloudAppEventsService,
     private alert: AlertService,
     private _Activatedroute: ActivatedRoute,
     private _location: Location,
@@ -32,12 +27,14 @@ export class SettingsComponent implements OnInit, OnDestroy {
   currentFullName: String;
   currentUserAddresses: Array<Object>;
   subscription;
+  loading: Boolean;
 
   ngOnInit(): void {
     this.subscription = this._libraryManagementService.getUserObject().subscribe(
       res => {
+        console.log("initing");
         this.currentFullName = res.getFullName();
-        this.currentUserAddresses = this._libraryManagementService.user.getAddresses();
+        this.currentUserAddresses = this._libraryManagementService.getUserAddresses();
       },
       err => {
         console.error(`An error occurred: ${err.message}`);
@@ -49,10 +46,15 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
 
-  changePreferredAddress(address: Object): void {
-    console.log(address);
-    console.log(this.currentUserAddresses.indexOf(address));
-    this._libraryManagementService.setUserPreferredAddress(address);
+  async changePreferredAddress(address: Object): Promise<void> {
+    this.loading = true;
+    const isAdded = await this._libraryManagementService.setUserPreferredAddress(address);
+    if (!isAdded) {
+      this.alert.error("Preferred address could not be changed.", { autoClose: true });
+    } else {
+      this.alert.success("Preferred address changed successfully.");
+    }
+    this.loading = false;
   }
 
   navigateBack(): void {

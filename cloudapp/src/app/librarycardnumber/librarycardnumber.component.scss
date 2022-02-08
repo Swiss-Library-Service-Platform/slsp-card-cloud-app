@@ -3,4 +3,26 @@ table {
     .table-cell-remove {
         text-align: right;
     }
+    tr {
+        height: 46px;
+    }
+    td {
+        padding: 0px;
+    }
+}
+
+form {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem; 
+}
+
+mat-action-row {
+    width: 100%;
+}
+
+mat-form-field-wrapper {
+    padding-bottom: 1rem;
 }

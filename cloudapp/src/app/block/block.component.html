@@ -10,7 +10,7 @@
 </div>
 <br>
 
-<h2> {{'Blocks.CurrentBlockTitle' | translate}}</h2>
+<!-- <h2> {{'Blocks.CurrentBlockTitle' | translate}}</h2> -->
 <!-- Current Block -->
 <mat-card>
   <mat-card-content>
@@ -37,6 +37,8 @@
     </mat-card-title>
   </mat-card-header>
   <mat-card-content>
+    <mat-divider></mat-divider>
+    <br>
     <div *ngIf="!collapsedDouble" style="font-style: italic;">
       {{'Blocks.DoubleRegistrationsDescription' | translate}}
       <br><br>
@@ -47,19 +49,17 @@
       {{'Blocks.ExpiringOn' | translate}} {{getDateString(currentUserBlocks['02']['expiry_date'])}} <br>
       {{'Blocks.Note' | translate}}: {{currentUserBlocks['02']['block_note']}}
     </div>
-    <div *ngIf="!currentUserBlocks['02']">
-      <mat-form-field appearance="fill">
-        <mat-label>{{'Blocks.Comment' | translate}}</mat-label>
-        <input matInput #first>
-      </mat-form-field>
-    </div>
-    <mat-action-row *ngIf="currentUserBlocks['02']">
-      <button mat-flat-button color="secondary" (click)="clear()">
+    <mat-action-row class="mat-action-row-single" *ngIf="currentUserBlocks['02']">
+      <button mat-flat-button color="secondary" (click)="removeUserBlock('02')">
         <mat-icon inline=true>delete</mat-icon>{{'Blocks.RemoveBlock' | translate}}
       </button>
     </mat-action-row>
     <mat-action-row *ngIf="!currentUserBlocks['02']">
-      <button mat-flat-button class="slsp-purple-button" (click)="clear()">
+      <mat-form-field appearance="fill">
+        <mat-label>{{'Blocks.Comment' | translate}}</mat-label>
+        <input matInput #first>
+      </mat-form-field>
+      <button mat-flat-button class="slsp-purple-button" (click)="addUserBlock('02')">
         <mat-icon inline=true>add</mat-icon>{{'Blocks.AddBlock' | translate}}
       </button>
     </mat-action-row>
@@ -78,6 +78,8 @@
     </mat-card-title>
   </mat-card-header>
   <mat-card-content>
+    <mat-divider></mat-divider>
+    <br>
     <div *ngIf="!collapsedWrong" style="font-style: italic;">
       {{'Blocks.WrongAddressDescription' | translate}}
       <br><br>
@@ -87,12 +89,6 @@
       {{'Blocks.CreatedOn' | translate}} {{getDateString(currentUserBlocks['03']['created_date'])}} <br>
       {{'Blocks.ExpiringOn' | translate}} {{getDateString(currentUserBlocks['03']['expiry_date'])}} <br>
       {{'Blocks.Note' | translate}}: {{currentUserBlocks['03']['block_note']}}
-    </div>
-    <div *ngIf="!currentUserBlocks['03']">
-      <mat-form-field appearance="fill">
-        <mat-label>Comment (optional)</mat-label>
-        <input matInput #first>
-      </mat-form-field>
     </div>
     <div *ngIf="currentUserBlocks['03']">
       <br>
@@ -104,9 +100,50 @@
       </div>
     </div>
     <mat-action-row *ngIf="!currentUserBlocks['03']">
+      <mat-form-field appearance="fill">
+        <mat-label>Comment (optional)</mat-label>
+        <input matInput #first>
+      </mat-form-field>
       <button mat-flat-button class="slsp-purple-button" (click)="addUserBlock('03')">
         <mat-icon inline=true>add</mat-icon><span>{{'Blocks.AddBlock' | translate}}</span>
       </button>
     </mat-action-row>
   </mat-card-content>
 </mat-card>
+
+<!-- New Account -->
+<mat-card *ngIf="currentUserBlocks['08']" class="mat-card-with-info">
+  <mat-card-header>
+    <mat-card-title>
+      {{'Blocks.NewAccount' | translate}}
+      <button class="info-button" mat-flat-button (click)="collapsedNew=!collapsedNew">
+        <mat-icon>info</mat-icon>
+      </button>
+    </mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <mat-divider></mat-divider>
+    <br>
+    <div *ngIf="!collapsedNew" style="font-style: italic;">
+      {{'Blocks.NewAccountDescription' | translate}}
+      <br><br>
+    </div>
+
+    <div>
+      {{'Blocks.CreatedOn' | translate}} {{getDateString(currentUserBlocks['08']['created_date'])}} <br>
+      {{'Blocks.ExpiringOn' | translate}} {{getDateString(currentUserBlocks['08']['expiry_date'])}} <br>
+      {{'Blocks.Note' | translate}}: {{currentUserBlocks['08']['block_note']}}
+    </div>
+
+    <mat-action-row class="mat-action-row-single">
+      <button mat-flat-button color="secondary" (click)="removeUserBlock('08')">
+        <mat-icon inline=true>delete</mat-icon>{{'Blocks.RemoveBlock' | translate}}
+      </button>
+    </mat-action-row>
+  </mat-card-content>
+</mat-card>
+
+
+<div class="loading-shade" *ngIf="loading">
+  <mat-spinner diameter="50"></mat-spinner>
+</div>

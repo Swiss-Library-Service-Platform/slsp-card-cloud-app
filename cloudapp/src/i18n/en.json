@@ -16,7 +16,7 @@
         "Add": "Add",
         "AddLibraryCardNumber": "Add Library Card Number",
         "CurrentLibraryCardNumbers": "Current Library Card Numbers",
-        "CurrentLibraryCardNumbersDescription": "Current library card numbers and matriculation numbers:",
+        "CurrentLibraryCardNumbersDescription": "Current library card numbers:",
         "NoCurrentLibraryCardNumbers": "There are no library card numbers for this user currently.",
         "Remove": "Remove"
     },
@@ -41,6 +41,7 @@
         "AddBlockTitle": "Add a User Block",
         "DoubleRegistrations": "Double Registration",
         "WrongAddress": "Wrong Address",
+        "NewAccount": "New Account",
         "AddBlock": "Add Block",
         "CreatedOn": "Created on",
         "ExpiringOn": "Expiring on",
@@ -50,6 +51,7 @@
         "address-block-internal-info": "Address blocks added to institutional accounts are managed by SLSP.",
         "Comment": "Comment (optional)",
         "DoubleRegistrationsDescription": "This block is used when a patron has two or more accounts. As soon as the patron merges their duplicate SWITCH edu-ID account, the redundant SLSP account is automatically deleted too (or merged with the remaining account in case of open transactions/fees). Then, the global block from the remaining one can be manually removed via the present platform.",
-        "WrongAddressDescription": "This block is used when a patron user account has a wrong preferred address. Since the preferred address can only be changed in the SWITCH edu-ID account, the block is automatically removed as soon as the system receives an update of the preferred address from SWITCH."
+        "WrongAddressDescription": "This block is used when a patron user account has a wrong preferred address. Since the preferred address can only be changed in the SWITCH edu-ID account, the block is automatically removed as soon as the system receives an update of the preferred address from SWITCH.",
+        "NewAccountDescription": "This block is automatically applied when an institution self-registers via the SLSP registration platform. The global block can then be removed via the present platform by the library that approves the eligibility of the institution to get an account according to the criteria list. This block is not yet in use."
     }
 }

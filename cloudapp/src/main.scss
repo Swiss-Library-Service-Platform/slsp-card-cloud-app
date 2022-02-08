@@ -124,6 +124,10 @@
         background-color: var(--slsp-purple-light);
         border-radius: 5px;
     }
+    .mat-tab-label-active{
+        //background-color: #3398dc !important;
+        opacity: 1 !important;
+    }
 
     .confirm-button {
         color: white !important;

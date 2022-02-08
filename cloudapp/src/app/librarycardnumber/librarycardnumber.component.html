@@ -16,19 +16,44 @@
     </mat-card-title>
   </mat-card-header>
   <mat-card-content>
+    <div *ngIf="currentMatriculationNumber">
+      <mat-divider></mat-divider>
+      <br>
+      Current matriculation number
+      <br>
+      <table>
+        <tr>
+          <td> {{ currentMatriculationNumber }} </td>
+        </tr>
+      </table>
+    </div>
+    <mat-divider></mat-divider>
+    <br>
     <div *ngIf="currentLibraryCardNumbers.length == 0">
       {{'LibraryCardNumber.NoCurrentLibraryCardNumbers' | translate}}
     </div>
     <div *ngIf="currentLibraryCardNumbers.length != 0">
       {{'LibraryCardNumber.CurrentLibraryCardNumbersDescription' | translate}}
-      <br> <br>
+      <br><br>
       <table>
         <tr *ngFor="let item of currentLibraryCardNumbers">
-          <td> {{ item }} </td>
+          <td> {{ item['value'].toUpperCase() }} </td>
           <td class="table-cell-remove">
-            <button mat-flat-button color="secondary" (click)="deleteLibraryCardNumber(item)">
-              <mat-icon inline=true>delete</mat-icon>{{'LibraryCardNumber.Remove' | translate}}
-            </button>
+            <div *ngIf="isNumberDashedLibraryCardNumber(item)" style="font-style: italic;">
+              Alias
+            </div>
+            <div *ngIf="!isNumberDashedLibraryCardNumber(item)">
+              <button *ngIf="isNumberRemovable(item)" mat-flat-button color="secondary"
+                (click)="deleteLibraryCardNumber(item)">
+                <mat-icon inline=true>delete</mat-icon>{{'LibraryCardNumber.Remove' | translate}}
+              </button>
+              <!--
+              <div *ngIf="!isNumberRemovable(item)">
+                Cannot be removed
+              </div>
+            -->
+            </div>
+
           </td>
         </tr>
       </table>
@@ -43,19 +68,24 @@
     </mat-card-title>
   </mat-card-header>
   <mat-card-content>
-    <mat-form-field appearance="fill">
-      <mat-label>{{'Main.LibraryCardNumber' | translate}}</mat-label>
-      <input matInput [(ngModel)]="newLibraryCardNumber">
-    </mat-form-field>
+    <mat-divider></mat-divider>
+
     <mat-action-row>
-      <button mat-flat-button [disabled]="newLibraryCardNumber === ''" class="slsp-purple-button" color="secondary"
-        (click)="addLibraryCardNumber()">
-        <mat-icon inline=true>add</mat-icon>{{'LibraryCardNumber.Add' | translate}}
-      </button>
+      <form [formGroup]="numberForm" (submit)="addLibraryCardNumber()">
+        <mat-form-field appearance="fill">
+          <mat-label>{{'Main.LibraryCardNumber' | translate}}</mat-label>
+          <input matInput formControlName="newLibraryCardNumber">
+        </mat-form-field>
+        <button type="submit" mat-flat-button [disabled]="numberForm.controls['newLibraryCardNumber'].value.length == 0"
+          class="slsp-purple-button" color="secondary">
+          <mat-icon inline=true>add</mat-icon>{{'LibraryCardNumber.Add' | translate}}
+        </button>
+      </form>
+
     </mat-action-row>
   </mat-card-content>
 </mat-card>
 
-<div class="loading-shade" *ngIf="loading">
+<div class=" loading-shade" *ngIf="loading">
   <mat-spinner diameter="50"></mat-spinner>
 </div>

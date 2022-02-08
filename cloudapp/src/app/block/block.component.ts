@@ -34,6 +34,8 @@ export class BlockComponent implements OnInit, OnDestroy {
   subscription;
   collapsedDouble: Boolean = true;
   collapsedWrong: Boolean = true;
+  collapsedNew: Boolean = true;
+  loading: Boolean;
 
   ngOnInit(): void {
     this.subscription = this._libraryManagementService.getUserObject().subscribe(
@@ -48,8 +50,17 @@ export class BlockComponent implements OnInit, OnDestroy {
     );
   }
 
-  addUserBlock(blockType: String): void {
-    this._libraryManagementService.addUserblock(blockType, "Test");
+  async addUserBlock(blockType: String): Promise<void> {
+    this.loading = true;
+    await this._libraryManagementService.addUserblock(blockType, "Test");
+    this.loading = false;
+  }
+
+  async removeUserBlock(blockType: String): Promise<void> {
+    this.loading = true;
+    const isRemoved = await this._libraryManagementService.removeUserblock(blockType);
+    if (!isRemoved) this.alert.error("Block could not be removed.")
+    this.loading = false;
   }
 
   ngOnDestroy(): void {

@@ -1,19 +1,84 @@
 export class Librarycardnumber {
 
-    static sanitizeLibraryCardNumber(libraryCardNumber) {
-        if (libraryCardNumber.match(/slsp-/i)) {
-            libraryCardNumber.replace(/-/, '');
+    static allowedRegex = [
+        // RERO Freiburg
+        /^(200)\d{7}$/,
+        // RERO Valais
+        /201\d{7}/,
+        // RERO Neuchâtel
+        /20[345]\d{7}/,
+        // RERO Genève
+        /(20[67]\d{7}|307\d{7}|407\d{7}|507\d{7})/,
+        // Bundesinstitutionen
+        /208\d{7}/,
+        // Service Bibliothèques & Archives de la Ville de Lausanne
+        /BVL\d{7}/,
+        // RERO Vaud
+        /209\d{7}/,
+        // Olympic World Library (Le Centre d’Etudes Olympiques)
+        /220\d{7}/,
+        // RERO IUED
+        /(L[1-9]\d{2}|L\d{4})/,
+        // Alexandria
+        /295\d{7}/,
+        // Schweizerische Nationalbibliothek
+        /(nb\d+|210\d{7})/,
+        // IDS Basel
+        /[AB][A-Z\d]*\d{2,}[A-Z\d]*/, /(A[A-Z\d]*\d{2,}[A-Z\d]*|MBS[A-Z\d]*\d{2,}[A-Z\d]*|\d{7}|\d{11})/,
+        // IDS Bern
+        /B[A-Z\d]*\d{2,}[A-Z\d]*/, /(B[A-Z\d]*\d{2,}[A-Z\d]*|\d{9})/,
+        // IDS Luzern
+        /L\-[A-Z\d]*\d{2,}[A-Z\d]*/, /(L[A-Z\d]*\d{2,}[A-Z\d]*|FHZ\d{7})/,
+        // IDS St. Gallen
+        /H\-[A-Z\d]*\d{2,}[A-Z\d]*/, /(H[A-Z\d]*\d{2,}[A-Z\d]*|\d{13})/,
+        // IDS Zürich Universität
+        /U\-[A-Z\d]*\d{2,}[A-Z\d]*/, /([UM][A-Z\d]*\d{2,}[A-Z\d]*)/,
+        // NEBIS
+        /E\-[A-Z\d]*\d{2,}[A-Z\d]*/, /([ESP][A-Z\d]*\d{2,}[A-Z\d]*)/,
+        // IDS Zürich Zentralbibliothek
+        /(Z\-[A-Z\d]*\d{2,}[A-Z\d]*|E\-[A-Z\d]*\d{2,}[A-Z\d]*)/, /[ZY][A-Z\d]*\d{2,}[A-Z\d]*/,
+        // Aargauer Bibliotheksnetz
+        /(ABN\d+|BBM\d+)/,
+        // Bibliotheksverbund Graubünden
+        /Q[A-Z\d]*\d{2,}[A-Z\d]*/, /(Q\d+|\d{9})/,
+        // St. Galler Bibliotheksnetz (SGBN)
+        /G\-[A-Z\d]*\d{2,}[A-Z\d]*/, /(G\d+|GKBG\d+|GKSB\d+|GKSH\d+|GKWA\d+|GKWI\d+|GBAR\d+|GBEB\d+)/,
+        // Sistema Bibliotecario Ticinese (SBT)
+        /T\-[A-Z\d]*\d{2,}[A-Z\d]*/, /(T[A-Z\d]*\d{2,}[A-Z\d]*|202\d{7})/,
+        // HSG staff library card numbers. See https://task.slsp.ch/browse/SUPPORT-4486
+        /62991200\d{8}/,
+        // FHNW library card numbers. See https://task.slsp.ch/browse/SUPPORT-7471
+        /N\d{8,9}/,
+        // OST library card numbers. See https://task.slsp.ch/browse/SUPPORT-7935
+        /OST\d+/,
+        // SLSP
+        /SLSP\-\d{9}$/, // Altes Format
+        /SLSP\d{9}/ // Neues Format
+    ];
+
+    static sanitizeLibraryCardNumber(libraryCardNumber: string): string {
+        if (!libraryCardNumber.match(/slsp-/i)) {
+            libraryCardNumber = libraryCardNumber.replace(/-/g, '');
         }
         return libraryCardNumber.toLowerCase();
     }
 
-    /*
-    static isValidLibraryCardNumber(librarycardnumber: string) {
-        // Matriculation number
-        if (librarycardnumber.match(/(\d{2})(\d{3})(\d{3})/)) {
-            return Librarycardnumber.isValidImmatriculationNumber(librarycardnumber);
-        }
+    static getDashedMatriculationNumber(immatriculationNumber: string): string {
+        return immatriculationNumber.replace(/(\d{2})(\d{3})(\d{3})/, "$1-$2-$3");
+    }
 
+    static isRemovable(libraryCardNumber: Object): Boolean {
+        let matchNote = libraryCardNumber['note'].match(/via edu-ID/i);
+        return libraryCardNumber["id_type"]["value"] == '02'
+            && matchNote == null;
+    }
+
+    static isDashedLibraryCardNumber(libraryCardNumber: Object): Boolean {
+        let matchImma = libraryCardNumber['value'].match(/(\d{2})-(\d{3})-(\d{3})/);
+        return matchImma != null;
+    }
+
+    static isValidLibraryCardNumber(librarycardnumber: string) {
         // Reject if number contains umlauts or other non-standard characters
         if (librarycardnumber.match(/[^a-zA-Z0-9\-]/)) {
             return false;
@@ -21,13 +86,23 @@ export class Librarycardnumber {
 
         // Reject specific number ranges:
         // Mathias Stocker reqested on 2020-11-19 to reject these numbers 
-        if (preg_match('/^1100\d{5}$/i', $librarycardnumber)) {
+        if (librarycardnumber.match(/^1100\d{5}$/i)) {
             return false;
         }
 
-        return librarycardnumber.length == 3;
+        // Check all regex of possible numbers from IZs
+        // TODO: check all regex
+        let isMatched = false;
+        this.allowedRegex.forEach((regex) => {
+            var regExp = new RegExp(regex);
+            if (librarycardnumber.match(regExp)) {
+                console.log(regex);
+                isMatched = true;
+            }
+        });
+        return isMatched;
     }
-    */
+
 
     static isValidImmatriculationNumber(immatriculationNumber: string) {
         // Must be 8 chars long

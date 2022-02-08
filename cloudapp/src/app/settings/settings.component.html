@@ -17,6 +17,8 @@
         </mat-card-title>
     </mat-card-header>
     <mat-card-content>
+        <mat-divider></mat-divider>
+        <br>
         {{ 'Settings.PreferredAddressDescription' | translate }}
         <a href="https://eduid.ch/" target="_blank">{{ 'Settings.PreferredAddressDescriptionLink' | translate }}</a>
         <br><br>
@@ -41,7 +43,8 @@
                         <td class="address-table-desc">
                             {{ 'Settings.Address' | translate }}
                         </td>
-                        <td> {{item.line1}}, {{item.postal_code}}, {{item.city}}, {{item.country.desc}} </td>
+                        <td> {{item.line1}}, {{item.postal_code}}, {{item.city}}, {{item.country ? item.country.desc :
+                            ''}} </td>
                     </tr>
                     <!--
                     <tr>
@@ -97,3 +100,7 @@
         <button mat-flat-button color="secondary" (click)="clear()">{{'Settings.SaveUserGroup' | translate}}</button>
     </mat-action-row>
 </mat-card>
+
+<div class="loading-shade" *ngIf="loading">
+    <mat-spinner diameter="50"></mat-spinner>
+</div>
