@@ -22,17 +22,17 @@ export class LibraryManagementService {
     private http: HttpClient,
     private eventsService: CloudAppEventsService,
     private alert: AlertService
-  ) {
-    this.eventsService.getAuthToken()
-      .subscribe(authToken => {
-        this.httpOptions = {
-          headers: new HttpHeaders({
-            'Authorization': `Bearer ${authToken}`,
-            'Content-Type': 'application/json'
-          }),
-          withCredentials: true
-        };
-      });
+  ) { }
+
+  async init(): Promise<void> {
+    let authToken = await this.eventsService.getAuthToken().toPromise();
+    this.httpOptions = {
+      headers: new HttpHeaders({
+        'Authorization': `Bearer ${authToken}`,
+        'Content-Type': 'application/json'
+      }),
+      withCredentials: true
+    };
   }
 
   getUserObject(): Observable<User> {
@@ -75,9 +75,9 @@ export class LibraryManagementService {
     });
   }
 
-  addUserblock(blockType: String, comment: String = ""): Promise<Boolean> {
+  addUserblock(blockType: String, comment: String = "", libCode: String, url: String): Promise<Boolean> {
     // ADD USER BLOCK
-    this.user.addBlock(blockType, comment);
+    this.user.addBlock(blockType, comment, libCode, url);
     // API CALL
     return this.updateUser();
   }
@@ -116,7 +116,6 @@ export class LibraryManagementService {
 
   async updateUser(): Promise<Boolean> {
     return new Promise(resolve => {
-      console.log(this.httpOptions);
       this.http.put(this.userEntity.link, this.user.userValue, this.httpOptions).subscribe(
         userdata => {
           // UPDATE USER

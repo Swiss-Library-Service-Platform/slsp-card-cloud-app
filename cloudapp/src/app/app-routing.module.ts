@@ -7,7 +7,8 @@ import { SettingsComponent } from './settings/settings.component';
 import { UsermenuComponent } from './usermenu/usermenu.component';
 
 const routes: Routes = [
-  { path: '', component: MainComponent },
+  { path: '', redirectTo: 'root/true', pathMatch: 'full' },
+  { path: 'root/:isAutoSelect', component: MainComponent },
   { path: 'usermenu', component: UsermenuComponent },
   { path: 'block', component: BlockComponent },
   { path: 'settings', component: SettingsComponent },

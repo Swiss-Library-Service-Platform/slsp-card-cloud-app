@@ -13,13 +13,25 @@
         stroke: var(--slsp-purple);
     }
 
-    :root 
-    {
-    --slsp-purple: rgba( 78, 74, 153, 1); // or any global you wish to share with components 
-    --slsp-purple-light: #eeeef7;
-    --slsp-purple-transparent: rgba(78, 74, 153, 0.1);
+    :root {
+        height: 100%;
+        --slsp-purple: rgba( 78, 74, 153, 1); // or any global you wish to share with components 
+        --slsp-purple-light: #eeeef7;
+        --slsp-purple-transparent: rgba(78, 74, 153, 0.1);
     }
 
+    body[class*=cloudapp-theme] {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    app-usermenu {
+        display: flex;
+        flex-direction: column;
+        height: 100%
+    }
+    
     .loading-shade {
         //background: var(--slsp-purple-transparent) !important;
     }
@@ -56,6 +68,7 @@
     }
 
     .user-header {
+        margin-top: 1rem;
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -98,8 +111,6 @@
             background-color: #ADA9BB !important;
         }
     }
-
-    
 
     button.mat-button .mat-icon,
     a.mat-button .mat-icon,

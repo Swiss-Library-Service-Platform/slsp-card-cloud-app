@@ -21,38 +21,7 @@
     </mat-tab>
 </mat-tab-group>
 
-<div hidden>
-    <!-- Library Card Number -->
-    <mat-card [routerLink]="['/librarycardnumber']">
-        <mat-card-header>
-            <mat-card-title>
-                {{'Main.LibraryCardNumber' | translate}}
-            </mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-            {{'Main.LibraryCardNumberDescription' | translate}}
-        </mat-card-content>
-    </mat-card>
-    <!-- Settings -->
-    <mat-card [routerLink]="['/settings']">
-        <mat-card-header>
-            <mat-card-title>
-                {{'Main.Settings' | translate}}
-            </mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-            {{'Main.SettingsDescription' | translate}}
-        </mat-card-content>
-    </mat-card>
-    <!-- User Block -->
-    <mat-card [routerLink]="['/block']">
-        <mat-card-header>
-            <mat-card-title>
-                {{'Main.Block' | translate}}
-            </mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-            {{'Main.BlockDescription' | translate}}
-        </mat-card-content>
-    </mat-card>
+<div class="please-note">
+    <span> {{ 'Main.PleaseNote' | translate }} </span>
+    {{ 'Main.TakesAFewMinutes' | translate }}
 </div>

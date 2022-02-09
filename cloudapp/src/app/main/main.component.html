@@ -2,18 +2,23 @@
 
 
 <ng-template #noentities>
-  <h1>Welcome to Swisscovery Library Card Management!</h1>
-  <p>Let's get started with this app:</p>
-  <ul>
-    <li>Search for the user you want to activate</li>
-    <li>Open this Cloud App</li>
-    <li>Select the user and press "Activate"</li>
-  </ul>
-  <div class="highlight">Search for the user you want to activate.</div>
+  <div class="select-entities">
+    <h1>
+      {{ 'Welcome.Welcome' | translate }}
+    </h1>
+    <p> {{ 'Welcome.LetsGo' | translate }} </p>
+    <ul>
+      <li> {{ 'Welcome.Instructions1' | translate }} </li>
+      <li> {{ 'Welcome.Instructions2' | translate }} </li>
+      <li> {{ 'Welcome.Instructions3' | translate }} </li>
+    </ul>
+    <div class="highlight"> {{ 'Welcome.Instructions1' | translate }}. </div>
+  </div>
+
 </ng-template>
 
 <ng-template #entities>
-  <div *ngIf="!selectedEntity">
+  <div class="select-entities" *ngIf="!selectedEntity">
     <label id="entities-radio-group-label">Select a user:</label>
     <mat-radio-group aria-labelledby="entities-radio-group-label" class="entities-radio-group"
       [(ngModel)]="selectedEntity" (change)="entitySelected($event)">
@@ -23,7 +28,6 @@
     </mat-radio-group>
   </div>
 </ng-template>
-
 
 <div class="loading-shade" *ngIf="loading">
   <mat-spinner diameter="50"></mat-spinner>

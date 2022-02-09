@@ -31,13 +31,13 @@ export class User {
         return blocks;
     }
 
-    addBlock(blockType: String = "SUSPENDED", comment: String = ""): void {
+    addBlock(blockType: String = "SUSPENDED", comment: String = "", libCode: String, url: String): void {
         //create User Object
         let blockObject = {};
         blockObject["segment_type"] = "External";
         blockObject["block_status"] = "Active";
-        blockObject["block_note"] = comment; //TODO: append IZ / staff user
-        blockObject["created_by"] = "" //TODO:
+        blockObject["block_note"] = 'Blocked by ' + libCode + ': ' + comment;
+        blockObject["created_by"] = 'Alma Cloud App @ ' + url;
         blockObject["block_description"] = {};
         blockObject["block_description"]["value"] = blockType;
         blockObject["block_type"] = {};
@@ -119,7 +119,6 @@ export class User {
             // create matriculation number Object
             let immatriculationObject = {};
             let dashedMatriculationNumber = Librarycardnumber.getDashedMatriculationNumber(libraryCardNumber);
-            console.log("dashed: " + dashedMatriculationNumber);
             let currentDate = new Date();
             immatriculationObject["value"] = dashedMatriculationNumber;
             immatriculationObject["id_type"] = {};
@@ -136,8 +135,6 @@ export class User {
         let initialCount = this.userValue["user_identifier"].length;
         let isImmatriculationNumber = Librarycardnumber.isValidImmatriculationNumber(libraryCardNumber["value"]);
         this.userValue["user_identifier"] = this.userValue["user_identifier"].filter(function (identifier) {
-            console.log(identifier["value"]);
-
             return !isImmatriculationNumber ? identifier["value"] !== libraryCardNumber['value']
                 // also remove matriculation number;
                 : (identifier["value"] !== libraryCardNumber['value'] && Librarycardnumber.getDashedMatriculationNumber(libraryCardNumber["value"]) !== identifier['value']);

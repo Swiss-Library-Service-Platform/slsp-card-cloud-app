@@ -4,13 +4,22 @@
         "Yes": "Yes",
         "No": "No"
     },
+    "Welcome": {
+        "Welcome": "Welcome to Swisscovery Library Card Management!",
+        "LetsGo": "Let's get started with this app:",
+        "Instructions1": "Search for the user you want to activate",
+        "Instructions2": "Open this Cloud App",
+        "Instructions3": "Select the user"
+    },
     "Main": {
         "Block": "User Blocks",
         "Settings": "User Settings",
         "LibraryCardNumber": "Library Card Number",
         "BlockDescription": "Globally blocked user accounts can neither loan, request, nor renew.",
         "SettingsDescription": "Change the preferred address or the user group of a user",
-        "LibraryCardNumberDescription": "Add a library card number"
+        "LibraryCardNumberDescription": "Add a library card number",
+        "PleaseNote": "Please note:",
+        "TakesAFewMinutes": "It will take a few minutes until changes become active in the library system."
     },
     "LibraryCardNumber": {
         "Add": "Add",

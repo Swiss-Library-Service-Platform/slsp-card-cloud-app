@@ -11,8 +11,7 @@ import { LibraryManagementService } from '../services/library-management.service
 export class UsermenuComponent implements OnInit {
 
   constructor(
-    private _Activatedroute: ActivatedRoute,
-    private _location: Location,
+    private router: Router,
     private _libraryManagementService: LibraryManagementService
   ) { }
 
@@ -35,7 +34,7 @@ export class UsermenuComponent implements OnInit {
   }
 
   navigateBack(): void {
-    this._location.back();
+    this.router.navigate(['root/false']);
   }
 
 

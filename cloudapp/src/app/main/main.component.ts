@@ -1,12 +1,12 @@
 import { Observable } from 'rxjs';
-import { finalize, tap } from 'rxjs/operators';
+import { finalize, map, switchMap, tap } from 'rxjs/operators';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import {
   CloudAppRestService, CloudAppEventsService, Request, HttpMethod,
-  Entity, RestErrorResponse, AlertService
+  Entity, RestErrorResponse, AlertService, EntityType
 } from '@exlibris/exl-cloudapp-angular-lib';
 import { MatRadioChange } from '@angular/material/radio';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, Params } from '@angular/router';
 import { LibraryManagementService } from '../services/library-management.service';
 
 @Component({
@@ -18,19 +18,34 @@ export class MainComponent implements OnInit, OnDestroy {
   loading = false;
   selectedEntity: Entity;
   apiResult: any;
+  isAutoSelect: string;
 
   entities$: Observable<Entity[]> = this.eventsService.entities$
-    .pipe(tap(() => this.clear()))
+    .pipe(
+      tap(() => this.clear()),
+      map(entities => {
+        return entities.filter(e => e.type == EntityType.USER);
+      }),
+    )
+
 
   constructor(
     private _libraryManagementService: LibraryManagementService,
-    private restService: CloudAppRestService,
     private eventsService: CloudAppEventsService,
-    private alert: AlertService,
+    private route: ActivatedRoute,
     private router: Router
   ) { }
 
-  ngOnInit() {
+  async ngOnInit() {
+    await this._libraryManagementService.init();
+    this.route.params.subscribe((params: Params) => this.isAutoSelect = params['isAutoSelect']);
+    if (this.isAutoSelect == 'true') {
+      this.eventsService.entities$.subscribe((availableEntities) => {
+        if (availableEntities.length == 1) {
+          this.setUser(availableEntities[0]);
+        }
+      });
+    }
   }
 
   ngOnDestroy(): void {
@@ -38,14 +53,7 @@ export class MainComponent implements OnInit, OnDestroy {
 
   async entitySelected(event: MatRadioChange) {
     const value = event.value as Entity;
-    this.loading = true;
-    const userFound = await this._libraryManagementService.getUserFromEntity(value);
-    this.loading = false
-    if (userFound) {
-      this.router.navigate(['usermenu'])
-    } else {
-      this.clear();
-    }
+    this.setUser(value);
   }
 
   clear() {
@@ -53,42 +61,14 @@ export class MainComponent implements OnInit, OnDestroy {
     this.selectedEntity = null;
   }
 
-  update(value: any) {
-    const requestBody = this.tryParseJson(value)
-    if (!requestBody) return this.alert.error('Failed to parse json');
-
-    // TODO: add user block to json
-
-
+  async setUser(entity: Entity) {
     this.loading = true;
-    let request: Request = {
-      url: this.selectedEntity.link,
-      method: HttpMethod.PUT,
-      requestBody
-    };
-    // TODO: change to NZ alma (either pass api Key to restService / or don't use restservice and call URL manually)
-    this.restService.call(request)
-      .pipe(finalize(() => this.loading = false))
-      .subscribe({
-        next: result => {
-          this.apiResult = result;
-          this.eventsService.refreshPage().subscribe(
-            () => this.alert.success('Success!')
-          );
-        },
-        error: (e: RestErrorResponse) => {
-          this.alert.error('Failed to update data: ' + e.message);
-          console.error(e);
-        }
-      });
-  }
-
-  private tryParseJson(value: any) {
-    try {
-      return JSON.parse(value);
-    } catch (e) {
-      console.error(e);
+    const userFound = await this._libraryManagementService.getUserFromEntity(entity);
+    this.loading = false
+    if (userFound) {
+      this.router.navigate(['usermenu'])
+    } else {
+      this.clear();
     }
-    return undefined;
   }
 }

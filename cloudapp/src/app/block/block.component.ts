@@ -1,9 +1,9 @@
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { finalize, tap } from 'rxjs/operators';
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import {
   CloudAppRestService, CloudAppEventsService, Request, HttpMethod,
-  Entity, RestErrorResponse, AlertService
+  Entity, RestErrorResponse, AlertService, InitData
 } from '@exlibris/exl-cloudapp-angular-lib';
 import { MatRadioChange } from '@angular/material/radio';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -11,6 +11,7 @@ import { Location } from '@angular/common';
 import { LibraryManagementService } from '../services/library-management.service';
 import { User } from '../model/user.model';
 import { ElementRef, ViewChild } from '@angular/core';
+import { ɵangular_packages_platform_browser_dynamic_platform_browser_dynamic_a } from '@angular/platform-browser-dynamic';
 
 @Component({
   selector: 'app-block',
@@ -25,8 +26,8 @@ export class BlockComponent implements OnInit, OnDestroy {
     private _libraryManagementService: LibraryManagementService,
     private eventsService: CloudAppEventsService,
     private alert: AlertService,
-    private _Activatedroute: ActivatedRoute,
     private _location: Location
+
   ) { }
   currentFullName: String;
   currentUser: User = null;
@@ -35,6 +36,8 @@ export class BlockComponent implements OnInit, OnDestroy {
   collapsedDouble: Boolean = true;
   collapsedWrong: Boolean = true;
   collapsedNew: Boolean = true;
+  commentDouble: String = '';
+  commentWrong: String = '';
   loading: Boolean;
 
   ngOnInit(): void {
@@ -51,9 +54,12 @@ export class BlockComponent implements OnInit, OnDestroy {
   }
 
   async addUserBlock(blockType: String): Promise<void> {
+    let initData = await this.eventsService.getInitData().toPromise();
     this.loading = true;
-    await this._libraryManagementService.addUserblock(blockType, "Test");
+    let comment = blockType == '02' ? this.commentDouble : this.commentWrong;
+    await this._libraryManagementService.addUserblock(blockType, comment, initData.instCode, initData.urls.alma);
     this.loading = false;
+
   }
 
   async removeUserBlock(blockType: String): Promise<void> {
