@@ -79,6 +79,8 @@ export class Librarycardnumber {
     }
 
     static isValidLibraryCardNumber(librarycardnumber: string) {
+        if (!librarycardnumber) return false;
+
         // Reject if number contains umlauts or other non-standard characters
         if (librarycardnumber.match(/[^a-zA-Z0-9\-]/)) {
             return false;
@@ -96,7 +98,6 @@ export class Librarycardnumber {
         this.allowedRegex.forEach((regex) => {
             var regExp = new RegExp(regex);
             if (librarycardnumber.match(regExp)) {
-                console.log(regex);
                 isMatched = true;
             }
         });

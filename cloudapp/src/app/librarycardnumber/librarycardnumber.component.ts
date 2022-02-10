@@ -7,8 +7,9 @@ import { AlertService, CloudAppEventsService } from '@exlibris/exl-cloudapp-angu
 import { Librarycardnumber } from '../model/librarycardnumber.model';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ConfirmationdialogComponent } from '../confirmationdialog/confirmationdialog.component';
-import { FormBuilder, Validators, FormControl } from '@angular/forms';
+import { FormBuilder, Validators, FormControl, FormGroupDirective } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
+import { TOUCH_BUFFER_MS } from '@angular/cdk/a11y';
 @Component({
   selector: 'app-librarycardnumber',
   templateUrl: './librarycardnumber.component.html',
@@ -88,13 +89,10 @@ export class LibrarycardnumberComponent implements OnInit {
 
   }
 
-  async addLibraryCardNumber(): Promise<void> {
+  async addLibraryCardNumber(formData: any, formDirective: FormGroupDirective): Promise<void> {
     let initData = await this.eventsService.getInitData().toPromise();
-    let libaryCardNumber = this.numberForm.controls['newLibraryCardNumber'].value;
+    let libaryCardNumber = formData.value.newLibraryCardNumber;
     if (!this.numberForm.valid) {
-      // TODO: show under input
-      let errMessage = await this.translate.get('LibraryCardNumber.FomatError').toPromise();
-      this.alert.error(errMessage, { autoClose: true });
       return;
     }
     this.loading = true;
@@ -104,7 +102,8 @@ export class LibrarycardnumberComponent implements OnInit {
       this.alert.error(errMessage, { autoClose: true });
     } else {
       let succMessage = await this.translate.get('LibraryCardNumber.AddSuccess').toPromise();
-      this.numberForm.controls['newLibraryCardNumber'].setValue('');
+      formDirective.resetForm();
+      this.numberForm.reset();
       this.alert.success(succMessage, { autoClose: true });
     }
     this.loading = false;

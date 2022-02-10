@@ -71,13 +71,15 @@
     <mat-divider></mat-divider>
 
     <mat-action-row>
-      <form [formGroup]="numberForm" (submit)="addLibraryCardNumber()">
+      <form [formGroup]="numberForm" #formDirective="ngForm"
+        (submit)="submitBtn.focus(); addLibraryCardNumber(numberForm, formDirective);">
         <mat-form-field appearance="fill">
           <mat-label>{{'Main.LibraryCardNumber' | translate}}</mat-label>
           <input matInput formControlName="newLibraryCardNumber">
+          <mat-error *ngIf="!numberForm.valid"> {{ 'LibraryCardNumber.FomatError' | translate }} </mat-error>
         </mat-form-field>
-        <button type="submit" mat-flat-button [disabled]="numberForm.controls['newLibraryCardNumber'].value.length == 0"
-          class="slsp-purple-button" color="secondary">
+        <button #submitBtn type="submit" mat-flat-button [disabled]="!numberForm.valid" class="slsp-purple-button"
+          color="secondary">
           <mat-icon inline=true>add</mat-icon>{{'LibraryCardNumber.Add' | translate}}
         </button>
       </form>
