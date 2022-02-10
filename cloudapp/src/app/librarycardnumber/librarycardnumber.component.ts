@@ -67,16 +67,19 @@ export class LibrarycardnumberComponent implements OnInit {
     this.dialogRef = this.dialog.open(ConfirmationdialogComponent, {
       disableClose: false
     });
-    this.dialogRef.componentInstance.confirmMessage = "Are you sure you want to remove this number?"
+    let sureMessage = await this.translate.get('LibraryCardNumber.Sure').toPromise();
+    this.dialogRef.componentInstance.confirmMessage = sureMessage;
 
     this.dialogRef.afterClosed().subscribe(async result => {
       if (result) {
         this.loading = true;
         const isRemoved = await this._libraryManagementService.removeUserLibraryCardNumber(libraryCardNumber);
         if (!isRemoved) {
-          this.alert.error("Library card number could not be removed.");
+          let errMessage = await this.translate.get('LibraryCardNumber.RemoveError').toPromise();
+          this.alert.error(errMessage, { autoClose: true });
         } else {
-          this.alert.success("Library card successfully removed.");
+          let succMessage = await this.translate.get('LibraryCardNumber.RemoveSuccess').toPromise();
+          this.alert.success(succMessage, { autoClose: true });
         }
         this.loading = false;
       }
@@ -89,16 +92,20 @@ export class LibrarycardnumberComponent implements OnInit {
     let initData = await this.eventsService.getInitData().toPromise();
     let libaryCardNumber = this.numberForm.controls['newLibraryCardNumber'].value;
     if (!this.numberForm.valid) {
-      this.alert.error("Format of library card number is not valid.", { autoClose: true });
+      // TODO: show under input
+      let errMessage = await this.translate.get('LibraryCardNumber.FomatError').toPromise();
+      this.alert.error(errMessage, { autoClose: true });
       return;
     }
     this.loading = true;
     const isAdded = await this._libraryManagementService.addUserLibraryCardNumber(libaryCardNumber, initData.user.primaryId, initData.instCode);
     if (!isAdded) {
-      this.alert.error("Library card number is not valid or already in use.", { autoClose: true });
+      let errMessage = await this.translate.get('LibraryCardNumber.AddError').toPromise();
+      this.alert.error(errMessage, { autoClose: true });
     } else {
+      let succMessage = await this.translate.get('LibraryCardNumber.AddSuccess').toPromise();
       this.numberForm.controls['newLibraryCardNumber'].setValue('');
-      this.alert.success("Library card successfully added.", { autoClose: true });
+      this.alert.success(succMessage, { autoClose: true });
     }
     this.loading = false;
   }

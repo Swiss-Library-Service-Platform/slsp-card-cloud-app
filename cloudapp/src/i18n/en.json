@@ -2,7 +2,9 @@
     "General": {
         "BackToMenu": "Back",
         "Yes": "Yes",
-        "No": "No"
+        "No": "No",
+        "Cancel": "Cancel",
+        "Confirm": "Confirm"
     },
     "Welcome": {
         "Welcome": "Welcome to Swisscovery Library Card Management!",
@@ -19,7 +21,9 @@
         "SettingsDescription": "Change the preferred address or the user group of a user",
         "LibraryCardNumberDescription": "Add a library card number",
         "PleaseNote": "Please note:",
-        "TakesAFewMinutes": "It will take a few minutes until changes become active in the library system."
+        "TakesAFewMinutes": "It will take a few minutes until changes become active in the library system.",
+        "UserNotFound": " was not found in the Network Zone.",
+        "TemporarilyUnavailable": "Service temporarily unavailable"
     },
     "LibraryCardNumber": {
         "Add": "Add",
@@ -27,7 +31,13 @@
         "CurrentLibraryCardNumbers": "Current Library Card Numbers",
         "CurrentLibraryCardNumbersDescription": "Current library card numbers:",
         "NoCurrentLibraryCardNumbers": "There are no library card numbers for this user currently.",
-        "Remove": "Remove"
+        "Remove": "Remove",
+        "Sure": "Are you sure you want to remove this number?",
+        "RemoveSuccess": "Library card successfully removed.",
+        "RemoveError": "Library card number could not be removed.",
+        "FomatError": "Format of library card number is not valid.",
+        "AddError": "Library card number is not valid or already in use.",
+        "AddSuccess": "Library card successfully added."
     },
     "Settings": {
         "PreferredAddress": "Preferred address",
@@ -41,7 +51,9 @@
         "Address": "Address",
         "Preferred": "Preferred",
         "UseAsPreferred": "Use as preferred address",
-        "NoAddresses": "This user does not have any address entries in the NZ."
+        "NoAddresses": "This user does not have any address entries in the NZ.",
+        "SetError": "Preferred address could not be changed.",
+        "SetSuccess": "Preferred address changed successfully."
     },
     "Blocks": {
         "CurrentBlockTitle": "Current Block Status",
@@ -63,6 +75,10 @@
         "Comment": "Comment (optional)",
         "DoubleRegistrationsDescription": "This block is used when a patron has two or more accounts. As soon as the patron merges their duplicate SWITCH edu-ID account, the redundant SLSP account is automatically deleted too (or merged with the remaining account in case of open transactions/fees). Then, the global block from the remaining one can be manually removed via the present platform.",
         "WrongAddressDescription": "This block is used when a patron user account has a wrong preferred address. Since the preferred address can only be changed in the SWITCH edu-ID account, the block is automatically removed as soon as the system receives an update of the preferred address from SWITCH.",
-        "NewAccountDescription": "This block is automatically applied when an institution self-registers via the SLSP registration platform. The global block can then be removed via the present platform by the library that approves the eligibility of the institution to get an account according to the criteria list. This block is not yet in use."
+        "NewAccountDescription": "This block is automatically applied when an institution self-registers via the SLSP registration platform. The global block can then be removed via the present platform by the library that approves the eligibility of the institution to get an account according to the criteria list. This block is not yet in use.",
+        "RemoveError": "Block could not be removed.",
+        "RemoveSuccess": "Block successfully removed.",
+        "AddError": "Block could not be added.",
+        "AddSuccess": "Block successfully added."
     }
 }

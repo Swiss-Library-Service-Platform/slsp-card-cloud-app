@@ -9,6 +9,7 @@ import { MatRadioChange } from '@angular/material/radio';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import { LibraryManagementService } from '../services/library-management.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-settings',
@@ -19,7 +20,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   constructor(
     private alert: AlertService,
-    private _Activatedroute: ActivatedRoute,
+    private translate: TranslateService,
     private _location: Location,
     private _libraryManagementService: LibraryManagementService,
     private eventsService: CloudAppEventsService
@@ -51,9 +52,11 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.loading = true;
     const isAdded = await this._libraryManagementService.setUserPreferredAddress(address, initData.urls.alma);
     if (!isAdded) {
-      this.alert.error("Preferred address could not be changed.", { autoClose: true });
+      let errMessage = await this.translate.get('Settings.SetError').toPromise();
+      this.alert.error(errMessage, { autoClose: true });
     } else {
-      this.alert.success("Preferred address changed successfully.");
+      let succMessage = await this.translate.get('Settings.SetSuccess').toPromise();
+      this.alert.success(succMessage, { autoClose: true });
     }
     this.loading = false;
   }

@@ -58,15 +58,27 @@ export class BlockComponent implements OnInit, OnDestroy {
     let initData = await this.eventsService.getInitData().toPromise();
     this.loading = true;
     let comment = blockType == '02' ? this.commentDouble : this.commentWrong;
-    await this._libraryManagementService.addUserblock(blockType, comment, initData.instCode, initData.urls.alma);
+    let isAdded = await this._libraryManagementService.addUserblock(blockType, comment, initData.instCode, initData.urls.alma);
+    if (!isAdded) {
+      let errMessage = await this.translate.get('Blocks.AddError').toPromise();
+      this.alert.error(errMessage, { autoClose: true });
+    } else {
+      let succMessage = await this.translate.get('Blocks.AddSuccess').toPromise();
+      this.alert.success(succMessage, { autoClose: true });
+    }
     this.loading = false;
-
   }
 
   async removeUserBlock(blockType: String): Promise<void> {
     this.loading = true;
     const isRemoved = await this._libraryManagementService.removeUserblock(blockType);
-    if (!isRemoved) this.alert.error("Block could not be removed.")
+    if (!isRemoved) {
+      let errMessage = await this.translate.get('Blocks.RemoveError').toPromise();
+      this.alert.error(errMessage, { autoClose: true });
+    } else {
+      let succMessage = await this.translate.get('Blocks.RemoveSuccess').toPromise();
+      this.alert.success(succMessage, { autoClose: true });
+    }
     this.loading = false;
   }
 

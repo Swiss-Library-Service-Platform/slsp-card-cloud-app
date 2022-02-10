@@ -7,6 +7,7 @@ import {
 } from '@exlibris/exl-cloudapp-angular-lib';
 import { User } from '../model/user.model';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { TranslateService } from '@ngx-translate/core';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +22,8 @@ export class LibraryManagementService {
   constructor(
     private http: HttpClient,
     private eventsService: CloudAppEventsService,
-    private alert: AlertService
+    private alert: AlertService,
+    private translate: TranslateService
   ) { }
 
   async init(): Promise<void> {
@@ -64,11 +66,13 @@ export class LibraryManagementService {
           this._setObservableUserObject(this.user);
           resolve(true);
         },
-        error => {
+        async error => {
           if (error.status == 400) {
-            this.alert.error(entity.description + ' was not found in the Network Zone.');
+            let errMessage = await this.translate.get('Main.UserNotFound').toPromise();
+            this.alert.error(entity.description + errMessage);
           } else {
-            this.alert.error('Service temporarily unavailable');
+            let errMessage = await this.translate.get('Main.TemporarilyUnavailable').toPromise();
+            this.alert.error(errMessage, { autoClose: true });
           }
           resolve(false);
         });
