@@ -89,9 +89,9 @@ export class LibraryManagementService {
     return this.updateUser();
   }
 
-  async addUserLibraryCardNumber(libraryCardNumber: string): Promise<Boolean> {
+  async addUserLibraryCardNumber(libraryCardNumber: string, primaryId: string, instCode: string): Promise<Boolean> {
     // ADD NUMBER TO USER OBJECT
-    const isAdded = this.user.addLibraryCardNumber(libraryCardNumber);
+    const isAdded = this.user.addLibraryCardNumber(libraryCardNumber, primaryId, instCode);
     if (!isAdded) return false;
     // API CALL
     return this.updateUser();
@@ -105,9 +105,9 @@ export class LibraryManagementService {
     return this.updateUser();
   }
 
-  async setUserPreferredAddress(address: Object): Promise<Boolean> {
+  async setUserPreferredAddress(address: Object, url: string): Promise<Boolean> {
     // SET PREFERRED ADDRESS
-    const isChanged = this.user.setPreferredAddress(address);
+    const isChanged = this.user.setPreferredAddress(address, url);
     // API CALL
     if (!isChanged) return false;
     // UPDATE USER

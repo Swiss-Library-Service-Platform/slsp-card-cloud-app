@@ -45,6 +45,7 @@
     },
     "Blocks": {
         "CurrentBlockTitle": "Current Block Status",
+        "Status": "Status: ",
         "NoBlocks": "User has no blocks.",
         "ExistingBlocks": "Account is blocked!",
         "AddBlockTitle": "Add a User Block",
@@ -53,7 +54,8 @@
         "NewAccount": "New Account",
         "AddBlock": "Add Block",
         "CreatedOn": "Created on",
-        "ExpiringOn": "Expiring on",
+        "ExpiringOn": "Expiring on:",
+        "NoExpiringDate": "Not expiring",
         "Note": "Note",
         "RemoveBlock": "Remove Block",
         "address-block-external-info": "Address blocks added to SWITCH edu-ID accounts are automatically removed when the patron user updates the postal address in their edu-ID account.",

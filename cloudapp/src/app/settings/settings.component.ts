@@ -21,7 +21,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
     private alert: AlertService,
     private _Activatedroute: ActivatedRoute,
     private _location: Location,
-    private _libraryManagementService: LibraryManagementService
+    private _libraryManagementService: LibraryManagementService,
+    private eventsService: CloudAppEventsService
   ) { }
 
   currentFullName: String;
@@ -46,8 +47,9 @@ export class SettingsComponent implements OnInit, OnDestroy {
   }
 
   async changePreferredAddress(address: Object): Promise<void> {
+    let initData = await this.eventsService.getInitData().toPromise();
     this.loading = true;
-    const isAdded = await this._libraryManagementService.setUserPreferredAddress(address);
+    const isAdded = await this._libraryManagementService.setUserPreferredAddress(address, initData.urls.alma);
     if (!isAdded) {
       this.alert.error("Preferred address could not be changed.", { autoClose: true });
     } else {

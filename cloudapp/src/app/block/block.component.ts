@@ -12,6 +12,7 @@ import { LibraryManagementService } from '../services/library-management.service
 import { User } from '../model/user.model';
 import { ElementRef, ViewChild } from '@angular/core';
 import { ɵangular_packages_platform_browser_dynamic_platform_browser_dynamic_a } from '@angular/platform-browser-dynamic';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-block',
@@ -26,8 +27,8 @@ export class BlockComponent implements OnInit, OnDestroy {
     private _libraryManagementService: LibraryManagementService,
     private eventsService: CloudAppEventsService,
     private alert: AlertService,
-    private _location: Location
-
+    private _location: Location,
+    private translate: TranslateService
   ) { }
   currentFullName: String;
   currentUser: User = null;

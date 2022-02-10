@@ -3,11 +3,12 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import { LibraryManagementService } from '../services/library-management.service';
 import { libraryCardValidator } from '../validators/librarycardnumber.validator';
-import { AlertService } from '@exlibris/exl-cloudapp-angular-lib';
+import { AlertService, CloudAppEventsService } from '@exlibris/exl-cloudapp-angular-lib';
 import { Librarycardnumber } from '../model/librarycardnumber.model';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ConfirmationdialogComponent } from '../confirmationdialog/confirmationdialog.component';
 import { FormBuilder, Validators, FormControl } from '@angular/forms';
+import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-librarycardnumber',
   templateUrl: './librarycardnumber.component.html',
@@ -23,6 +24,8 @@ export class LibrarycardnumberComponent implements OnInit {
     private alert: AlertService,
     private dialog: MatDialog,
     private formBuilder: FormBuilder,
+    private eventsService: CloudAppEventsService,
+    private translate: TranslateService
   ) { }
   loading = false;
   currentFullName: String;
@@ -83,13 +86,14 @@ export class LibrarycardnumberComponent implements OnInit {
   }
 
   async addLibraryCardNumber(): Promise<void> {
+    let initData = await this.eventsService.getInitData().toPromise();
     let libaryCardNumber = this.numberForm.controls['newLibraryCardNumber'].value;
     if (!this.numberForm.valid) {
       this.alert.error("Format of library card number is not valid.", { autoClose: true });
       return;
     }
     this.loading = true;
-    const isAdded = await this._libraryManagementService.addUserLibraryCardNumber(libaryCardNumber);
+    const isAdded = await this._libraryManagementService.addUserLibraryCardNumber(libaryCardNumber, initData.user.primaryId, initData.instCode);
     if (!isAdded) {
       this.alert.error("Library card number is not valid or already in use.", { autoClose: true });
     } else {

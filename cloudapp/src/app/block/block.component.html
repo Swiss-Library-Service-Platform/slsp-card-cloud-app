@@ -13,13 +13,17 @@
 <!-- <h2> {{'Blocks.CurrentBlockTitle' | translate}}</h2> -->
 <!-- Current Block -->
 <mat-card>
-  <mat-card-content>
-    <div *ngIf="(currentUserBlocks | json) != ({} | json)" class="warning">
-      {{'Blocks.ExistingBlocks' | translate}}
+  <mat-card-content class="mat-card-content-center">
+    <div>
+      {{'Blocks.Status' | translate}}
+      <span *ngIf="(currentUserBlocks | json) != ({} | json)" class="warning">
+        {{'Blocks.ExistingBlocks' | translate}}
+      </span>
+      <span *ngIf="(currentUserBlocks | json) == ({} | json)">
+        {{'Blocks.NoBlocks' | translate}}
+      </span>
     </div>
-    <div *ngIf="(currentUserBlocks | json) == ({} | json)">
-      {{'Blocks.NoBlocks' | translate}}
-    </div>
+
 
   </mat-card-content>
 </mat-card>
@@ -46,8 +50,11 @@
 
     <div *ngIf="currentUserBlocks['02']">
       {{'Blocks.CreatedOn' | translate}} {{getDateString(currentUserBlocks['02']['created_date'])}} <br>
-      {{'Blocks.ExpiringOn' | translate}} {{getDateString(currentUserBlocks['02']['expiry_date'])}} <br> //TODO: show if
-      not expiring
+      {{ 'Blocks.ExpiringOn' | translate }}
+      <span *ngIf="currentUserBlocks['02']['expiry_date']"> {{
+        getDateString(currentUserBlocks['02']['expiry_date']) }} </span>
+      <span *ngIf="!currentUserBlocks['02']['expiry_date']"> {{ 'Blocks.NoExpiringDate' | translate }} </span>
+      <br>
       {{'Blocks.Note' | translate}}: {{currentUserBlocks['02']['block_note']}}
     </div>
     <mat-action-row class="mat-action-row-single" *ngIf="currentUserBlocks['02']">
@@ -88,7 +95,11 @@
 
     <div *ngIf="currentUserBlocks['03']">
       {{'Blocks.CreatedOn' | translate}} {{getDateString(currentUserBlocks['03']['created_date'])}} <br>
-      {{'Blocks.ExpiringOn' | translate}} {{getDateString(currentUserBlocks['03']['expiry_date'])}} <br>
+      {{ 'Blocks.ExpiringOn' | translate }}
+      <span *ngIf="currentUserBlocks['03']['expiry_date']"> {{
+        getDateString(currentUserBlocks['03']['expiry_date']) }} </span>
+      <span *ngIf="!currentUserBlocks['03']['expiry_date']"> {{ 'Blocks.NoExpiringDate' | translate }} </span>
+      <br>
       {{'Blocks.Note' | translate}}: {{currentUserBlocks['03']['block_note']}}
     </div>
     <div *ngIf="currentUserBlocks['03']">
@@ -132,7 +143,11 @@
 
     <div>
       {{'Blocks.CreatedOn' | translate}} {{getDateString(currentUserBlocks['08']['created_date'])}} <br>
-      {{'Blocks.ExpiringOn' | translate}} {{getDateString(currentUserBlocks['08']['expiry_date'])}} <br>
+      {{ 'Blocks.ExpiringOn' | translate }}
+      <span *ngIf="currentUserBlocks['08']['expiry_date']"> {{
+        getDateString(currentUserBlocks['08']['expiry_date']) }} </span>
+      <span *ngIf="!currentUserBlocks['08']['expiry_date']"> {{ 'Blocks.NoExpiringDate' | translate }} </span>
+      <br>
       {{'Blocks.Note' | translate}}: {{currentUserBlocks['08']['block_note']}}
     </div>
 

@@ -13,3 +13,10 @@ mat-action-row {
 mat-form-field-wrapper {
     padding-bottom: 1rem;
 }
+
+.mat-card-content-center {
+    text-align: center;
+    span {
+        font-weight: bold;
+    }
+}
