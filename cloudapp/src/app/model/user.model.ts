@@ -1,5 +1,11 @@
 import { Librarycardnumber } from "./librarycardnumber.model";
 
+/**
+ * Alma User Object
+ *
+ * @export
+ * @class User
+ */
 export class User {
 
     userValue: Object;
@@ -8,6 +14,13 @@ export class User {
         this.userValue = userValue;
     }
 
+    /**
+     * Get all User Blocks 
+     *
+     * @param {String} [blockDescriptionValue=""]
+     * @return {*}  {Map<String, any>}
+     * @memberof User
+     */
     getUserBlocks(blockDescriptionValue: String = ""): Map<String, any> {
         var blocks = new Map<String, any>();
 
@@ -25,12 +38,21 @@ export class User {
             if (userblock["block_type"]["value"].toUpperCase() !== "USER") continue;
             // Not requested block description
             if (blockDescriptionValue && userblock["block_description"]["value"] !== blockDescriptionValue) continue;
-            //Add Block
+            // Add Block
             blocks[userblock["block_description"]["value"]] = userblock;
         }
         return blocks;
     }
 
+    /**
+     * Adds a new block to the user
+     *
+     * @param {String} [blockType="SUSPENDED"]
+     * @param {String} [comment=""]
+     * @param {String} libCode
+     * @param {String} url
+     * @memberof User
+     */
     addBlock(blockType: String = "SUSPENDED", comment: String = "", libCode: String, url: String): void {
         //create User Object
         let blockObject = {};
@@ -45,6 +67,13 @@ export class User {
         this.userValue["user_block"].push(blockObject);
     }
 
+    /**
+     * Removes an existing block from a user
+     *
+     * @param {String} blockType
+     * @return {*}  {Boolean}
+     * @memberof User
+     */
     removeBlock(blockType: String): Boolean {
         let initialCount = this.userValue["user_block"].length;
         this.userValue["user_block"] = this.userValue["user_block"].filter(function (userblock) {
@@ -53,20 +82,45 @@ export class User {
         return initialCount != this.userValue["user_block"].length;
     }
 
+    /**
+     * Checks whether the user is external or not
+     *
+     * @return {*}  {boolean}
+     * @memberof User
+     */
     getIsExternal(): boolean {
         return this.userValue["primary_id"].match(/^\d+\@.*eduid\.ch$/);
     }
 
+    /**
+     * Gets the full name of the user
+     *
+     * @return {*}  {string}
+     * @memberof User
+     */
     getFullName(): string {
         return this.userValue["full_name"];
     }
 
+    /**
+     * Gets all addresses from the user
+     * Uses JSON.parse(JSON.stringify) workaround in order to not return an object reference, that will lead to change the user upon a change of the object
+     *
+     * @return {*}  {Array<Object>}
+     * @memberof User
+     */
     getAddresses(): Array<Object> {
         // copy without object reference (prevent automatic update)
         let addresses = JSON.parse(JSON.stringify(this.userValue["contact_info"]["address"]));
         return addresses;
     }
 
+    /**
+     * Get all library card numbers from the user with id_type 01, 02 or 03
+     *
+     * @return {*}  {Array<string>}
+     * @memberof User
+     */
     getLibraryCardNumbers(): Array<string> {
         let libraryCardNumbers = [];
         if (!Array.isArray(this.userValue["user_identifier"]) || this.userValue["user_identifier"].length < 1) {
@@ -84,6 +138,12 @@ export class User {
         return libraryCardNumbers;
     }
 
+    /**
+     * Gets the matriculation number of a user and returns it together with the dashed (22-222-222) version 
+     *
+     * @return {*}  {string}
+     * @memberof User
+     */
     getMatriculationNumber(): string {
         if (!Array.isArray(this.userValue["user_identifier"]) || this.userValue["user_identifier"].length < 1) {
             return null;
@@ -99,6 +159,15 @@ export class User {
         return matriculationNumber;
     }
 
+    /**
+     * Adds a library card number to the user
+     *
+     * @param {string} libraryCardNumber
+     * @param {string} primaryId
+     * @param {string} instCode
+     * @return {*}  {boolean}
+     * @memberof User
+     */
     addLibraryCardNumber(libraryCardNumber: string, primaryId: string, instCode: string): boolean {
         libraryCardNumber = Librarycardnumber.sanitizeLibraryCardNumber(libraryCardNumber);
         // check if number exists already
@@ -130,6 +199,13 @@ export class User {
         return true;
     }
 
+    /**
+     * Removes a library card number from the user
+     *
+     * @param {string} libraryCardNumber
+     * @return {*}  {Boolean}
+     * @memberof User
+     */
     removeLibraryCardNumber(libraryCardNumber: string): Boolean {
         let initialCount = this.userValue["user_identifier"].length;
         let isImmatriculationNumber = Librarycardnumber.isValidImmatriculationNumber(libraryCardNumber["value"]);
@@ -141,6 +217,14 @@ export class User {
         return initialCount != this.userValue["user_identifier"].length;
     }
 
+    /**
+     * Sets the preferred address
+     *
+     * @param {object} address
+     * @param {string} url
+     * @return {*}  {Boolean}
+     * @memberof User
+     */
     setPreferredAddress(address: object, url: string): Boolean {
         let isChanged = false;
         this.userValue["contact_info"]["address"].map((currAddress) => {
@@ -157,6 +241,12 @@ export class User {
         return true;
     }
 
+    /**
+     * Get the settings: an entity in the user_note that Starts with 'User Settings: [...]')
+     *
+     * @return {*}  {[Object, Object]}
+     * @memberof User
+     */
     getSettings(): [Object, Object] {
         let settingsObject = null;
         let settingsValue = '{}';
@@ -175,6 +265,15 @@ export class User {
         return [settingsObject, JSON.parse(settingsValue)];
     }
 
+    /**
+     * Adds a setting 
+     * Create the setting object in the user_notes if its not existing already
+     *
+     * @param {string} key
+     * @param {string} value
+     * @param {string} url
+     * @memberof User
+     */
     addSetting(key: string, value: string, url: string) {
         let settings = this.getSettings();
         let isUserSettingsExisting = settings[0] != null;

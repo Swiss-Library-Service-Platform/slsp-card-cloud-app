@@ -1,3 +1,10 @@
+/**
+ * Library card number model
+ * Serves functions to validate and format the library card numbers
+ *
+ * @export
+ * @class Librarycardnumber
+ */
 export class Librarycardnumber {
 
     static allowedRegex = [
@@ -56,6 +63,14 @@ export class Librarycardnumber {
         /SLSP\d{9}/ // Neues Format
     ];
 
+    /**
+     * Sanitizes the number (removes the '-')
+     *
+     * @static
+     * @param {string} libraryCardNumber
+     * @return {*}  {string}
+     * @memberof Librarycardnumber
+     */
     static sanitizeLibraryCardNumber(libraryCardNumber: string): string {
         if (!libraryCardNumber.match(/slsp-/i)) {
             libraryCardNumber = libraryCardNumber.replace(/-/g, '');
@@ -63,21 +78,54 @@ export class Librarycardnumber {
         return libraryCardNumber.toLowerCase();
     }
 
+    /**
+     * Gets the dashed version (12-123-123) of a matriculation number (12123123)
+     *
+     * @static
+     * @param {string} immatriculationNumber
+     * @return {*}  {string}
+     * @memberof Librarycardnumber
+     */
     static getDashedMatriculationNumber(immatriculationNumber: string): string {
         return immatriculationNumber.replace(/(\d{2})(\d{3})(\d{3})/, "$1-$2-$3");
     }
 
+    /**
+     * Checks whether the librarycardnumber is removable from the cloud app
+     * Is removable when Type = '02' and does not include 'via edu-ID'
+     *
+     * @static
+     * @param {Object} libraryCardNumber
+     * @return {*}  {Boolean}
+     * @memberof Librarycardnumber
+     */
     static isRemovable(libraryCardNumber: Object): Boolean {
         let matchNote = libraryCardNumber['note'].match(/via edu-ID/i);
         return libraryCardNumber["id_type"]["value"] == '02'
             && matchNote == null;
     }
 
+    /**
+     * Checks where the number is a dashed matriculation number
+     *
+     * @static
+     * @param {Object} libraryCardNumber
+     * @return {*}  {Boolean}
+     * @memberof Librarycardnumber
+     */
     static isDashedLibraryCardNumber(libraryCardNumber: Object): Boolean {
         let matchImma = libraryCardNumber['value'].match(/(\d{2})-(\d{3})-(\d{3})/);
         return matchImma != null;
     }
 
+    /**
+     * Checks if the number is a valid library card number
+     *
+     * @static
+     * @param {string} librarycardnumber
+     * @return {*} 
+     * @memberof Librarycardnumber
+     */
     static isValidLibraryCardNumber(librarycardnumber: string) {
         if (!librarycardnumber) return false;
 
@@ -105,6 +153,14 @@ export class Librarycardnumber {
     }
 
 
+    /**
+     * Checks whether the number is a valid immatriculation number
+     *
+     * @static
+     * @param {string} immatriculationNumber
+     * @return {*} 
+     * @memberof Librarycardnumber
+     */
     static isValidImmatriculationNumber(immatriculationNumber: string) {
         // Must be 8 chars long
         if (immatriculationNumber.length != 8) {
