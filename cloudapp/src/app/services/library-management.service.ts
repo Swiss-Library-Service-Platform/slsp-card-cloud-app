@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { CloudAppEventsService, Entity, AlertService } from '@exlibris/exl-cloudapp-angular-lib';
+import { CloudAppEventsService, Entity, AlertService, CloudAppRestService } from '@exlibris/exl-cloudapp-angular-lib';
 import { User } from '../model/user.model';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
@@ -23,6 +23,7 @@ export class LibraryManagementService {
 
   constructor(
     private http: HttpClient,
+    private restService: CloudAppRestService,
     private eventsService: CloudAppEventsService,
     private alert: AlertService,
     private translate: TranslateService
@@ -65,6 +66,29 @@ export class LibraryManagementService {
    */
   private _setObservableUserObject(user: User): void {
     this._userObject.next(user);
+  }
+
+  /**
+   * Checks wheter the currently loggedin user has sufficient permissions
+   *
+   * @param {string} primaryId of currently loggedin user
+   * @return {Boolean} 
+   * @memberof LibraryManagementService
+   */
+  async getIsCurrentUserAllowed(primaryId: string): Promise<Boolean> {
+    let user = await this.restService.call<any>('/users/' + primaryId).toPromise();
+    console.log(user);
+    // 26 (General System Administrator)
+    // 52 (Fulfillment Administrator)
+    // 21 (User Manager)
+    const requiredRoles = ['26', '52', '21'];
+    for (let userrole of user.user_role) {
+      console.log(userrole);
+      if (requiredRoles.indexOf(userrole.role_type.value) != -1 &&
+        userrole.status.value == 'ACTIVE')
+        return true
+    }
+    return false;
   }
 
   /**
@@ -114,6 +138,10 @@ export class LibraryManagementService {
           resolve(true);
         },
         async error => {
+          // TODO: change back to user friendly error message
+          this.alert.error(JSON.stringify(error.error));
+          resolve(false);
+
           if (error.status == 400) {
             let errMessage = await this.translate.get('Main.UserNotFound').toPromise();
             this.alert.error(entity.description + errMessage);
@@ -223,6 +251,8 @@ export class LibraryManagementService {
         },
         error => {
           console.log(error);
+          // TODO: Remove user unfriendly error message here
+          this.alert.error(JSON.stringify(error.error));
           // RESTORE OLD USER ENTITY
           this.getUserFromEntity(this.userEntity);
           resolve(false);

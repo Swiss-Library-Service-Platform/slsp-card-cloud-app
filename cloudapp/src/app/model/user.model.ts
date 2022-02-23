@@ -251,7 +251,7 @@ export class User {
         let settingsObject = null;
         let settingsValue = '{}';
         if (!Array.isArray(this.userValue["user_note"]) || this.userValue["user_note"].length < 1) {
-            return [null, null];
+            return [settingsObject, JSON.parse(settingsValue)];
         }
         this.userValue["user_note"].forEach((setting) => {
             if (!setting["note_type"] || setting['note_type']['value'] == 'Other') {
@@ -277,7 +277,8 @@ export class User {
     addSetting(key: string, value: string, url: string) {
         let settings = this.getSettings();
         let isUserSettingsExisting = settings[0] != null;
-
+        console.log(settings[0]);
+        console.log(settings[1]);
         settings[1][key] = value;
         let noteText = 'User Settings: ' + JSON.stringify(settings[1]);
 

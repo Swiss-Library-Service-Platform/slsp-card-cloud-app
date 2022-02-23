@@ -19,6 +19,9 @@ export class MainComponent implements OnInit, OnDestroy {
   selectedEntity: Entity;
   apiResult: any;
   isAutoSelect: string;
+  isUserHasRole: boolean = false;
+  isUserCheckDone: boolean = false;
+  isInstitutionAllowed: boolean = false;
 
   entities$: Observable<Entity[]> = this.eventsService.entities$
     .pipe(
@@ -37,15 +40,30 @@ export class MainComponent implements OnInit, OnDestroy {
   ) { }
 
   async ngOnInit() {
+    this.loading = true;
     await this._libraryManagementService.init();
-    this.route.params.subscribe((params: Params) => this.isAutoSelect = params['isAutoSelect']);
-    if (this.isAutoSelect == 'true') {
-      this.eventsService.entities$.subscribe((availableEntities) => {
-        if (availableEntities.length == 1) {
-          this.setUser(availableEntities[0]);
-        }
-      });
+    // TODO: check if current institution is allowed to use this cloud app
+    this.isInstitutionAllowed = true;
+    // check if current user has a role
+    let initData = await this.eventsService.getInitData().toPromise();
+    const isUserAllowed = this._libraryManagementService.getIsCurrentUserAllowed(initData.user.primaryId);
+    this.isUserCheckDone = true;
+    if (!isUserAllowed) {
+      this.isUserHasRole = false;
+    } else {
+      this.isUserHasRole = true;
+      // auto select the user if only one user is visible
+      this.route.params.subscribe((params: Params) => this.isAutoSelect = params['isAutoSelect']);
+      if (this.isAutoSelect == 'true') {
+        this.eventsService.entities$.subscribe((availableEntities) => {
+          if (availableEntities.length == 1) {
+            this.setUser(availableEntities[0]);
+          }
+        });
+      }
     }
+    this.loading = false;
+
   }
 
   ngOnDestroy(): void {
