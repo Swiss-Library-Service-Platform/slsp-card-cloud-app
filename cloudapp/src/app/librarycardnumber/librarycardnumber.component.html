@@ -19,7 +19,7 @@
     <div *ngIf="currentMatriculationNumber">
       <mat-divider></mat-divider>
       <br>
-      Current matriculation number
+      {{ 'LibraryCardNumber.CurrentMatriculationNumber'| translate }}
       <br>
       <table>
         <tr>
@@ -40,7 +40,7 @@
           <td> {{ item['value'].toUpperCase() }} </td>
           <td class="table-cell-remove">
             <div *ngIf="isNumberDashedLibraryCardNumber(item)" style="font-style: italic;">
-              Alias
+              {{'LibraryCardNumber.Alias' | translate}}
             </div>
             <div *ngIf="!isNumberDashedLibraryCardNumber(item)">
               <button *ngIf="isNumberRemovable(item)" mat-flat-button color="secondary"

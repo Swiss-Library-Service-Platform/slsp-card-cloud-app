@@ -31,7 +31,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
   subscription;
   loading: Boolean;
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.subscription = this._libraryManagementService.getUserObject().subscribe(
       res => {
         this.currentFullName = res.getFullName();

@@ -56,7 +56,7 @@
       </button>
     </mat-action-row>
     <mat-action-row *ngIf="!currentUserBlocks['02']">
-      <mat-form-field appearance="fill">
+      <mat-form-field>
         <mat-label>{{'Blocks.Comment' | translate}}</mat-label>
         <input [(ngModel)]='commentDouble' matInput #first>
       </mat-form-field>
@@ -105,8 +105,8 @@
       </div>
     </div>
     <mat-action-row *ngIf="!currentUserBlocks['03']">
-      <mat-form-field appearance="fill">
-        <mat-label>Comment (optional)</mat-label>
+      <mat-form-field>
+        <mat-label>{{'Blocks.Comment' | translate}}</mat-label>
         <input [(ngModel)]='commentWrong' matInput #first>
       </mat-form-field>
       <button mat-flat-button class="slsp-purple-button" (click)="addUserBlock('03')">

@@ -50,7 +50,7 @@
 
   <ng-template #entities>
     <div class="select-entities" *ngIf="!selectedEntity">
-      <label id="entities-radio-group-label">Select a user:</label>
+      <label id="entities-radio-group-label">{{ 'Welcome.SelectUser' | translate }}</label>
       <mat-radio-group aria-labelledby="entities-radio-group-label" class="entities-radio-group"
         [(ngModel)]="selectedEntity" (change)="entitySelected($event)">
         <mat-radio-button *ngFor="let entity of entities$ | async" [value]="entity">
