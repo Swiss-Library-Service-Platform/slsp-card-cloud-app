@@ -1,8 +1,13 @@
 {
    "id": "slsp-library-card-management",
    "title": "Swisscovery Library Card Management ",
-   "subtitle": "First version of the SLSP Swisscovery Library Card Management",
+   "subtitle": "SLSP Swisscovery Library Card Management",
    "author": "SLSP",
+   "icon": {
+      "type": "font",
+      "value": "fa fa-id-card"
+   },
+   "description": "Manage Library Cards",
    "contentSecurity": {
       "connectSrc": [
          "https://api-eu.hosted.exlibrisgroup.com/",

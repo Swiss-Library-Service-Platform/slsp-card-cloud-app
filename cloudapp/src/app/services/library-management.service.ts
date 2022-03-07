@@ -75,20 +75,46 @@ export class LibraryManagementService {
    * @return {Boolean} 
    * @memberof LibraryManagementService
    */
-  async getIsCurrentUserAllowed(primaryId: string): Promise<Boolean> {
+  async getIsCurrentUserAllowed(primaryId: string): Promise<boolean> {
     let user = await this.restService.call<any>('/users/' + primaryId).toPromise();
-    console.log(user);
     // 26 (General System Administrator)
     // 52 (Fulfillment Administrator)
     // 21 (User Manager)
     const requiredRoles = ['26', '52', '21'];
+    let isAllowed = false;
     for (let userrole of user.user_role) {
-      console.log(userrole);
       if (requiredRoles.indexOf(userrole.role_type.value) != -1 &&
-        userrole.status.value == 'ACTIVE')
-        return true
+        userrole.status.value == 'ACTIVE') {
+        isAllowed = true;
+        break;
+      }
+
     }
-    return false;
+    return isAllowed;
+  }
+
+  /**
+   * Checks wheter the current instition is allowed to use this cloudapp
+   *
+   * @param {string} primaryId of currently loggedin user
+   * @return {Boolean} 
+   * @memberof LibraryManagementService
+   */
+  async getIsCurrentInstitutionAllowed(institutionId: string): Promise<boolean> {
+    return new Promise(resolve => {
+      this.http.get('isAllowed/' + institutionId, this.httpOptions).subscribe(
+        isAllowed => {
+          // RETURN boolean
+          resolve(!!isAllowed);
+        },
+        error => {
+          console.log(error);
+          // TODO: Remove user unfriendly error message here
+          this.alert.error(JSON.stringify(error.error));
+          resolve(false);
+        },
+      );
+    });
   }
 
   /**
@@ -131,14 +157,14 @@ export class LibraryManagementService {
   async getUserFromEntity(entity: Entity) {
     this.userEntity = entity;
     return new Promise(resolve => {
-      this.http.get(entity.link, this.httpOptions).subscribe(
+      this.http.get('p/api-eu.hosted.exlibrisgroup.com/almaws/v1' + entity.link, this.httpOptions).subscribe(
         userdata => {
           this.user = new User(userdata);
           this._setObservableUserObject(this.user);
           resolve(true);
         },
         async error => {
-          // TODO: change back to user friendly error message
+          // TODO: Remove user unfriendly error message here
           this.alert.error(JSON.stringify(error.error));
           resolve(false);
 
@@ -242,7 +268,7 @@ export class LibraryManagementService {
    */
   async updateUser(): Promise<Boolean> {
     return new Promise(resolve => {
-      this.http.put(this.userEntity.link, this.user.userValue, this.httpOptions).subscribe(
+      this.http.put('p/api-eu.hosted.exlibrisgroup.com/almaws/v1' + this.userEntity.link, this.user.userValue, this.httpOptions).subscribe(
         userdata => {
           // UPDATE USER
           this.user = new User(userdata);

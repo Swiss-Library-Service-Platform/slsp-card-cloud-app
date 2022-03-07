@@ -277,8 +277,6 @@ export class User {
     addSetting(key: string, value: string, url: string) {
         let settings = this.getSettings();
         let isUserSettingsExisting = settings[0] != null;
-        console.log(settings[0]);
-        console.log(settings[1]);
         settings[1][key] = value;
         let noteText = 'User Settings: ' + JSON.stringify(settings[1]);
 

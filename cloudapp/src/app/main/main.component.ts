@@ -42,27 +42,30 @@ export class MainComponent implements OnInit, OnDestroy {
   async ngOnInit() {
     this.loading = true;
     await this._libraryManagementService.init();
-    // TODO: check if current institution is allowed to use this cloud app
-    this.isInstitutionAllowed = true;
-    // check if current user has a role
     let initData = await this.eventsService.getInitData().toPromise();
-    const isUserAllowed = this._libraryManagementService.getIsCurrentUserAllowed(initData.user.primaryId);
-    this.isUserCheckDone = true;
-    if (!isUserAllowed) {
-      this.isUserHasRole = false;
-    } else {
-      this.isUserHasRole = true;
-      // auto select the user if only one user is visible
-      this.route.params.subscribe((params: Params) => this.isAutoSelect = params['isAutoSelect']);
-      if (this.isAutoSelect == 'true') {
-        this.eventsService.entities$.subscribe((availableEntities) => {
-          if (availableEntities.length == 1) {
-            this.setUser(availableEntities[0]);
-          }
-        });
-      }
+    // check if current institution is allowed to use this cloud app
+    this.isInstitutionAllowed = await this._libraryManagementService.getIsCurrentInstitutionAllowed(initData.instCode);
+    // check if current user has a role
+    if (this.isInstitutionAllowed) {
+      this.isUserHasRole = await this._libraryManagementService.getIsCurrentUserAllowed(initData.user.primaryId);
     }
-    this.loading = false;
+    this.isUserCheckDone = true;
+    // auto select the user if only one user is visible
+    if (this.isUserHasRole) {
+      if (this.route.snapshot.params.isAutoSelect == 'true') {
+        this.entities$.subscribe(async (availableEntities) => {
+          if (availableEntities.length == 1) {
+            await this.setUser(availableEntities[0]);
+          }
+          this.loading = false;
+        });
+      } else {
+        this.loading = false;
+      }
+    } else {
+      this.loading = false;
+
+    }
 
   }
 
@@ -71,7 +74,9 @@ export class MainComponent implements OnInit, OnDestroy {
 
   async entitySelected(event: MatRadioChange) {
     const value = event.value as Entity;
-    this.setUser(value);
+    this.loading = true;
+    await this.setUser(value);
+    this.loading = false
   }
 
   clear() {
@@ -80,9 +85,7 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   async setUser(entity: Entity) {
-    this.loading = true;
     const userFound = await this._libraryManagementService.getUserFromEntity(entity);
-    this.loading = false
     if (userFound) {
       this.router.navigate(['usermenu'])
     } else {

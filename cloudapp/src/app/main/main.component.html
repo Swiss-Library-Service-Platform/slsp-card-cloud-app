@@ -1,6 +1,16 @@
 <ng-container *ngIf="isUserCheckDone && !isInstitutionAllowed">
   <div class="select-entities">
-    Nope
+    <h1>
+      <mat-icon inline=true>error</mat-icon>
+      {{ 'Welcome.AccessDenied' | translate }}
+    </h1>
+    <p>
+      {{ 'Welcome.InstitutionDenied1' | translate }}
+      <a href="https://slsp.ch/en/contact">
+        {{ 'Welcome.InstitutionDenied2' | translate }}
+      </a>
+      {{ 'Welcome.InstitutionDenied3' | translate }}
+    </p>
   </div>
 </ng-container>
 
