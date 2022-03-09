@@ -1,13 +1,14 @@
 {
    "id": "slsp-library-card-management",
-   "title": "Swisscovery Library Card Management ",
-   "subtitle": "SLSP Swisscovery Library Card Management",
+   "title": "Swisscovery Library Card Management",
+   "subtitle": "Manage Library Cards and Account Settings",
    "author": "SLSP",
    "icon": {
       "type": "font",
       "value": "fa fa-id-card"
    },
-   "description": "Manage Library Cards",
+   "license": "https://github.com/Swiss-Library-Service-Platform/registration-cloud-app/blob/main/LICENCE",
+   "description": "Manage account settings on the network level by managing blocks, the prefererred address and the library card numbers of a user. This Alma Cloud App is a product for SLSP libraries.",
    "contentSecurity": {
       "connectSrc": [
          "https://api-eu.hosted.exlibrisgroup.com/",
