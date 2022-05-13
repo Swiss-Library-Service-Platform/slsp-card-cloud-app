@@ -8,16 +8,20 @@
         <div class="user-header-text"> {{currentFullName}} </div>
     </span>
 </div>
-<br>
+
 <mat-tab-group mat-stretch-tabs>
     <mat-tab [label]="numbersTitle">
         <app-librarycardnumber></app-librarycardnumber>
     </mat-tab>
+    <mat-tab>
+        <ng-template mat-tab-label>
+            <mat-icon *ngIf="(currentUserBlocks | json) != ({} | json)" class="blocks-tab-icon">warning</mat-icon>
+            {{ blocksTitle}}
+        </ng-template>
+        <app-block></app-block>
+    </mat-tab>
     <mat-tab [label]="settingsTitle">
         <app-settings></app-settings>
-    </mat-tab>
-    <mat-tab [label]="blocksTitle">
-        <app-block></app-block>
     </mat-tab>
 </mat-tab-group>
 

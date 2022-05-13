@@ -22,6 +22,7 @@ export class UsermenuComponent implements OnInit {
   blocksTitle: String;
   settingsTitle: String;
   numbersTitle: String;
+  currentUserBlocks: Map<String, any> = null;
 
   async ngOnInit() {
     this.blocksTitle = await this.translate.get('Main.Block').toPromise();
@@ -31,6 +32,7 @@ export class UsermenuComponent implements OnInit {
     this.subscription = this._libraryManagementService.getUserObject().subscribe(
       res => {
         this.currentFullName = res.getFullName();
+        this.currentUserBlocks = this._libraryManagementService.user.getUserBlocks();
       },
       err => {
         console.error(`An error occurred: ${err.message}`);

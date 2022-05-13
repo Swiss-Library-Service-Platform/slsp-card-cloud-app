@@ -24,8 +24,8 @@
     },
     "Main": {
         "Block": "Blocks",
-        "Settings": "Settings",
-        "LibraryCardNumber": "Library Card",
+        "Settings": "Others",
+        "LibraryCardNumber": "Card Number",
         "PleaseNote": "Please note:",
         "TakesAFewMinutes": "It will take a few minutes until changes become active in the library system.",
         "UserNotFound": " was not found in the Network Zone.",

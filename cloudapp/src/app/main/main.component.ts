@@ -64,7 +64,6 @@ export class MainComponent implements OnInit, OnDestroy {
       }
     } else {
       this.loading = false;
-
     }
 
   }

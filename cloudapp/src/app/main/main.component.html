@@ -1,5 +1,5 @@
 <ng-container *ngIf="isUserCheckDone && !isInstitutionAllowed">
-  <div class="select-entities">
+  <div class="institution-now-allowed">
     <h1>
       <mat-icon inline=true>error</mat-icon>
       {{ 'Welcome.AccessDenied' | translate }}
@@ -15,7 +15,7 @@
 </ng-container>
 
 <ng-container *ngIf="isUserCheckDone && isInstitutionAllowed && !isUserHasRole">
-  <div class="select-entities">
+  <div class="user-not-allowed">
     <h1>
       <mat-icon inline=true>error</mat-icon>
       {{ 'Welcome.AccessDenied' | translate }}

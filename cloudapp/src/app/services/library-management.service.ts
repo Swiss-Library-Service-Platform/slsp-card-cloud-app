@@ -109,8 +109,6 @@ export class LibraryManagementService {
         },
         error => {
           console.log(error);
-          // TODO: Remove user unfriendly error message here
-          this.alert.error(JSON.stringify(error.error));
           resolve(false);
         },
       );
@@ -164,16 +162,12 @@ export class LibraryManagementService {
           resolve(true);
         },
         async error => {
-          // TODO: Remove user unfriendly error message here
-          this.alert.error(JSON.stringify(error.error));
-          resolve(false);
-
           if (error.status == 400) {
             let errMessage = await this.translate.get('Main.UserNotFound').toPromise();
-            this.alert.error(entity.description + errMessage);
+            this.alert.warn(entity.description + errMessage);
           } else {
             let errMessage = await this.translate.get('Main.TemporarilyUnavailable').toPromise();
-            this.alert.error(errMessage, { autoClose: true });
+            this.alert.error(errMessage, { autoClose: true, delay: 10000 });
           }
           resolve(false);
         });
@@ -277,8 +271,6 @@ export class LibraryManagementService {
         },
         error => {
           console.log(error);
-          // TODO: Remove user unfriendly error message here
-          this.alert.error(JSON.stringify(error.error));
           // RESTORE OLD USER ENTITY
           this.getUserFromEntity(this.userEntity);
           resolve(false);

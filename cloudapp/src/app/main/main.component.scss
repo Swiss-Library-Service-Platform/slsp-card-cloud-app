@@ -32,5 +32,18 @@ textarea {
 }
 
 .select-entities {
-  margin-top: 1rem;
+  padding-top: 1rem;
+}
+
+.user-not-allowed,
+.institution-now-allowed {
+  padding-top: 1rem;
+
+  h1 {
+    display: flex;
+
+    .mat-icon {
+      margin-right: 4px;
+    }
+  }
 }
