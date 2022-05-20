@@ -164,10 +164,10 @@ export class LibraryManagementService {
         async error => {
           if (error.status == 400) {
             let errMessage = await this.translate.get('Main.UserNotFound').toPromise();
-            this.alert.warn(entity.description + errMessage);
+            this.alert.warn(entity.description + errMessage, { autoClose: false });
           } else {
             let errMessage = await this.translate.get('Main.TemporarilyUnavailable').toPromise();
-            this.alert.error(errMessage);
+            this.alert.error(errMessage, { autoClose: false });
           }
           resolve(false);
         });

@@ -53,10 +53,10 @@ export class SettingsComponent implements OnInit, OnDestroy {
     const isAdded = await this._libraryManagementService.setUserPreferredAddress(address, initData.urls.alma);
     if (!isAdded) {
       let errMessage = await this.translate.get('Settings.SetError').toPromise();
-      this.alert.error(errMessage);
+      this.alert.error(errMessage, { autoClose: false });
     } else {
       let succMessage = await this.translate.get('Settings.SetSuccess').toPromise();
-      this.alert.success(succMessage);
+      this.alert.success(succMessage, { autoClose: false });
     }
     this.loading = false;
   }

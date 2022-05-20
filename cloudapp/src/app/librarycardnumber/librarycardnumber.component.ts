@@ -77,10 +77,10 @@ export class LibrarycardnumberComponent implements OnInit {
         const isRemoved = await this._libraryManagementService.removeUserLibraryCardNumber(libraryCardNumber);
         if (!isRemoved) {
           let errMessage = await this.translate.get('LibraryCardNumber.RemoveError').toPromise();
-          this.alert.error(errMessage);
+          this.alert.error(errMessage, { autoClose: false });
         } else {
           let succMessage = await this.translate.get('LibraryCardNumber.RemoveSuccess').toPromise();
-          this.alert.success(succMessage);
+          this.alert.success(succMessage, { autoClose: false });
         }
         this.loading = false;
       }
@@ -99,12 +99,12 @@ export class LibrarycardnumberComponent implements OnInit {
     const isAdded = await this._libraryManagementService.addUserLibraryCardNumber(libaryCardNumber, initData.user.primaryId, initData.instCode);
     if (!isAdded) {
       let errMessage = await this.translate.get('LibraryCardNumber.AddError').toPromise();
-      this.alert.error(errMessage);
+      this.alert.error(errMessage, { autoClose: false });
     } else {
       let succMessage = await this.translate.get('LibraryCardNumber.AddSuccess').toPromise();
       formDirective.resetForm();
       this.numberForm.reset();
-      this.alert.success(succMessage);
+      this.alert.success(succMessage, { autoClose: false });
     }
     this.loading = false;
   }
