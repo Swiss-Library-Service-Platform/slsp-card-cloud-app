@@ -1,11 +1,11 @@
 {
    "id": "slsp-library-card-management",
-   "title": "Swisscovery Accounts",
+   "title": "SLSP Card",
    "subtitle": "Centralized management of card numbers, blocks and preferred address for consortia",
    "author": "SLSP",
    "icon": {
-      "type": "font",
-      "value": "fa fa-id-card"
+      "type": "url",
+      "value": "/assets/SLSP_Card_IC_370x260.png"
    },
    "license": "https://github.com/Swiss-Library-Service-Platform/registration-cloud-app/blob/main/LICENCE",
    "description": "Change account settings on the network level by managing card numbers, blocks and the preferred address of a user. This Alma Cloud App is a product for SLSP libraries.",
