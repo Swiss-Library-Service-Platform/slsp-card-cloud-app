@@ -167,7 +167,7 @@ export class LibraryManagementService {
             this.alert.warn(entity.description + errMessage);
           } else {
             let errMessage = await this.translate.get('Main.TemporarilyUnavailable').toPromise();
-            this.alert.error(errMessage, { autoClose: true, delay: 10000 });
+            this.alert.error(errMessage);
           }
           resolve(false);
         });

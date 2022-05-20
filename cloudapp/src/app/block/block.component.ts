@@ -61,10 +61,10 @@ export class BlockComponent implements OnInit, OnDestroy {
     let isAdded = await this._libraryManagementService.addUserblock(blockType, comment, initData.instCode, initData.urls.alma);
     if (!isAdded) {
       let errMessage = await this.translate.get('Blocks.AddError').toPromise();
-      this.alert.error(errMessage, { autoClose: true, delay: 10000 });
+      this.alert.error(errMessage);
     } else {
       let succMessage = await this.translate.get('Blocks.AddSuccess').toPromise();
-      this.alert.success(succMessage, { autoClose: true, delay: 10000 });
+      this.alert.success(succMessage);
     }
     this.loading = false;
   }
@@ -74,10 +74,10 @@ export class BlockComponent implements OnInit, OnDestroy {
     const isRemoved = await this._libraryManagementService.removeUserblock(blockType);
     if (!isRemoved) {
       let errMessage = await this.translate.get('Blocks.RemoveError').toPromise();
-      this.alert.error(errMessage, { autoClose: true, delay: 10000 });
+      this.alert.error(errMessage);
     } else {
       let succMessage = await this.translate.get('Blocks.RemoveSuccess').toPromise();
-      this.alert.success(succMessage, { autoClose: true, delay: 10000 });
+      this.alert.success(succMessage);
     }
     this.loading = false;
   }
