@@ -7,9 +7,9 @@
         "Confirm": "Confirm"
     },
     "Welcome": {
-        "Welcome": "Welcome to Swisscovery Library Card Management!",
+        "Welcome": "Welcome to SLSP Card!",
         "LetsGo": "Let's get started with this app:",
-        "Instructions1": "Search for the user you want to edit",
+        "Instructions1": "Search for the user you want to edit in the Alma searchbar",
         "Instructions2": "Open this Cloud App",
         "Instructions3": "Select the user",
         "AccessDenied": "Access denied",
