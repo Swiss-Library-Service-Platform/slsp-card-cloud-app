@@ -29,7 +29,8 @@
         "PleaseNote": "Bitte beachten:",
         "TakesAFewMinutes": "Es wird einige Minuten dauern bis Änderungen im Bibliothekssystem aktiv werden.",
         "UserNotFound": " wurde nicht in der Network Zone gefunden.",
-        "TemporarilyUnavailable": "Dienst vorübergehend nicht verfügbar."
+        "TemporarilyUnavailable": "Dienst vorübergehend nicht verfügbar.",
+        "Help": "Hilfe"
     },
     "LibraryCardNumber": {
         "Add": "Hinzufügen",
@@ -60,7 +61,7 @@
         "UseAsPreferred": "Als Bevorzugt markieren",
         "NoAddresses": "Dieser Nutzer hat keine Adress-Einträge in der Network-Zone.",
         "SetError": "Die bevorzugte Adresse konnte nicht geändert werden.",
-        "SetSuccess": "Bevorzugte Adresse erfolgreich geändert.."
+        "SetSuccess": "Bevorzugte Adresse erfolgreich geändert."
     },
     "Blocks": {
         "CurrentBlockTitle": "Derzeitige Sperren",

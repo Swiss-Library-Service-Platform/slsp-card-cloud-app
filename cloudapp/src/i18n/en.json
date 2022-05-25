@@ -16,7 +16,7 @@
         "InstitutionDenied1": "Unfortunately your institution does not have the permission to use this app. Please ",
         "InstitutionDenied2": "contact SLSP ",
         "InstitutionDenied3": "if you have any questions.",
-        "NoRole": "Unfortunately you do not have the permission to use this app. In order to apply changes via the Library Card Management, you need at least one of the following roles:",
+        "NoRole": "Unfortunately you do not have the permission to use this app. In order to apply changes via this app, you need at least one of the following roles:",
         "Fulfillment": "Fulfillment Services Manager",
         "UserManager": "User Manager",
         "GeneralSystem": "General System Administrator",
@@ -29,7 +29,8 @@
         "PleaseNote": "Please note:",
         "TakesAFewMinutes": "It will take a few minutes until changes become active in the library system.",
         "UserNotFound": " was not found in the Network Zone.",
-        "TemporarilyUnavailable": "Service temporarily unavailable"
+        "TemporarilyUnavailable": "Service temporarily unavailable",
+        "Help": "Help"
     },
     "LibraryCardNumber": {
         "Add": "Add",
