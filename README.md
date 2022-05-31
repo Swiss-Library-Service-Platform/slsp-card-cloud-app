@@ -1,4 +1,4 @@
-# Alma Cloud App - Swisscovery Library Card Management
+# SLSP Card - Alma Cloud App
 ## Overview
 
 This repository contains the [Alma Cloud App](https://developers.exlibrisgroup.com/cloudapps/) for Swisscovery Library Card Management from [SLSP](https://slsp.ch/).
