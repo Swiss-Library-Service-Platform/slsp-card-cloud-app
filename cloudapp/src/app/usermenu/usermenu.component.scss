@@ -15,6 +15,15 @@ mat-card {
     span {
         font-weight: bold;
     }
+
+    div {
+        margin-top: 1rem;
+    }
+
+    .mat-icon {
+        vertical-align: bottom;
+        margin-right: 4px;
+    }
 }
 
 .blocks-tab-icon {
