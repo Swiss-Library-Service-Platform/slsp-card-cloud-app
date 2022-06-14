@@ -83,7 +83,7 @@
         "Comment": "Kommentar (optional)",
         "DoubleRegistrationsDescription": "Diese Sperre wird verwendet, wenn eine Benutzerin / ein Benutzer zwei oder mehrere Konten hat. Sobald die Konten zusammengeführt wurden, wird das redundante SLSP-Konto gelöscht (oder mit dem verbleibenden Konto zusammengeführt, falls offene Transaktionen/Gebühren vorhanden sind). Die zentrale Sperre des verbleibenden Kontos kann hier aufgehoben werden.",
         "WrongAddressDescription": "Diese Sperre wird verwendet, wenn ein Benutzerkonto eine falsche bevorzugte Adresse enthält. Da diese Adresse nur im SWITCH edu-ID-Konto angepasst werden kann, wird die Sperre automatisch aufgehoben, sobald das System ein Update der bevorzugten Adresse von SWITCH erhält.",
-        "NewAccountDescription": "Diese Sperre wird automatisch vergeben, wenn eine Institution sich über die SLSP-Registrierungsplattform einschreibt. Diese zentrale Sperre kann hier durch die Bibliothek aufgehoben werden, nachdem die Daten gemäss der Kriterienliste überprüft wurden.<br />Diese Sperre ist momentan noch nicht im Einsatz.",
+        "NewAccountDescription": "Diese Sperre wird automatisch vergeben, wenn eine Institution sich über die SLSP-Registrierungsplattform einschreibt. Diese zentrale Sperre kann hier durch die Bibliothek aufgehoben werden, nachdem die Daten gemäss der Kriterienliste überprüft wurden.",
         "RemoveError": "Sperre konnte nicht entfernt werden.",
         "RemoveSuccess": "Sperre erfolgreicht entfernt.",
         "AddError": "Sperre konnte nicht hinzugefügt werden.",

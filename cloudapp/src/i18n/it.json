@@ -83,7 +83,7 @@
         "Comment": "Commento (opzionale)",
         "DoubleRegistrationsDescription": "Questo blocco è usato quando un utente ha due o più account. Dopo la fusione dei diversi account edu-ID di SWITCH, gli account SLSP ridondanti vengono automaticamente cancellati (o uniti con l'account rimanente nel caso di transazioni/commissioni pendenti). Il blocco globale sul conto rimanente può quindi essere rimosso tramite la presente piattaforma.",
         "WrongAddressDescription": "Questo blocco viene usato quando nell'account utente è presente un indirizzo preferito sbagliato. Dato che l'indirizzo preferito può solo essere cambiato nell'account SWITCH edu-ID, il blocco è automaticamente rimosso appena il sistema riceve l'aggiornamento dell'indirizzo preferito da SWITCH.",
-        "NewAccountDescription": "Questo blocco viene aggiunto automaticamente quanto un'istituzione si iscrive attraverso la piattaforma di registrazione di SLSP. Questo blocco globale può essere rimosso attraverso la presente piattaforma dalla biblioteca che verifica se effettivamente l'ente abbia diritto ad un account secondo la lista di criteri predefinita.<br />Questo blocco non è ancora in funzione.",
+        "NewAccountDescription": "Questo blocco viene aggiunto automaticamente quanto un'istituzione si iscrive attraverso la piattaforma di registrazione di SLSP. Questo blocco globale può essere rimosso attraverso la presente piattaforma dalla biblioteca che verifica se effettivamente l'ente abbia diritto ad un account secondo la lista di criteri predefinita.",
         "RemoveError": "Il blocco non può essere rimosso.",
         "RemoveSuccess": "Blocco rimosso con successo.",
         "AddError": "Il blocco non può essere aggiunto.",
