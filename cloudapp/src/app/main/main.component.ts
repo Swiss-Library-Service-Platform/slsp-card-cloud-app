@@ -22,6 +22,7 @@ export class MainComponent implements OnInit, OnDestroy {
   isUserHasRole: boolean = false;
   isUserCheckDone: boolean = false;
   isInstitutionAllowed: boolean = false;
+  isProdEnvironment: boolean = true;
 
   entities$: Observable<Entity[]> = this.eventsService.entities$
     .pipe(
@@ -41,13 +42,17 @@ export class MainComponent implements OnInit, OnDestroy {
 
   async ngOnInit() {
     this.loading = true;
-    await this._libraryManagementService.init();
     let initData = await this.eventsService.getInitData().toPromise();
+    let regExp = new RegExp('^https.*-psb.*com$|.*localhost.*'), // contains "PSB" (Premium Sandbox) or "localhost"
+      currentUrl = initData["urls"]["alma"];
+    this.isProdEnvironment = !regExp.test(currentUrl);
+
+    await this._libraryManagementService.init(initData, this.isProdEnvironment);
     // check if current institution is allowed to use this cloud app
-    this.isInstitutionAllowed = await this._libraryManagementService.getIsCurrentInstitutionAllowed(initData.instCode);
+    this.isInstitutionAllowed = await this._libraryManagementService.getIsCurrentInstitutionAllowed();
     // check if current user has a role
     if (this.isInstitutionAllowed) {
-      this.isUserHasRole = await this._libraryManagementService.getIsCurrentUserAllowed(initData.user.primaryId);
+      this.isUserHasRole = await this._libraryManagementService.getIsCurrentUserAllowed();
     }
     this.isUserCheckDone = true;
     // auto select the user if only one user is visible

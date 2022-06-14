@@ -48,9 +48,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
   }
 
   async changePreferredAddress(address: Object): Promise<void> {
-    let initData = await this.eventsService.getInitData().toPromise();
     this.loading = true;
-    const isAdded = await this._libraryManagementService.setUserPreferredAddress(address, initData.urls.alma);
+    const isAdded = await this._libraryManagementService.setUserPreferredAddress(address);
     if (!isAdded) {
       let errMessage = await this.translate.get('Settings.SetError').toPromise();
       this.alert.error(errMessage, { autoClose: false });

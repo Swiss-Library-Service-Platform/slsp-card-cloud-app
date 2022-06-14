@@ -23,12 +23,13 @@ export class UsermenuComponent implements OnInit {
   settingsTitle: String;
   numbersTitle: String;
   currentUserBlocks: Map<String, any> = null;
+  isProdEnvironment: boolean;
 
   async ngOnInit() {
     this.blocksTitle = await this.translate.get('Main.Block').toPromise();
     this.settingsTitle = await this.translate.get('Main.Settings').toPromise();
     this.numbersTitle = await this.translate.get('Main.LibraryCardNumber').toPromise();
-
+    this.isProdEnvironment = this._libraryManagementService.isProdEnvironment;
     this.subscription = this._libraryManagementService.getUserObject().subscribe(
       res => {
         this.currentFullName = res.getFullName();

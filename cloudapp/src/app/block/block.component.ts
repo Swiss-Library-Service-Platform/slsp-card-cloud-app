@@ -3,7 +3,7 @@ import { finalize, tap } from 'rxjs/operators';
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import {
   CloudAppRestService, CloudAppEventsService, Request, HttpMethod,
-  Entity, RestErrorResponse, AlertService, InitData
+  Entity, RestErrorResponse, AlertService
 } from '@exlibris/exl-cloudapp-angular-lib';
 import { MatRadioChange } from '@angular/material/radio';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -55,10 +55,9 @@ export class BlockComponent implements OnInit, OnDestroy {
   }
 
   async addUserBlock(blockType: String): Promise<void> {
-    let initData = await this.eventsService.getInitData().toPromise();
     this.loading = true;
     let comment = blockType == '02' ? this.commentDouble : this.commentWrong;
-    let isAdded = await this._libraryManagementService.addUserblock(blockType, comment, initData.instCode, initData.urls.alma);
+    let isAdded = await this._libraryManagementService.addUserblock(blockType, comment);
     if (!isAdded) {
       let errMessage = await this.translate.get('Blocks.AddError').toPromise();
       this.alert.error(errMessage, { autoClose: false });

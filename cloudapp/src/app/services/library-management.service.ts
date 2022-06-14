@@ -19,6 +19,8 @@ export class LibraryManagementService {
   public user: User;
   private userEntity: Entity
   private readonly _userObject = new BehaviorSubject<User>(new User());
+  public isProdEnvironment: boolean;
+  private initData: Object
   httpOptions: {};
 
   constructor(
@@ -36,9 +38,12 @@ export class LibraryManagementService {
    * @return {*}  {Promise<void>}
    * @memberof LibraryManagementService
    */
-  async init(): Promise<void> {
+  async init(initData: Object, isProdEnvironment: boolean): Promise<void> {
+    this.initData = initData;
+    this.isProdEnvironment = isProdEnvironment;
     let authToken = await this.eventsService.getAuthToken().toPromise();
     this.httpOptions = {
+      params: { "isProdEnvironment": isProdEnvironment },
       headers: new HttpHeaders({
         'Authorization': `Bearer ${authToken}`,
         'Content-Type': 'application/json'
@@ -75,7 +80,8 @@ export class LibraryManagementService {
    * @return {Boolean} 
    * @memberof LibraryManagementService
    */
-  async getIsCurrentUserAllowed(primaryId: string): Promise<boolean> {
+  async getIsCurrentUserAllowed(): Promise<boolean> {
+    let primaryId = this.initData['user']['primaryId'];
     let user = await this.restService.call<any>('/users/' + primaryId).toPromise();
     // 26 (General System Administrator)
     // 52 (Fulfillment Administrator)
@@ -100,7 +106,8 @@ export class LibraryManagementService {
    * @return {Boolean} 
    * @memberof LibraryManagementService
    */
-  async getIsCurrentInstitutionAllowed(institutionId: string): Promise<boolean> {
+  async getIsCurrentInstitutionAllowed(): Promise<boolean> {
+    let institutionId = this.initData['instCode'];
     return new Promise(resolve => {
       this.http.get('isAllowed/' + institutionId, this.httpOptions).subscribe(
         isAllowed => {
@@ -184,7 +191,9 @@ export class LibraryManagementService {
    * @return {*}  {Promise<Boolean>}
    * @memberof LibraryManagementService
    */
-  addUserblock(blockType: String, comment: String = "", libCode: String, url: String): Promise<Boolean> {
+  addUserblock(blockType: String, comment: String = ""): Promise<Boolean> {
+    let libCode = this.initData['instCode'],
+      url = this.initData['urls']['alma'];
     // ADD USER BLOCK
     this.user.addBlock(blockType, comment, libCode, url);
     // API CALL
@@ -214,7 +223,9 @@ export class LibraryManagementService {
    * @return {*}  {Promise<Boolean>}
    * @memberof LibraryManagementService
    */
-  async addUserLibraryCardNumber(libraryCardNumber: string, primaryId: string, instCode: string): Promise<Boolean> {
+  async addUserLibraryCardNumber(libraryCardNumber: string): Promise<Boolean> {
+    let primaryId = this.initData['user']['primaryId'],
+      instCode = this.initData['instCode'];
     // ADD NUMBER TO USER OBJECT
     const isAdded = this.user.addLibraryCardNumber(libraryCardNumber, primaryId, instCode);
     if (!isAdded) return false;
@@ -245,7 +256,8 @@ export class LibraryManagementService {
    * @return {*}  {Promise<Boolean>}
    * @memberof LibraryManagementService
    */
-  async setUserPreferredAddress(address: Object, url: string): Promise<Boolean> {
+  async setUserPreferredAddress(address: Object): Promise<Boolean> {
+    let url = this.initData['urls']['alma'];
     // SET PREFERRED ADDRESS
     const isChanged = this.user.setPreferredAddress(address, url);
     // API CALL

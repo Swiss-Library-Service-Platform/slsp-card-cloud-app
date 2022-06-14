@@ -1,3 +1,9 @@
+<ng-container *ngIf="!isProdEnvironment">
+  <div class="info-test-env">
+    Test instance using Alma Sandbox environment
+  </div>
+</ng-container>
+
 <ng-container *ngIf="isUserCheckDone && !isInstitutionAllowed">
   <div class="institution-now-allowed">
     <h1>
@@ -44,7 +50,6 @@
         <li> {{ 'Welcome.Instructions3' | translate }} </li>
       </ul>
     </div>
-
   </ng-template>
 
   <ng-template #entities>

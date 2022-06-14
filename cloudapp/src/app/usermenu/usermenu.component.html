@@ -1,3 +1,9 @@
+<ng-container *ngIf="!isProdEnvironment">
+    <div class="info-test-env">
+        Test instance using Alma Sandbox environment
+    </div>
+</ng-container>
+
 <div class="user-header" fxLayout="row">
     <button mat-flat-button color="secondary" (click)="navigateBack()">
         <mat-icon inline=true>arrow_back_ios</mat-icon>

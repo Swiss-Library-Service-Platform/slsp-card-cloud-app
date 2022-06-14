@@ -90,13 +90,12 @@ export class LibrarycardnumberComponent implements OnInit {
   }
 
   async addLibraryCardNumber(formData: any, formDirective: FormGroupDirective): Promise<void> {
-    let initData = await this.eventsService.getInitData().toPromise();
     let libaryCardNumber = formData.value.newLibraryCardNumber;
     if (!this.numberForm.valid) {
       return;
     }
     this.loading = true;
-    const isAdded = await this._libraryManagementService.addUserLibraryCardNumber(libaryCardNumber, initData.user.primaryId, initData.instCode);
+    const isAdded = await this._libraryManagementService.addUserLibraryCardNumber(libaryCardNumber);
     if (!isAdded) {
       let errMessage = await this.translate.get('LibraryCardNumber.AddError').toPromise();
       this.alert.error(errMessage, { autoClose: false });
