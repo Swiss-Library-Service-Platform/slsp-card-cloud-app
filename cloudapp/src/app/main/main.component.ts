@@ -43,10 +43,10 @@ export class MainComponent implements OnInit, OnDestroy {
   async ngOnInit() {
     this.loading = true;
     let initData = await this.eventsService.getInitData().toPromise();
-    let regExp = new RegExp('^https.*-psb.*com$|.*localhost.*'), // contains "PSB" (Premium Sandbox) or "localhost"
+    let regExp = new RegExp('^https(.*)psb(.*)com/?$|.*localhost.*'), // contains "PSB" (Premium Sandbox) or "localhost"
       currentUrl = initData["urls"]["alma"];
+    console.log(currentUrl);
     this.isProdEnvironment = !regExp.test(currentUrl);
-
     await this._libraryManagementService.init(initData, this.isProdEnvironment);
     // check if current institution is allowed to use this cloud app
     this.isInstitutionAllowed = await this._libraryManagementService.getIsCurrentInstitutionAllowed();
