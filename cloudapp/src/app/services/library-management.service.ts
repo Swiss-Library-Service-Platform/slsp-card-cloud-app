@@ -84,9 +84,9 @@ export class LibraryManagementService {
     let primaryId = this.initData['user']['primaryId'];
     let user = await this.restService.call<any>('/users/' + primaryId).toPromise();
     // 26 (General System Administrator)
-    // 52 (Fulfillment Administrator)
+    // 215 (Fulfillment Services Manager)
     // 21 (User Manager)
-    const requiredRoles = ['26', '52', '21'];
+    const requiredRoles = ['26', '215', '21'];
     let isAllowed = false;
     for (let userrole of user.user_role) {
       if (requiredRoles.indexOf(userrole.role_type.value) != -1 &&
