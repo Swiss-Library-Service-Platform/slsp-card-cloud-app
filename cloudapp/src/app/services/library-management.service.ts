@@ -82,7 +82,13 @@ export class LibraryManagementService {
    */
   async getIsCurrentUserAllowed(): Promise<boolean> {
     let primaryId = this.initData['user']['primaryId'];
-    let user = await this.restService.call<any>('/users/' + primaryId).toPromise();
+    let user;
+    try {
+      user = await this.restService.call<any>('/users/' + primaryId).toPromise();
+    } catch (error) {
+      // user not allowed
+      return false;
+    }
     // 26 (General System Administrator)
     // 215 (Fulfillment Services Manager)
     // 21 (User Manager)
