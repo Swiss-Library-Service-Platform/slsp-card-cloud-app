@@ -82,7 +82,7 @@
         "address-block-internal-info": "Blocchi legati all'indirizzo aggiunti ad account istituzionali vengono gestiti da SLSP.",
         "Comment": "Commento (opzionale)",
         "DoubleRegistrationsDescription": "Questo blocco è usato quando un utente ha due o più account. Dopo la fusione dei diversi account edu-ID di SWITCH, gli account SLSP ridondanti vengono automaticamente cancellati (o uniti con l'account rimanente nel caso di transazioni/commissioni pendenti). Il blocco globale sul conto rimanente può quindi essere rimosso tramite la presente piattaforma.",
-        "WrongAddressDescription": "Questo blocco viene usato quando nell'account utente è presente un indirizzo preferito sbagliato. Dato che l'indirizzo preferito può solo essere cambiato nell'account SWITCH edu-ID, il blocco è automaticamente rimosso appena il sistema riceve l'aggiornamento dell'indirizzo preferito da SWITCH.",
+        "WrongAddressDescription": "Questo blocco viene utilizzato quando un utente ha nel suo account un indirizzo postale o un indirizzo email errato. Poiché gli indirizzi possono essere modificati solo nell'account SWITCH edu-ID, il blocco viene automaticamente rimosso non appena il sistema riceve un aggiornamento dell'indirizzo o dell'indirizzo e-mail da SWITCH edu-ID.",
         "NewAccountDescription": "Questo blocco viene aggiunto automaticamente quanto un'istituzione si iscrive attraverso la piattaforma di registrazione di SLSP. Questo blocco globale può essere rimosso attraverso la presente piattaforma dalla biblioteca che verifica se effettivamente l'ente abbia diritto ad un account secondo la lista di criteri predefinita.",
         "RemoveError": "Il blocco non può essere rimosso.",
         "RemoveSuccess": "Blocco rimosso con successo.",

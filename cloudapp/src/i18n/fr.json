@@ -82,7 +82,7 @@
         "address-block-internal-info": "Les blocages liés aux adresses ajoutés à des comptes institutionnels sont gérés par SLSP.",
         "Comment": "Commentaire (optionnel)",
         "DoubleRegistrationsDescription": "Ce blocage est utilisé lorsqu'une utilisatrice ou un utilisateur a deux comptes ou davantage. Une fois que les comptes SWITCH edu-ID ont été fusionnés, les comptes SLSP redondants sont eux aussi supprimés (ou fusionnés avec le compte restant en cas de transactions/frais ouverts). Ensuite, le blocage global appliqué sur le compte restant peut être supprimé ici.",
-        "WrongAddressDescription": "Ce blocage est utilisé lorsqu'un compte comporte une mauvaise adresse postale ou addresse e-mail. Comme les adresses ne peuvent être changées que dans le compte SWITCH edu-ID, le blocage est automatiquement supprimé lorsque le système reçoit une mise à jour de l'adresse ou de l'adresse e-mail de la part de SWITCH edu-ID.",
+        "WrongAddressDescription": "Ce blocage est utilisé lorsqu'un compte utilisateur comporte une mauvaise adresse postale ou addresse e-mail. Comme les adresses ne peuvent être changées dans le compte SWITCH edu-ID, le blocage est automatiquement supprimé lorsque le système reçoit une mise à jour de l'adresse ou de l'adresse e-mail de la part de SWITCH edu-ID.",
         "NewAccountDescription": "Ce blocage est ajouté automatiquement quand une institution s'inscrit elle-même via la plateforme d'enregistrement SLSP. Le blocage général peut être supprimé ici par la bibliothèque qui approuve l'elligibilité de l'institution pour obtenir un compte en accord avec les critères de la liste.",
         "RemoveError": "Le blocage n'a pas pu être supprimé.",
         "RemoveSuccess": "Le blocage a été supprimé avec succès.",
