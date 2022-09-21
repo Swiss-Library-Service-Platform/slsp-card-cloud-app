@@ -42,13 +42,13 @@
     </div>
 
     <div *ngIf="currentUserBlocks['02']">
-      {{'Blocks.CreatedOn' | translate}} {{getDateString(currentUserBlocks['02']['created_date'])}} <br>
-      {{ 'Blocks.ExpiringOn' | translate }}
+      <b> {{'Blocks.CreatedOn' | translate}} </b> {{getDateString(currentUserBlocks['02']['created_date'])}} <br>
+      <b> {{ 'Blocks.ExpiringOn' | translate }} </b>
       <span *ngIf="currentUserBlocks['02']['expiry_date']"> {{
         getDateString(currentUserBlocks['02']['expiry_date']) }} </span>
       <span *ngIf="!currentUserBlocks['02']['expiry_date']"> {{ 'Blocks.NoExpiringDate' | translate }} </span>
       <br>
-      {{'Blocks.Note' | translate}}: {{currentUserBlocks['02']['block_note']}}
+      <b> {{'Blocks.Note' | translate}}: </b> {{currentUserBlocks['02']['block_note']}}
     </div>
     <mat-action-row class="mat-action-row-single" *ngIf="currentUserBlocks['02']">
       <button mat-flat-button color="secondary" (click)="removeUserBlock('02')">
@@ -60,7 +60,7 @@
         <mat-label>{{'Blocks.Comment' | translate}}</mat-label>
         <input [(ngModel)]='commentDouble' matInput #first>
       </mat-form-field>
-      <button mat-flat-button class="slsp-purple-button" (click)="addUserBlock('02')">
+      <button mat-flat-button class="slsp-purple-button" (click)="addUserBlock('02', commentDouble)">
         <mat-icon inline=true>add</mat-icon>{{'Blocks.AddBlock' | translate}}
       </button>
     </mat-action-row>
@@ -87,13 +87,13 @@
     </div>
 
     <div *ngIf="currentUserBlocks['03']">
-      {{'Blocks.CreatedOn' | translate}} {{getDateString(currentUserBlocks['03']['created_date'])}} <br>
-      {{ 'Blocks.ExpiringOn' | translate }}
+      <b> {{'Blocks.CreatedOn' | translate}} </b> {{getDateString(currentUserBlocks['03']['created_date'])}} <br>
+      <b> {{ 'Blocks.ExpiringOn' | translate }} </b>
       <span *ngIf="currentUserBlocks['03']['expiry_date']"> {{
         getDateString(currentUserBlocks['03']['expiry_date']) }} </span>
       <span *ngIf="!currentUserBlocks['03']['expiry_date']"> {{ 'Blocks.NoExpiringDate' | translate }} </span>
       <br>
-      {{'Blocks.Note' | translate}}: {{currentUserBlocks['03']['block_note']}}
+      <b> {{'Blocks.Note' | translate}}: </b> {{currentUserBlocks['03']['block_note']}}
     </div>
     <div *ngIf="currentUserBlocks['03']">
       <br>
@@ -109,9 +109,53 @@
         <mat-label>{{'Blocks.Comment' | translate}}</mat-label>
         <input [(ngModel)]='commentWrong' matInput #first>
       </mat-form-field>
-      <button mat-flat-button class="slsp-purple-button" (click)="addUserBlock('03')">
+      <button mat-flat-button class="slsp-purple-button" (click)="addUserBlock('03', commentWrong)">
         <mat-icon inline=true>add</mat-icon><span>{{'Blocks.AddBlock' | translate}}</span>
       </button>
+    </mat-action-row>
+  </mat-card-content>
+</mat-card>
+
+<!-- Global Block 09 -->
+<mat-card class="mat-card-with-info">
+  <mat-card-header>
+    <mat-card-title>
+      {{'Blocks.GlobalBlock' | translate}}
+      <button class="info-button" mat-flat-button (click)="collapseGlobal=!collapseGlobal">
+        <mat-icon>info</mat-icon>
+      </button>
+    </mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <mat-divider></mat-divider>
+    <br>
+    <div *ngIf="!collapseGlobal" style="font-style: italic;">
+      {{'Blocks.GlobalBlockDescription' | translate}}
+      <br><br>
+    </div>
+
+    <div *ngIf="currentUserBlocks['09']">
+      <b> {{'Blocks.CreatedOn' | translate}} </b> {{getDateString(currentUserBlocks['09']['created_date'])}} <br>
+      <b> {{ 'Blocks.ExpiringOn' | translate }} </b>
+      <span *ngIf="currentUserBlocks['09']['expiry_date']"> {{
+        getDateString(currentUserBlocks['09']['expiry_date']) }} </span>
+      <span *ngIf="!currentUserBlocks['09']['expiry_date']"> {{ 'Blocks.NoExpiringDate' | translate }} </span>
+      <br>
+      <b> {{'Blocks.GlobalBlockNote' | translate}}: </b> {{currentUserBlocks['09']['block_note']}}
+    </div>
+    <mat-action-row class="mat-action-row-single" *ngIf="currentUserBlocks['09']">
+      <button mat-flat-button color="secondary" (click)="removeUserBlock('09')">
+        <mat-icon inline=true>delete</mat-icon>{{'Blocks.RemoveBlock' | translate}}
+      </button>
+    </mat-action-row>
+    <mat-action-row *ngIf="!currentUserBlocks['09']">
+        <mat-form-field>
+          <mat-label>{{'Blocks.GlobalBlockNote' | translate}}</mat-label>
+          <input [(ngModel)]='commentGlobal' matInput #first>
+        </mat-form-field>
+        <button [disabled]="!commentGlobal" mat-flat-button class="slsp-purple-button" (click)="addUserBlock('09', commentGlobal)">
+          <mat-icon inline=true>add</mat-icon><span>{{'Blocks.AddBlock' | translate}}</span>
+        </button>
     </mat-action-row>
   </mat-card-content>
 </mat-card>
@@ -135,13 +179,13 @@
     </div>
 
     <div>
-      {{'Blocks.CreatedOn' | translate}} {{getDateString(currentUserBlocks['08']['created_date'])}} <br>
-      {{ 'Blocks.ExpiringOn' | translate }}
+      <b> {{'Blocks.CreatedOn' | translate}} </b> {{getDateString(currentUserBlocks['08']['created_date'])}} <br>
+      <b> {{ 'Blocks.ExpiringOn' | translate }} </b>
       <span *ngIf="currentUserBlocks['08']['expiry_date']"> {{
         getDateString(currentUserBlocks['08']['expiry_date']) }} </span>
       <span *ngIf="!currentUserBlocks['08']['expiry_date']"> {{ 'Blocks.NoExpiringDate' | translate }} </span>
       <br>
-      {{'Blocks.Note' | translate}}: {{currentUserBlocks['08']['block_note']}}
+      <b> {{'Blocks.Note' | translate}}: </b> {{currentUserBlocks['08']['block_note']}}
     </div>
 
     <mat-action-row class="mat-action-row-single">

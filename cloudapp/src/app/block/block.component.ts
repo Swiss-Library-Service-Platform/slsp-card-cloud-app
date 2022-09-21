@@ -36,9 +36,11 @@ export class BlockComponent implements OnInit, OnDestroy {
   subscription;
   collapsedDouble: Boolean = true;
   collapsedWrong: Boolean = true;
+  collapseGlobal: Boolean = true;
   collapsedNew: Boolean = true;
   commentDouble: String = '';
   commentWrong: String = '';
+  commentGlobal: String = '';
   loading: Boolean;
 
   ngOnInit(): void {
@@ -54,9 +56,12 @@ export class BlockComponent implements OnInit, OnDestroy {
     );
   }
 
-  async addUserBlock(blockType: String): Promise<void> {
+  async addUserBlock(blockType: String, comment: String): Promise<void> {
+    if (blockType == '09' && !comment) {
+      this.alert.error("Comment must not be empty on global block!", { autoClose: false });
+      return;
+    }
     this.loading = true;
-    let comment = blockType == '02' ? this.commentDouble : this.commentWrong;
     let isAdded = await this._libraryManagementService.addUserblock(blockType, comment);
     if (!isAdded) {
       let errMessage = await this.translate.get('Blocks.AddError').toPromise();
