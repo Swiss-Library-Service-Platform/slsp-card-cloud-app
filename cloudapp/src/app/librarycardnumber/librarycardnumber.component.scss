@@ -13,16 +13,19 @@ table {
 
 form {
     display: flex;
+    flex-direction: column;
     width: 100%;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 1rem; 
+    padding-top: 1rem;
+    align-items: flex-end;
+    mat-form-field {
+        width: 100%;
+    }
 }
-
+/*
 mat-action-row {
     width: 100%;
 }
-
+*/
 mat-form-field-wrapper {
     padding-bottom: 1rem;
 }
