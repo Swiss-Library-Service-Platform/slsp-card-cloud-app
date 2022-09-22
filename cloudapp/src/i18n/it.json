@@ -86,7 +86,7 @@
         "WrongAddressDescription": "Questo blocco viene utilizzato quando un utente ha nel suo account un indirizzo postale o un indirizzo email errato. Poiché gli indirizzi possono essere modificati solo nell'account SWITCH edu-ID, il blocco viene automaticamente rimosso non appena il sistema riceve un aggiornamento dell'indirizzo o dell'indirizzo e-mail da SWITCH edu-ID.",
         "NewAccountDescription": "Questo blocco viene aggiunto automaticamente quanto un'istituzione si iscrive attraverso la piattaforma di registrazione di SLSP. Questo blocco globale può essere rimosso attraverso la presente piattaforma dalla biblioteca che verifica se effettivamente l'ente abbia diritto ad un account secondo la lista di criteri predefinita.",
         "GlobalBlockDescription": "Questo blocco può essere applicato quando un account deve essere bloccato in tutte le IZ/biblioteche. Si prega di aggiungere il motivo del blocco nel campo delle note, senza tuttavia aggiungere informazioni personali sull’utente.",
-        "GlobalBlockNote": "Motivo del blocco (obbligatorio) / Codice biblioteca (facoltativo)",
+        "GlobalBlockNote": "Motivo del blocco (obbligatorio) / Codice biblioteca (consigliato)",
         "RemoveError": "Il blocco non può essere rimosso.",
         "RemoveSuccess": "Blocco rimosso con successo.",
         "AddError": "Il blocco non può essere aggiunto.",

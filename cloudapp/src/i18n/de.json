@@ -86,7 +86,7 @@
         "WrongAddressDescription": "Diese Sperre wird verwendet, wenn ein Benutzerkonto eine falsche Post oder e-Mail Adresse enthält. Da diese Adressen nur im SWITCH edu-ID-Konto angepasst werden können, wird die Sperre automatisch aufgehoben, sobald das System ein Update der Adresse oder e-Mail-Adresse von SWITCH edu-ID erhält.",
         "NewAccountDescription": "Diese Sperre wird automatisch vergeben, wenn eine Institution sich über die SLSP-Registrierungsplattform einschreibt. Diese zentrale Sperre kann hier durch die Bibliothek aufgehoben werden, nachdem die Daten gemäss der Kriterienliste überprüft wurden.",
         "GlobalBlockDescription": "Diese Sperre kann angewendet werden, wenn ein Konto in allen IZs/Bibliotheken gesperrt werden muss. Bitte tragen Sie den Grund für die Sperrung im Notizfeld ein. Tragen Sie jedoch keine persönlichen Informationen über den/die Benutzer:in ein. ",
-        "GlobalBlockNote": "Sperrgrund (Pflicht) / Bibliothekskürzel (optional)",
+        "GlobalBlockNote": "Sperrgrund (Pflicht) / Bibliothekskürzel (empfohlen)",
         "RemoveError": "Sperre konnte nicht entfernt werden.",
         "RemoveSuccess": "Sperre erfolgreicht entfernt.",
         "AddError": "Sperre konnte nicht hinzugefügt werden.",

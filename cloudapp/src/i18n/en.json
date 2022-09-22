@@ -86,7 +86,7 @@
         "WrongAddressDescription": "This block is used when a patron user account has a wrong postal or e-mail address. Since the addresses can only be changed in the SWITCH edu-ID account, the block is automatically removed as soon as the system receives an update of the address or e-mail from SWITCH edu-ID.",
         "NewAccountDescription": "This block is automatically applied when an institution self-registers via the SLSP registration platform. The global block can then be removed via the present platform by the library that approves the eligibility of the institution to get an account according to the criteria list.",
         "GlobalBlockDescription": "This block can be applied when an account needs to be blocked in all IZs/libraries. Please add the reason for the block in the note field - however, don't add any personal information about the user.",
-        "GlobalBlockNote": "Reason for blocking (mandatory) / Library code (optional)",
+        "GlobalBlockNote": "Reason for blocking (mandatory) / Library code (recommended)",
         "RemoveError": "Block could not be removed.",
         "RemoveSuccess": "Block successfully removed.",
         "AddError": "Block could not be added.",
