@@ -57,9 +57,21 @@
       <label id="entities-radio-group-label">{{ 'Welcome.SelectUser' | translate }}</label>
       <mat-radio-group aria-labelledby="entities-radio-group-label" class="entities-radio-group"
         [(ngModel)]="selectedEntity" (change)="entitySelected($event)">
-        <mat-radio-button *ngFor="let entity of entities$ | async" [value]="entity">
-          {{entity.description}}
-        </mat-radio-button>
+        <div  *ngFor="let entity of entities$ | async">
+          <ng-container *ngIf="(entity | async); then loaded; else loading"></ng-container>
+            <ng-template #loading>
+              <div class="loading-entities">
+                <mat-spinner class="mat-spinner-color" diameter="20"></mat-spinner>
+                <div><br><br></div>
+              </div>
+            </ng-template>
+            <ng-template #loaded>
+              <mat-radio-button [value]="entity">
+                {{ (entity | async)?.description }} <br>
+                ({{ (entity | async)?.primary_id }})
+              </mat-radio-button>
+            </ng-template>
+        </div>
       </mat-radio-group>
     </div>
   </ng-template>

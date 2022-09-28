@@ -47,3 +47,16 @@ textarea {
     }
   }
 }
+
+.loading-entities {
+  display:flex;
+  flex-direction: row;
+  margin: 5px;
+  align-items: center;
+  div {
+    padding-left: 5px;
+  }
+  .mat-spinner-color::ng-deep circle{
+    stroke: gray !important;
+    }
+}
