@@ -8,7 +8,6 @@ import {
 import { MatRadioChange } from '@angular/material/radio';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { LibraryManagementService } from '../services/library-management.service';
-import { CustomEntity } from '../model/customentity.model';
 
 @Component({
   selector: 'app-main',
@@ -25,28 +24,18 @@ export class MainComponent implements OnInit, OnDestroy {
   isInstitutionAllowed: boolean = false;
   isProdEnvironment: boolean = true;
 
-  entities$: Observable<Promise<CustomEntity>[]> = this.eventsService.entities$
+  entities$: Observable<Entity[]> = this.eventsService.entities$
     .pipe(
       tap(() => this.clear()),
       map(entities => {
-        return entities.filter(e => e.type == EntityType.USER).map(async (entity, index, wholeArray) => {
-          let primary_id;
-          try {
-            let user = await this.restService.call<any>(entity.link).toPromise();
-            primary_id = user.primary_id;
-          } catch (error) {
-            // user not allowed
-            primary_id = "-";
-          }
-          return new CustomEntity(entity, primary_id);
-        })}),
-    );
+        return entities.filter(e => e.type == EntityType.USER);
+      }),
+    )
 
 
   constructor(
     private _libraryManagementService: LibraryManagementService,
     private eventsService: CloudAppEventsService,
-    private restService: CloudAppRestService,
     private route: ActivatedRoute,
     private router: Router
   ) { }
@@ -56,6 +45,7 @@ export class MainComponent implements OnInit, OnDestroy {
     let initData = await this.eventsService.getInitData().toPromise();
     let regExp = new RegExp('^https(.*)psb(.*)com/?$|.*localhost.*'), // contains "PSB" (Premium Sandbox) or "localhost"
       currentUrl = initData["urls"]["alma"];
+    console.log(currentUrl);
     this.isProdEnvironment = !regExp.test(currentUrl);
     await this._libraryManagementService.init(initData, this.isProdEnvironment);
     // check if current institution is allowed to use this cloud app
@@ -70,8 +60,7 @@ export class MainComponent implements OnInit, OnDestroy {
       if (this.route.snapshot.params.isAutoSelect == 'true') {
         this.entities$.subscribe(async (availableEntities) => {
           if (availableEntities.length == 1) {
-            let user = await availableEntities[0];
-            await this.setUser(user);
+            await this.setUser(availableEntities[0]);
           }
           this.loading = false;
         });
@@ -88,7 +77,7 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   async entitySelected(event: MatRadioChange) {
-    const value = event.value as CustomEntity;
+    const value = event.value as Entity;
     this.loading = true;
     await this.setUser(value);
     this.loading = false
@@ -99,7 +88,7 @@ export class MainComponent implements OnInit, OnDestroy {
     this.selectedEntity = null;
   }
 
-  async setUser(entity: CustomEntity) {
+  async setUser(entity: Entity) {
     const userFound = await this._libraryManagementService.getUserFromEntity(entity);
     if (userFound) {
       this.router.navigate(['usermenu'])

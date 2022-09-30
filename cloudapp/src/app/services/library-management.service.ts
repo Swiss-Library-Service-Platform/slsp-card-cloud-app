@@ -4,7 +4,6 @@ import { CloudAppEventsService, Entity, AlertService, CloudAppRestService } from
 import { User } from '../model/user.model';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
-import { CustomEntity } from '../model/customentity.model';
 
 /**
  * Service which is responsible for all outgoing API calls in this cloud app
@@ -18,7 +17,7 @@ import { CustomEntity } from '../model/customentity.model';
 export class LibraryManagementService {
 
   public user: User;
-  private userEntity: CustomEntity
+  private userEntity: Entity
   private readonly _userObject = new BehaviorSubject<User>(new User());
   public isProdEnvironment: boolean;
   private initData: Object
@@ -166,7 +165,7 @@ export class LibraryManagementService {
    * @return {*} 
    * @memberof LibraryManagementService
    */
-  async getUserFromEntity(entity: CustomEntity) {
+  async getUserFromEntity(entity: Entity) {
     this.userEntity = entity;
     return new Promise(resolve => {
       this.http.get('p/api-eu.hosted.exlibrisgroup.com/almaws/v1' + entity.link, this.httpOptions).subscribe(
