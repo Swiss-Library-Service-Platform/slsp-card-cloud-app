@@ -100,7 +100,10 @@ export class Librarycardnumber {
      * @memberof Librarycardnumber
      */
     static isRemovable(libraryCardNumber: Object): Boolean {
-        let matchNote = libraryCardNumber['note'].match(/via edu-ID/i);
+        let matchNote = null;
+        if (libraryCardNumber['note']) {
+            matchNote = libraryCardNumber['note'].match(/via edu-ID/i);
+        }
         return libraryCardNumber["id_type"]["value"] == '02'
             && matchNote == null;
     }
