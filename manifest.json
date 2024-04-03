@@ -3,6 +3,9 @@
    "title": "SLSP Card",
    "subtitle": "Centralized management of card numbers, blocks and preferred address for consortia",
    "author": "SLSP",
+   "pages": {
+      "help": "https://github.com/Swiss-Library-Service-Platform/slsp-card-cloud-app"
+   },
    "icon": {
       "type": "url",
       "value": "/assets/logo_text.png"
