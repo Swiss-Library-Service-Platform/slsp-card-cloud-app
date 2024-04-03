@@ -3,6 +3,7 @@
    "title": "SLSP Card",
    "subtitle": "Centralized management of card numbers, blocks and preferred address for consortia",
    "author": "SLSP",
+   "description": "Change account settings on the network level by managing card numbers, blocks and the preferred address of a user. This Alma Cloud App is a product for SLSP libraries.",
    "pages": {
       "help": "https://github.com/Swiss-Library-Service-Platform/slsp-card-cloud-app"
    },
@@ -11,7 +12,6 @@
       "value": "/assets/logo_text.png"
    },
    "license": "https://github.com/Swiss-Library-Service-Platform/slsp-card-cloud-app/blob/main/LICENCE",
-   "description": "Change account settings on the network level by managing card numbers, blocks and the preferred address of a user. This Alma Cloud App is a product for SLSP libraries.",
    "contentSecurity": {
       "connectSrc": [
          "https://api-eu.hosted.exlibrisgroup.com/",
