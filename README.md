@@ -51,4 +51,4 @@ Please use the GitHub "Issues" of this repository to report any defects. We will
 
 ## Licence 
 
-[GNU Genereal Public Licence v3.0](https://github.com/Swiss-Library-Service-Platform/registration-cloud-app/blob/main/LICENCE)
+[GNU Genereal Public Licence v3.0](https://github.com/Swiss-Library-Service-Platform/slsp-card-cloud-app/blob/main/LICENCE)
