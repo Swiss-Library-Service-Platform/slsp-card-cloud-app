@@ -9,7 +9,7 @@
    },
    "icon": {
       "type": "url",
-      "value": "/assets/logo_text.png"
+      "value": "/assets/logo_text_left.png"
    },
    "license": "https://github.com/Swiss-Library-Service-Platform/slsp-card-cloud-app/blob/main/LICENCE",
    "contentSecurity": {
