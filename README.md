@@ -1,6 +1,6 @@
 # SLSP Card - Alma Cloud App
-<a href="https://developers.exlibrisgroup.com/appcenter/slsp-card/">![CloudApp Activations](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapps01.ext.exlibrisgroup.com%2Fappstats.json&query=%24%5B%3F(%40.cloud_app_id%3D%3D'swiss-library-service-platform%2Fregistration-cloud-app')%5D.user_count&style=flat&label=Cloud%20App%20Activations)</a>
-<a href="https://developers.exlibrisgroup.com/appcenter/slsp-card/">![CloudApp Activations](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapps01.ext.exlibrisgroup.com%2Fappstats.json&query=%24%5B%3F(%40.cloud_app_id%3D%3D'swiss-library-service-platform%2Fregistration-cloud-app')%5D.institution_count&style=flat&label=Cloud%20App%20Institutions)</a>
+<a href="https://developers.exlibrisgroup.com/appcenter/slsp-card/">![CloudApp Activations](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapps01.ext.exlibrisgroup.com%2Fappstats.json&query=%24%5B%3F(%40.cloud_app_id%3D%3D'swiss-library-service-platform%2Fslsp-card-cloud-app')%5D.user_count&style=flat&label=Cloud%20App%20Activations)</a>
+<a href="https://developers.exlibrisgroup.com/appcenter/slsp-card/">![CloudApp Activations](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapps01.ext.exlibrisgroup.com%2Fappstats.json&query=%24%5B%3F(%40.cloud_app_id%3D%3D'swiss-library-service-platform%2Fslsp-card-cloud-app')%5D.institution_count&style=flat&label=Cloud%20App%20Institutions)</a>
 
 
 ## Overview
