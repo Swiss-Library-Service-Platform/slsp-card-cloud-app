@@ -104,6 +104,11 @@
         {{'Blocks.address-block-internal-info' | translate}}
       </div>
     </div>
+    <mat-action-row class="mat-action-row-single" *ngIf="currentUserBlocks['03']">
+      <button mat-flat-button color="secondary" (click)="removeUserBlock('03')">
+        <mat-icon inline=true>delete</mat-icon>{{'Blocks.RemoveBlock' | translate}}
+      </button>
+    </mat-action-row>
     <mat-action-row *ngIf="!currentUserBlocks['03']">
       <mat-form-field>
         <mat-label>{{'Blocks.Comment' | translate}}</mat-label>
