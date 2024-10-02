@@ -115,7 +115,7 @@ export class LibraryManagementService {
   async getIsCurrentInstitutionAllowed(): Promise<boolean> {
     let institutionId = this.initData['instCode'];
     return new Promise(resolve => {
-      this.http.get('isAllowed/' + institutionId, this.httpOptions).subscribe(
+      this.http.get('isallowed', this.httpOptions).subscribe(
         isAllowed => {
           // RETURN boolean
           resolve(!!isAllowed);
