@@ -73,7 +73,7 @@
   <mat-card-header>
     <mat-card-title>
       {{'Blocks.WrongAddress' | translate}}
-      <button class="info-button" mat-flat-button (click)="collapsedWrong=!collapsedWrong">
+      <button class="info-button" mat-flat-button (click)="collapsedWrongPostal=!collapsedWrongPostal">
         <mat-icon>info</mat-icon>
       </button>
     </mat-card-title>
@@ -81,7 +81,7 @@
   <mat-card-content>
     <mat-divider></mat-divider>
     <br>
-    <div *ngIf="!collapsedWrong" style="font-style: italic;">
+    <div *ngIf="!collapsedWrongPostal" style="font-style: italic;">
       {{'Blocks.WrongAddressDescription' | translate}}
       <br><br>
     </div>
@@ -112,9 +112,62 @@
     <mat-action-row *ngIf="!currentUserBlocks['03']">
       <mat-form-field>
         <mat-label>{{'Blocks.Comment' | translate}}</mat-label>
-        <input [(ngModel)]='commentWrong' matInput #first>
+        <input [(ngModel)]='commentWrongPostal' matInput #first>
       </mat-form-field>
-      <button mat-flat-button class="slsp-purple-button" (click)="addUserBlock('03', commentWrong)">
+      <button mat-flat-button class="slsp-purple-button" (click)="addUserBlock('03', commentWrongPostal)">
+        <mat-icon inline=true>add</mat-icon><span>{{'Blocks.AddBlock' | translate}}</span>
+      </button>
+    </mat-action-row>
+  </mat-card-content>
+</mat-card>
+
+<!-- Wrong Email 03.1 -->
+<mat-card class="mat-card-with-info">
+  <mat-card-header>
+    <mat-card-title>
+      {{'Blocks.WrongEmail' | translate}}
+      <button class="info-button" mat-flat-button (click)="collapsedWrongEmail=!collapsedWrongEmail">
+        <mat-icon>info</mat-icon>
+      </button>
+    </mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <mat-divider></mat-divider>
+    <br>
+    <div *ngIf="!collapsedWrongEmail" style="font-style: italic;">
+      {{'Blocks.WrongEmailDescription' | translate}}
+      <br><br>
+    </div>
+
+    <div *ngIf="currentUserBlocks['03.1']">
+      <b> {{'Blocks.CreatedOn' | translate}} </b> {{getDateString(currentUserBlocks['03.1']['created_date'])}} <br>
+      <b> {{ 'Blocks.ExpiringOn' | translate }} </b>
+      <span *ngIf="currentUserBlocks['03.1']['expiry_date']"> {{
+        getDateString(currentUserBlocks['03.1']['expiry_date']) }} </span>
+      <span *ngIf="!currentUserBlocks['03.1']['expiry_date']"> {{ 'Blocks.NoExpiringDate' | translate }} </span>
+      <br>
+      <b> {{'Blocks.Note' | translate}}: </b> {{currentUserBlocks['03.1']['block_note']}}
+    </div>
+    <div *ngIf="currentUserBlocks['03.1']">
+      <br>
+      <div class="warning" *ngIf="currentUser.getIsExternal()">
+        {{'Blocks.email-block-external-info' | translate}}
+      </div>
+      <div class="warning" *ngIf="!currentUser.getIsExternal()">
+        {{'Blocks.email-block-internal-info' | translate}}
+      </div>
+    </div>
+    <mat-action-row class="mat-action-row-single" *ngIf="currentUserBlocks['03.1']">
+      <button mat-flat-button color="secondary" (click)="removeUserBlock('03.1')">
+        <mat-icon inline=true>delete</mat-icon>{{'Blocks.RemoveBlock' | translate}}
+      </button>
+    </mat-action-row>
+    <mat-action-row *ngIf="!currentUserBlocks['03.1']">
+      <mat-form-field>
+        <mat-label>{{'Blocks.Comment' | translate}}</mat-label>
+        <input [(ngModel)]='commentWrongEmail' matInput #first>
+      </mat-form-field>
+      <button mat-flat-button class="slsp-purple-button" (click)="addUserBlock('03.1', commentWrongEmail)">
         <mat-icon inline=true>add</mat-icon><span>{{'Blocks.AddBlock' | translate}}</span>
       </button>
     </mat-action-row>

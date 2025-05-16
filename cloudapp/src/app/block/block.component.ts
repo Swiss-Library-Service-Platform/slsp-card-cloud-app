@@ -35,11 +35,13 @@ export class BlockComponent implements OnInit, OnDestroy {
   currentUserBlocks: Map<String, any> = null;
   subscription;
   collapsedDouble: Boolean = true;
-  collapsedWrong: Boolean = true;
+  collapsedWrongPostal: Boolean = true;
+  collapsedWrongEmail: Boolean = true;
   collapseGlobal: Boolean = true;
   collapsedNew: Boolean = true;
   commentDouble: String = '';
-  commentWrong: String = '';
+  commentWrongPostal: String = '';
+  commentWrongEmail: String = '';
   commentGlobal: String = '';
   loading: Boolean;
 
