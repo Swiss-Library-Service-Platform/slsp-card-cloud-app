@@ -215,7 +215,8 @@ export class LibraryManagementService {
    */
   removeUserblock(blockType: String): Promise<Boolean> {
     // REMOVE USER BLOCK
-    this.user.removeBlock(blockType);
+    const isRemoved = this.user.removeBlock(blockType);
+    if (!isRemoved) return Promise.resolve(false);
     // API CALL
     return this.updateUser();
   }
