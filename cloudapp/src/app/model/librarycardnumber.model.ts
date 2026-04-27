@@ -146,6 +146,12 @@ export class Librarycardnumber {
     static isValidLibraryCardNumber(librarycardnumber: string) {
         if (!librarycardnumber) return false;
 
+        // Matriculation number (must be checked before regex patterns)
+        if (librarycardnumber.match(/^\d{2}-?\d{3}-?\d{3}$/)) {
+            const matriculationNumber = librarycardnumber.replace(/-/g, '');
+            return this.isValidImmatriculationNumber(matriculationNumber); // strict mode
+        }
+
         // Reject if number contains umlauts or other non-standard characters
         if (librarycardnumber.match(/[^a-zA-Z0-9\-]/)) {
             return false;
@@ -170,7 +176,7 @@ export class Librarycardnumber {
      * @return {*} 
      * @memberof Librarycardnumber
      */
-    static isValidImmatriculationNumber(immatriculationNumber: string) {
+    static isValidImmatriculationNumber(immatriculationNumber: string, useStrictChecking: boolean = true) {
         // Must be 8 chars long
         if (immatriculationNumber.length != 8) {
             return false;
@@ -179,7 +185,28 @@ export class Librarycardnumber {
         if (immatriculationNumber.match(/[^0-9]/)) {
             return false;
         }
-        return true;
+        // Abort if strict checking is disabled
+        if (!useStrictChecking) {
+            return true;
+        }
+        // Reject 00-000-000
+        if (immatriculationNumber === '00000000') {
+            return false;
+        }
+        // Luhn-like checksum validation (Swiss Federal Statistical Office algorithm)
+        const digits = immatriculationNumber.split('').map(Number);
+        const [a, b, c, d, e, f, g, h] = digits;
+        // Sum even-position digits (1-indexed: positions 2, 4, 6)
+        let t = b + d + f;
+        // Double odd-position digits (1-indexed: positions 1, 3, 5, 7) and add cross-sum
+        for (const v of [a, c, e, g]) {
+            const doubled = 2 * v;
+            t += doubled > 9 ? 1 + (doubled % 10) : doubled;
+        }
+        // Check digit is difference up to next multiple of 10
+        const modTen = t % 10;
+        const expectedH = modTen > 0 ? 10 - modTen : 0;
+        return h === expectedH;
     }
 
 }

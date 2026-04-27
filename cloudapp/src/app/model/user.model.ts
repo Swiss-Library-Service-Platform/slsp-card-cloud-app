@@ -183,7 +183,7 @@ export class User {
         identifierObject["note"] = "Added by " + primaryId + " from " + instCode + " on " + currentDate.toISOString().split('T')[0];
         this.userValue["user_identifier"].push(identifierObject);
 
-        if (Librarycardnumber.isValidImmatriculationNumber(libraryCardNumber)) {
+        if (Librarycardnumber.isValidImmatriculationNumber(libraryCardNumber, false)) {
             // create matriculation number Object
             let immatriculationObject = {};
             let dashedMatriculationNumber = Librarycardnumber.getDashedMatriculationNumber(libraryCardNumber);
@@ -208,7 +208,7 @@ export class User {
      */
     removeLibraryCardNumber(libraryCardNumber: string): Boolean {
         let initialCount = this.userValue["user_identifier"].length;
-        let isImmatriculationNumber = Librarycardnumber.isValidImmatriculationNumber(libraryCardNumber["value"]);
+        let isImmatriculationNumber = Librarycardnumber.isValidImmatriculationNumber(libraryCardNumber["value"], false);
         this.userValue["user_identifier"] = this.userValue["user_identifier"].filter(function (identifier) {
             return !isImmatriculationNumber ? identifier["value"] !== libraryCardNumber['value']
                 // also remove matriculation number;
