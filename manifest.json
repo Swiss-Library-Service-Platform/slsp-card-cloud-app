@@ -15,7 +15,7 @@
    "contentSecurity": {
       "connectSrc": [
          "https://api-eu.hosted.exlibrisgroup.com/",
-         "https://proxy02.swisscovery.network/"
+         "https://ecaproxy.swisscovery.network/"
       ]
    }
 }
