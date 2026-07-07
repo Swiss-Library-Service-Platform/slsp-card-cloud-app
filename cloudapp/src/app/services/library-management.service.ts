@@ -273,7 +273,7 @@ export class LibraryManagementService {
   }
 
   /**
-   * Updates the user via Alma NZ API (via proxy02.swisscovery.network)
+   * Updates the user via Alma NZ API (via NZ Proxy) and sets the observable user object
    *
    * @return {*}  {Promise<Boolean>}
    * @memberof LibraryManagementService
