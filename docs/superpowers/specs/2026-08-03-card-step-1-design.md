@@ -104,7 +104,7 @@ Every API request includes the Ex Libris bearer token. Quarkus verifies:
 - RS256 signature.
 - Configured issuer.
 - Exact Card audience.
-- The token's applicable time claims.
+- Expiry and other standard time claims when they are present. The backend does not invent a token lifetime when an Alma token omits one.
 
 The authorization layer then:
 
@@ -225,6 +225,7 @@ The behavioral precedence is:
 ### 9.2 Blocks
 
 - Supported codes are `02`, `03`, `03.1`, `09`, and `08`.
+- Treat a patron as external for the existing address/e-mail guidance only when the primary ID matches the shared registration-platform rule `^\d+@.*eduid\.ch$`.
 - A block is eligible for display when it is active, unexpired, and user-level.
 - For compatibility with the registration-platform management view, the first eligible block for each supported code is the displayed/actionable block. Further duplicates remain untouched; after the first is removed, the next becomes visible on refresh.
 - Codes `02`, `03`, `03.1`, and `09` may be added when no eligible block of that code is currently displayed.
