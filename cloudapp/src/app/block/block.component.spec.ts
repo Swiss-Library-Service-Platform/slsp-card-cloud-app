@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
+import { AppModule } from '../app.module';
 import { BlockComponent } from './block.component';
 
 describe('BlockComponent', () => {
@@ -8,15 +9,13 @@ describe('BlockComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ BlockComponent ]
-    })
-    .compileComponents();
+      imports: [AppModule],
+    }).compileComponents();
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(BlockComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should create', () => {

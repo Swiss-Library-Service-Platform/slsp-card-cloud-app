@@ -2,8 +2,13 @@ import { Observable, Subscription } from 'rxjs';
 import { finalize, tap } from 'rxjs/operators';
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import {
-  CloudAppRestService, CloudAppEventsService, Request, HttpMethod,
-  Entity, RestErrorResponse, AlertService
+  CloudAppRestService,
+  CloudAppEventsService,
+  Request,
+  HttpMethod,
+  Entity,
+  RestErrorResponse,
+  AlertService,
 } from '@exlibris/exl-cloudapp-angular-lib';
 import { MatRadioChange } from '@angular/material/radio';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -11,16 +16,14 @@ import { Location } from '@angular/common';
 import { LibraryManagementService } from '../services/library-management.service';
 import { User } from '../model/user.model';
 import { ElementRef, ViewChild } from '@angular/core';
-import { ɵangular_packages_platform_browser_dynamic_platform_browser_dynamic_a } from '@angular/platform-browser-dynamic';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-block',
   templateUrl: './block.component.html',
-  styleUrls: ['block.component.scss']
+  styleUrls: ['block.component.scss'],
 })
 export class BlockComponent implements OnInit, OnDestroy {
-
   @Input() primary_id: string;
 
   constructor(
@@ -28,61 +31,87 @@ export class BlockComponent implements OnInit, OnDestroy {
     private eventsService: CloudAppEventsService,
     private alert: AlertService,
     private _location: Location,
-    private translate: TranslateService
-  ) { }
-  currentFullName: String;
+    private translate: TranslateService,
+  ) {}
+  currentFullName: string;
   currentUser: User = null;
-  currentUserBlocks: Map<String, any> = null;
-  subscription;
-  collapsedDouble: Boolean = true;
-  collapsedWrongPostal: Boolean = true;
-  collapsedWrongEmail: Boolean = true;
-  collapseGlobal: Boolean = true;
-  collapsedNew: Boolean = true;
-  commentDouble: String = '';
-  commentWrongPostal: String = '';
-  commentWrongEmail: String = '';
-  commentGlobal: String = '';
-  loading: Boolean;
+  currentUserBlocks: Map<string, any> = null;
+  subscription = new Subscription();
+  collapsedDouble = true;
+  collapsedWrongPostal = true;
+  collapsedWrongEmail = true;
+  collapseGlobal = true;
+  collapsedNew = true;
+  commentDouble = '';
+  commentWrongPostal = '';
+  commentWrongEmail = '';
+  commentGlobal = '';
+  loading: boolean;
 
   ngOnInit(): void {
-    this.subscription = this._libraryManagementService.getUserObject().subscribe(
-      res => {
-        this.currentFullName = res.getFullName();
-        this.currentUser = res;
-        this.currentUserBlocks = this._libraryManagementService.user.getUserBlocks();
-      },
-      err => {
-        console.error(`An error occurred: ${err.message}`);
-      }
-    );
+    this.subscription = this._libraryManagementService
+      .getUserObject()
+      .subscribe(
+        (res) => {
+          this.currentFullName = res.getFullName();
+          this.currentUser = res;
+          this.currentUserBlocks =
+            this._libraryManagementService.user.getUserBlocks();
+        },
+        (err) => {
+          console.error(`An error occurred: ${err.message}`);
+        },
+      );
   }
 
-  async addUserBlock(blockType: String, comment: String): Promise<void> {
+  async addUserBlock(blockType: string, comment: string): Promise<void> {
     if (blockType == '09' && !comment) {
-      this.alert.error("Comment must not be empty on global block!", { autoClose: false });
+      this.alert.error('Comment must not be empty on global block!', {
+        autoClose: false,
+      });
+
       return;
     }
     this.loading = true;
-    let isAdded = await this._libraryManagementService.addUserblock(blockType, comment);
+
+    const isAdded = await this._libraryManagementService.addUserblock(
+      blockType,
+      comment,
+    );
+
     if (!isAdded) {
-      let errMessage = await this.translate.get('Blocks.AddError').toPromise();
+      const errMessage = await this.translate
+        .get('Blocks.AddError')
+        .toPromise();
+
       this.alert.error(errMessage, { autoClose: false });
     } else {
-      let succMessage = await this.translate.get('Blocks.AddSuccess').toPromise();
+      const succMessage = await this.translate
+        .get('Blocks.AddSuccess')
+        .toPromise();
+
       this.alert.success(succMessage, { autoClose: false });
     }
     this.loading = false;
   }
 
-  async removeUserBlock(blockType: String): Promise<void> {
+  async removeUserBlock(blockType: string): Promise<void> {
     this.loading = true;
-    const isRemoved = await this._libraryManagementService.removeUserblock(blockType);
+
+    const isRemoved =
+      await this._libraryManagementService.removeUserblock(blockType);
+
     if (!isRemoved) {
-      let errMessage = await this.translate.get('Blocks.RemoveError').toPromise();
+      const errMessage = await this.translate
+        .get('Blocks.RemoveError')
+        .toPromise();
+
       this.alert.error(errMessage, { autoClose: false });
     } else {
-      let succMessage = await this.translate.get('Blocks.RemoveSuccess').toPromise();
+      const succMessage = await this.translate
+        .get('Blocks.RemoveSuccess')
+        .toPromise();
+
       this.alert.success(succMessage, { autoClose: false });
     }
     this.loading = false;
@@ -96,8 +125,7 @@ export class BlockComponent implements OnInit, OnDestroy {
     this._location.back();
   }
 
-  getDateString(date: string): String {
+  getDateString(date: string): string {
     return new Date(date).toUTCString();
   }
-
 }

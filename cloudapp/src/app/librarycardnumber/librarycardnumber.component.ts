@@ -1,21 +1,30 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import { LibraryManagementService } from '../services/library-management.service';
 import { libraryCardValidator } from '../validators/librarycardnumber.validator';
-import { AlertService, CloudAppEventsService } from '@exlibris/exl-cloudapp-angular-lib';
+import {
+  AlertService,
+  CloudAppEventsService,
+} from '@exlibris/exl-cloudapp-angular-lib';
 import { Librarycardnumber } from '../model/librarycardnumber.model';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ConfirmationdialogComponent } from '../confirmationdialog/confirmationdialog.component';
-import { FormBuilder, Validators, FormControl, FormGroupDirective } from '@angular/forms';
+import {
+  FormBuilder,
+  Validators,
+  FormControl,
+  FormGroup,
+  FormGroupDirective,
+} from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
-import { TOUCH_BUFFER_MS } from '@angular/cdk/a11y';
+import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-librarycardnumber',
   templateUrl: './librarycardnumber.component.html',
-  styleUrls: ['./librarycardnumber.component.scss']
+  styleUrls: ['./librarycardnumber.component.scss'],
 })
-export class LibrarycardnumberComponent implements OnInit {
+export class LibrarycardnumberComponent implements OnInit, OnDestroy {
   @Input() primary_id: string;
 
   constructor(
@@ -26,34 +35,40 @@ export class LibrarycardnumberComponent implements OnInit {
     private dialog: MatDialog,
     private formBuilder: FormBuilder,
     private eventsService: CloudAppEventsService,
-    private translate: TranslateService
-  ) { }
+    private translate: TranslateService,
+  ) {
+    this.numberForm = this.formBuilder.group({
+      newLibraryCardNumber: new FormControl('', {
+        validators: [libraryCardValidator],
+        updateOn: 'change',
+      }),
+    });
+  }
   loading = false;
-  currentFullName: String;
+  currentFullName: string;
   currentLibraryCardNumbers: Array<string>;
   currentMatriculationNumber: string;
-  subscription;
-  newLibraryCardNumber: string = '';
+  subscription = new Subscription();
+  newLibraryCardNumber = '';
   dialogRef: MatDialogRef<ConfirmationdialogComponent>;
 
-  numberForm = this.formBuilder.group({
-    newLibraryCardNumber: new FormControl('', {
-      validators: [libraryCardValidator],
-      updateOn: 'change'
-    })
-  });
+  numberForm: FormGroup;
 
   ngOnInit(): void {
-    this.subscription = this._libraryManagementService.getUserObject().subscribe(
-      res => {
-        this.currentFullName = res.getFullName();
-        this.currentLibraryCardNumbers = this._libraryManagementService.getUserLibraryCardNumbers();
-        this.currentMatriculationNumber = this._libraryManagementService.getUserMatriculationNumber();
-      },
-      err => {
-        console.error(`An error occurred: ${err.message}`);
-      }
-    );
+    this.subscription = this._libraryManagementService
+      .getUserObject()
+      .subscribe(
+        (res) => {
+          this.currentFullName = res.getFullName();
+          this.currentLibraryCardNumbers =
+            this._libraryManagementService.getUserLibraryCardNumbers();
+          this.currentMatriculationNumber =
+            this._libraryManagementService.getUserMatriculationNumber();
+        },
+        (err) => {
+          console.error(`An error occurred: ${err.message}`);
+        },
+      );
   }
 
   ngOnDestroy(): void {
@@ -66,41 +81,70 @@ export class LibrarycardnumberComponent implements OnInit {
 
   async deleteLibraryCardNumber(libraryCardNumber: string): Promise<void> {
     this.dialogRef = this.dialog.open(ConfirmationdialogComponent, {
-      disableClose: false
+      disableClose: false,
     });
-    let sureMessage = await this.translate.get('LibraryCardNumber.Sure').toPromise();
+
+    const sureMessage = await this.translate
+      .get('LibraryCardNumber.Sure')
+      .toPromise();
+
     this.dialogRef.componentInstance.confirmMessage = sureMessage;
 
-    this.dialogRef.afterClosed().subscribe(async result => {
+    this.dialogRef.afterClosed().subscribe(async (result) => {
       if (result) {
         this.loading = true;
-        const isRemoved = await this._libraryManagementService.removeUserLibraryCardNumber(libraryCardNumber);
+
+        const isRemoved =
+          await this._libraryManagementService.removeUserLibraryCardNumber(
+            libraryCardNumber,
+          );
+
         if (!isRemoved) {
-          let errMessage = await this.translate.get('LibraryCardNumber.RemoveError').toPromise();
+          const errMessage = await this.translate
+            .get('LibraryCardNumber.RemoveError')
+            .toPromise();
+
           this.alert.error(errMessage, { autoClose: false });
         } else {
-          let succMessage = await this.translate.get('LibraryCardNumber.RemoveSuccess').toPromise();
+          const succMessage = await this.translate
+            .get('LibraryCardNumber.RemoveSuccess')
+            .toPromise();
+
           this.alert.success(succMessage, { autoClose: false });
         }
         this.loading = false;
       }
       this.dialogRef = null;
     });
-
   }
 
-  async addLibraryCardNumber(formData: any, formDirective: FormGroupDirective): Promise<void> {
-    let libaryCardNumber = formData.value.newLibraryCardNumber;
+  async addLibraryCardNumber(
+    formData: any,
+    formDirective: FormGroupDirective,
+  ): Promise<void> {
+    const libaryCardNumber = formData.value.newLibraryCardNumber;
+
     if (!this.numberForm.valid) {
       return;
     }
     this.loading = true;
-    const isAdded = await this._libraryManagementService.addUserLibraryCardNumber(libaryCardNumber);
+
+    const isAdded =
+      await this._libraryManagementService.addUserLibraryCardNumber(
+        libaryCardNumber,
+      );
+
     if (!isAdded) {
-      let errMessage = await this.translate.get('LibraryCardNumber.AddError').toPromise();
+      const errMessage = await this.translate
+        .get('LibraryCardNumber.AddError')
+        .toPromise();
+
       this.alert.error(errMessage, { autoClose: false });
     } else {
-      let succMessage = await this.translate.get('LibraryCardNumber.AddSuccess').toPromise();
+      const succMessage = await this.translate
+        .get('LibraryCardNumber.AddSuccess')
+        .toPromise();
+
       formDirective.resetForm();
       this.numberForm.reset();
       this.alert.success(succMessage, { autoClose: false });
@@ -108,13 +152,11 @@ export class LibrarycardnumberComponent implements OnInit {
     this.loading = false;
   }
 
-  isNumberRemovable(libraryCardNumber: Object): Boolean {
+  isNumberRemovable(libraryCardNumber: object): boolean {
     return Librarycardnumber.isRemovable(libraryCardNumber);
   }
 
-  isNumberDashedLibraryCardNumber(libraryCardNumber: Object): Boolean {
+  isNumberDashedLibraryCardNumber(libraryCardNumber: object): boolean {
     return Librarycardnumber.isDashedLibraryCardNumber(libraryCardNumber);
   }
 }
-
-

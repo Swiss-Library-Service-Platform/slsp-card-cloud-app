@@ -1,9 +1,14 @@
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { finalize, tap } from 'rxjs/operators';
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import {
-  CloudAppRestService, CloudAppEventsService, Request, HttpMethod,
-  Entity, RestErrorResponse, AlertService
+  CloudAppRestService,
+  CloudAppEventsService,
+  Request,
+  HttpMethod,
+  Entity,
+  RestErrorResponse,
+  AlertService,
 } from '@exlibris/exl-cloudapp-angular-lib';
 import { MatRadioChange } from '@angular/material/radio';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -14,47 +19,58 @@ import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.component.html',
-  styleUrls: ['./settings.component.scss']
+  styleUrls: ['./settings.component.scss'],
 })
 export class SettingsComponent implements OnInit, OnDestroy {
-
   constructor(
     private alert: AlertService,
     private translate: TranslateService,
     private _location: Location,
     private _libraryManagementService: LibraryManagementService,
-    private eventsService: CloudAppEventsService
-  ) { }
+    private eventsService: CloudAppEventsService,
+  ) {}
 
-  currentFullName: String;
-  currentUserAddresses: Array<Object>;
-  subscription;
-  loading: Boolean;
+  currentFullName: string;
+  currentUserAddresses: Array<object>;
+  subscription = new Subscription();
+  loading: boolean;
 
   ngOnInit() {
-    this.subscription = this._libraryManagementService.getUserObject().subscribe(
-      res => {
-        this.currentFullName = res.getFullName();
-        this.currentUserAddresses = this._libraryManagementService.getUserAddresses();
-      },
-      err => {
-        console.error(`An error occurred: ${err.message}`);
-      }
-    );
+    this.subscription = this._libraryManagementService
+      .getUserObject()
+      .subscribe(
+        (res) => {
+          this.currentFullName = res.getFullName();
+          this.currentUserAddresses =
+            this._libraryManagementService.getUserAddresses();
+        },
+        (err) => {
+          console.error(`An error occurred: ${err.message}`);
+        },
+      );
   }
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }
 
-  async changePreferredAddress(address: Object): Promise<void> {
+  async changePreferredAddress(address: object): Promise<void> {
     this.loading = true;
-    const isAdded = await this._libraryManagementService.setUserPreferredAddress(address);
+
+    const isAdded =
+      await this._libraryManagementService.setUserPreferredAddress(address);
+
     if (!isAdded) {
-      let errMessage = await this.translate.get('Settings.SetError').toPromise();
+      const errMessage = await this.translate
+        .get('Settings.SetError')
+        .toPromise();
+
       this.alert.error(errMessage, { autoClose: false });
     } else {
-      let succMessage = await this.translate.get('Settings.SetSuccess').toPromise();
+      const succMessage = await this.translate
+        .get('Settings.SetSuccess')
+        .toPromise();
+
       this.alert.success(succMessage, { autoClose: false });
     }
     this.loading = false;
@@ -63,5 +79,4 @@ export class SettingsComponent implements OnInit, OnDestroy {
   navigateBack(): void {
     this._location.back();
   }
-
 }

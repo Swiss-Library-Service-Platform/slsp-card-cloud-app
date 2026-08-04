@@ -1,6 +1,11 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { CloudAppEventsService, Entity, AlertService, CloudAppRestService } from '@exlibris/exl-cloudapp-angular-lib';
+import {
+  CloudAppEventsService,
+  Entity,
+  AlertService,
+  CloudAppRestService,
+} from '@exlibris/exl-cloudapp-angular-lib';
 import { User } from '../model/user.model';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
@@ -12,15 +17,14 @@ import { TranslateService } from '@ngx-translate/core';
  * @class LibraryManagementService
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class LibraryManagementService {
-
   public user: User;
-  private userEntity: Entity
+  private userEntity: Entity;
   private readonly _userObject = new BehaviorSubject<User>(new User());
   public isProdEnvironment: boolean;
-  private initData: Object
+  private initData: object;
   httpOptions: {};
 
   constructor(
@@ -28,8 +32,8 @@ export class LibraryManagementService {
     private restService: CloudAppRestService,
     private eventsService: CloudAppEventsService,
     private alert: AlertService,
-    private translate: TranslateService
-  ) { }
+    private translate: TranslateService,
+  ) {}
 
   /**
    * Initializes service
@@ -38,17 +42,19 @@ export class LibraryManagementService {
    * @return {*}  {Promise<void>}
    * @memberof LibraryManagementService
    */
-  async init(initData: Object, isProdEnvironment: boolean): Promise<void> {
+  async init(initData: object, isProdEnvironment: boolean): Promise<void> {
     this.initData = initData;
     this.isProdEnvironment = isProdEnvironment;
-    let authToken = await this.eventsService.getAuthToken().toPromise();
+
+    const authToken = await this.eventsService.getAuthToken().toPromise();
+
     this.httpOptions = {
-      params: { "isProdEnvironment": isProdEnvironment },
+      params: { isProdEnvironment },
       headers: new HttpHeaders({
-        'Authorization': `Bearer ${authToken}`,
-        'Content-Type': 'application/json'
+        Authorization: `Bearer ${authToken}`,
+        'Content-Type': 'application/json',
       }),
-      withCredentials: true
+      withCredentials: true,
     };
   }
 
@@ -77,31 +83,38 @@ export class LibraryManagementService {
    * Checks wheter the currently loggedin user has sufficient permissions
    *
    * @param {string} primaryId of currently loggedin user
-   * @return {Boolean} 
+   * @return {Boolean}
    * @memberof LibraryManagementService
    */
   async getIsCurrentUserAllowed(): Promise<boolean> {
-    let primaryId = this.initData['user']['primaryId'];
+    const primaryId = this.initData['user']['primaryId'];
     let user;
+
     try {
-      user = await this.restService.call<any>('/users/' + primaryId).toPromise();
+      user = await this.restService
+        .call<any>('/users/' + primaryId)
+        .toPromise();
     } catch (error) {
       // user not allowed
       return false;
     }
+
     // 26 (General System Administrator)
     // 215 (Fulfillment Services Manager)
     // 21 (User Manager)
     const requiredRoles = ['26', '215', '21'];
     let isAllowed = false;
-    for (let userrole of user.user_role) {
-      if (requiredRoles.indexOf(userrole.role_type.value) != -1 &&
-        userrole.status.value == 'ACTIVE') {
+
+    for (const userrole of user.user_role) {
+      if (
+        requiredRoles.indexOf(userrole.role_type.value) != -1 &&
+        userrole.status.value == 'ACTIVE'
+      ) {
         isAllowed = true;
         break;
       }
-
     }
+
     return isAllowed;
   }
 
@@ -109,18 +122,19 @@ export class LibraryManagementService {
    * Checks wheter the current instition is allowed to use this cloudapp
    *
    * @param {string} primaryId of currently loggedin user
-   * @return {Boolean} 
+   * @return {Boolean}
    * @memberof LibraryManagementService
    */
   async getIsCurrentInstitutionAllowed(): Promise<boolean> {
-    let institutionId = this.initData['instCode'];
-    return new Promise(resolve => {
+    const institutionId = this.initData['instCode'];
+
+    return new Promise((resolve) => {
       this.http.get('isallowed', this.httpOptions).subscribe(
-        isAllowed => {
+        (isAllowed) => {
           // RETURN boolean
           resolve(!!isAllowed);
         },
-        error => {
+        (error) => {
           console.log(error);
           resolve(false);
         },
@@ -131,7 +145,7 @@ export class LibraryManagementService {
   /**
    * Returns all user addresses
    *
-   * @return {*} 
+   * @return {*}
    * @memberof LibraryManagementService
    */
   getUserAddresses() {
@@ -141,7 +155,7 @@ export class LibraryManagementService {
   /**
    * Returns Library card numbers of user
    *
-   * @return {*} 
+   * @return {*}
    * @memberof LibraryManagementService
    */
   getUserLibraryCardNumbers() {
@@ -151,7 +165,7 @@ export class LibraryManagementService {
   /**
    * Returns the User Matriculation Number
    *
-   * @return {*} 
+   * @return {*}
    * @memberof LibraryManagementService
    */
   getUserMatriculationNumber() {
@@ -162,28 +176,43 @@ export class LibraryManagementService {
    * Gets the Alma user entity and sets the observable user object
    *
    * @param {Entity} entity
-   * @return {*} 
+   * @return {*}
    * @memberof LibraryManagementService
    */
   async getUserFromEntity(entity: Entity) {
     this.userEntity = entity;
-    return new Promise(resolve => {
-      this.http.get('p/api-eu.hosted.exlibrisgroup.com/almaws/v1' + entity.link, this.httpOptions).subscribe(
-        userdata => {
-          this.user = new User(userdata);
-          this._setObservableUserObject(this.user);
-          resolve(true);
-        },
-        async error => {
-          if (error.status == 400) {
-            let errMessage = await this.translate.get('Main.UserNotFound').toPromise();
-            this.alert.warn(entity.description + errMessage, { autoClose: false });
-          } else {
-            let errMessage = await this.translate.get('Main.TemporarilyUnavailable').toPromise();
-            this.alert.error(errMessage, { autoClose: false });
-          }
-          resolve(false);
-        });
+
+    return new Promise((resolve) => {
+      this.http
+        .get(
+          'p/api-eu.hosted.exlibrisgroup.com/almaws/v1' + entity.link,
+          this.httpOptions,
+        )
+        .subscribe(
+          (userdata) => {
+            this.user = new User(userdata);
+            this._setObservableUserObject(this.user);
+            resolve(true);
+          },
+          async (error) => {
+            if (error.status == 400) {
+              const errMessage = await this.translate
+                .get('Main.UserNotFound')
+                .toPromise();
+
+              this.alert.warn(entity.description + errMessage, {
+                autoClose: false,
+              });
+            } else {
+              const errMessage = await this.translate
+                .get('Main.TemporarilyUnavailable')
+                .toPromise();
+
+              this.alert.error(errMessage, { autoClose: false });
+            }
+            resolve(false);
+          },
+        );
     });
   }
 
@@ -197,11 +226,13 @@ export class LibraryManagementService {
    * @return {*}  {Promise<Boolean>}
    * @memberof LibraryManagementService
    */
-  addUserblock(blockType: String, comment: String = ""): Promise<Boolean> {
-    let libCode = this.initData['instCode'],
+  addUserblock(blockType: string, comment = ''): Promise<boolean> {
+    const libCode = this.initData['instCode'],
       url = this.initData['urls']['alma'];
+
     // ADD USER BLOCK
     this.user.addBlock(blockType, comment, libCode, url);
+
     // API CALL
     return this.updateUser();
   }
@@ -213,9 +244,10 @@ export class LibraryManagementService {
    * @return {*}  {Promise<Boolean>}
    * @memberof LibraryManagementService
    */
-  removeUserblock(blockType: String): Promise<Boolean> {
+  removeUserblock(blockType: string): Promise<boolean> {
     // REMOVE USER BLOCK
     this.user.removeBlock(blockType);
+
     // API CALL
     return this.updateUser();
   }
@@ -229,12 +261,18 @@ export class LibraryManagementService {
    * @return {*}  {Promise<Boolean>}
    * @memberof LibraryManagementService
    */
-  async addUserLibraryCardNumber(libraryCardNumber: string): Promise<Boolean> {
-    let primaryId = this.initData['user']['primaryId'],
+  async addUserLibraryCardNumber(libraryCardNumber: string): Promise<boolean> {
+    const primaryId = this.initData['user']['primaryId'],
       instCode = this.initData['instCode'];
     // ADD NUMBER TO USER OBJECT
-    const isAdded = this.user.addLibraryCardNumber(libraryCardNumber, primaryId, instCode);
+    const isAdded = this.user.addLibraryCardNumber(
+      libraryCardNumber,
+      primaryId,
+      instCode,
+    );
+
     if (!isAdded) return false;
+
     // API CALL
     return this.updateUser();
   }
@@ -246,10 +284,14 @@ export class LibraryManagementService {
    * @return {*}  {Promise<Boolean>}
    * @memberof LibraryManagementService
    */
-  async removeUserLibraryCardNumber(libraryCardNumber: string): Promise<Boolean> {
+  async removeUserLibraryCardNumber(
+    libraryCardNumber: string,
+  ): Promise<boolean> {
     // REMOVE NUMBER FROM USER OBJECT
     const isRemoved = this.user.removeLibraryCardNumber(libraryCardNumber);
+
     if (!isRemoved) return false;
+
     // API CALL
     return this.updateUser();
   }
@@ -262,12 +304,14 @@ export class LibraryManagementService {
    * @return {*}  {Promise<Boolean>}
    * @memberof LibraryManagementService
    */
-  async setUserPreferredAddress(address: Object): Promise<Boolean> {
-    let url = this.initData['urls']['alma'];
+  async setUserPreferredAddress(address: object): Promise<boolean> {
+    const url = this.initData['urls']['alma'];
     // SET PREFERRED ADDRESS
     const isChanged = this.user.setPreferredAddress(address, url);
+
     // API CALL
     if (!isChanged) return false;
+
     // UPDATE USER
     return this.updateUser();
   }
@@ -278,22 +322,28 @@ export class LibraryManagementService {
    * @return {*}  {Promise<Boolean>}
    * @memberof LibraryManagementService
    */
-  async updateUser(): Promise<Boolean> {
-    return new Promise(resolve => {
-      this.http.put('p/api-eu.hosted.exlibrisgroup.com/almaws/v1' + this.userEntity.link, this.user.userValue, this.httpOptions).subscribe(
-        userdata => {
-          // UPDATE USER
-          this.user = new User(userdata);
-          this._setObservableUserObject(this.user);
-          resolve(true);
-        },
-        error => {
-          console.log(error);
-          // RESTORE OLD USER ENTITY
-          this.getUserFromEntity(this.userEntity);
-          resolve(false);
-        },
-      );
+  async updateUser(): Promise<boolean> {
+    return new Promise((resolve) => {
+      this.http
+        .put(
+          'p/api-eu.hosted.exlibrisgroup.com/almaws/v1' + this.userEntity.link,
+          this.user.userValue,
+          this.httpOptions,
+        )
+        .subscribe(
+          (userdata) => {
+            // UPDATE USER
+            this.user = new User(userdata);
+            this._setObservableUserObject(this.user);
+            resolve(true);
+          },
+          (error) => {
+            console.log(error);
+            // RESTORE OLD USER ENTITY
+            this.getUserFromEntity(this.userEntity);
+            resolve(false);
+          },
+        );
     });
   }
 }

@@ -1,0 +1,9 @@
+node_modules/
+dist/
+build/
+.angular/
+.ng/
+coverage/
+package-lock.json
+README.md
+.superpowers/

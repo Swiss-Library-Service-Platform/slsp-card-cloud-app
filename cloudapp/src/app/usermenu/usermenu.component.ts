@@ -1,44 +1,49 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import { LibraryManagementService } from '../services/library-management.service';
 import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-usermenu',
   templateUrl: './usermenu.component.html',
-  styleUrls: ['./usermenu.component.scss']
+  styleUrls: ['./usermenu.component.scss'],
 })
-export class UsermenuComponent implements OnInit {
-
+export class UsermenuComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private _libraryManagementService: LibraryManagementService,
     private translate: TranslateService,
-  ) { }
+  ) {}
 
-  currentFullName: String;
-  subscription;
-  blocksTitle: String;
-  settingsTitle: String;
-  numbersTitle: String;
-  currentUserBlocks: Map<String, any> = null;
+  currentFullName: string;
+  subscription = new Subscription();
+  blocksTitle: string;
+  settingsTitle: string;
+  numbersTitle: string;
+  currentUserBlocks: Map<string, any> = null;
   isProdEnvironment: boolean;
 
   async ngOnInit() {
     this.blocksTitle = await this.translate.get('Main.Block').toPromise();
     this.settingsTitle = await this.translate.get('Main.Settings').toPromise();
-    this.numbersTitle = await this.translate.get('Main.LibraryCardNumber').toPromise();
+    this.numbersTitle = await this.translate
+      .get('Main.LibraryCardNumber')
+      .toPromise();
     this.isProdEnvironment = this._libraryManagementService.isProdEnvironment;
-    this.subscription = this._libraryManagementService.getUserObject().subscribe(
-      res => {
-        this.currentFullName = res.getFullName();
-        this.currentUserBlocks = this._libraryManagementService.user.getUserBlocks();
-      },
-      err => {
-        console.error(`An error occurred: ${err.message}`);
-      }
-    );
+    this.subscription = this._libraryManagementService
+      .getUserObject()
+      .subscribe(
+        (res) => {
+          this.currentFullName = res.getFullName();
+          this.currentUserBlocks =
+            this._libraryManagementService.user.getUserBlocks();
+        },
+        (err) => {
+          console.error(`An error occurred: ${err.message}`);
+        },
+      );
   }
 
   ngOnDestroy(): void {
@@ -48,6 +53,4 @@ export class UsermenuComponent implements OnInit {
   navigateBack(): void {
     this.router.navigate(['root/false']);
   }
-
-
 }

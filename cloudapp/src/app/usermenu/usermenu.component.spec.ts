@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
+import { AppModule } from '../app.module';
 import { UsermenuComponent } from './usermenu.component';
 
 describe('UsermenuComponent', () => {
@@ -8,15 +9,13 @@ describe('UsermenuComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ UsermenuComponent ]
-    })
-    .compileComponents();
+      imports: [AppModule],
+    }).compileComponents();
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(UsermenuComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should create', () => {

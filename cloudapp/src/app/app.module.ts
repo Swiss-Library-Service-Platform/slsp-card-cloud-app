@@ -1,10 +1,14 @@
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MaterialModule, CloudAppTranslateModule, AlertModule } from '@exlibris/exl-cloudapp-angular-lib';
+import {
+  MaterialModule,
+  CloudAppTranslateModule,
+  AlertModule,
+} from '@exlibris/exl-cloudapp-angular-lib';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -41,16 +45,15 @@ import { ConfirmationdialogComponent } from './confirmationdialog/confirmationdi
     {
       provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
       useValue: {
-        appearance: 'standard'
+        appearance: 'fill',
       },
     },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: APIInterceptor,
       multi: true,
-    }
+    },
   ],
-  entryComponents: [ConfirmationdialogComponent],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

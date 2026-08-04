@@ -1,33 +1,33 @@
 mat-action-row {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  width: 100%;
+
+  mat-form-field {
     width: 100%;
+  }
+  button {
+    width: 50%;
+  }
 
-    mat-form-field {
-        width: 100%;
-    }
-    button {
-        width: 50%;
-    }
-
-    mat-label {
-        font-size: 13px !important;
-    }
+  mat-label {
+    font-size: 13px !important;
+  }
 }
 
 .mat-action-row-single {
-    padding-top: 1rem;
-    justify-content: flex-end;
+  padding-top: 1rem;
+  justify-content: flex-end;
 }
 
 mat-form-field-wrapper {
-    padding-bottom: 1rem;
+  padding-bottom: 1rem;
 }
 
 .user-status {
-    text-align: center;
-    span {
-        font-weight: bold;
-    }
+  text-align: center;
+  span {
+    font-weight: bold;
+  }
 }

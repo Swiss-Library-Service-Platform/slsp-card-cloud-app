@@ -1,13 +1,11 @@
 <ng-container *ngIf="!isProdEnvironment">
-  <div class="info-test-env">
-    Test instance using Alma Sandbox environment
-  </div>
+  <div class="info-test-env">Test instance using Alma Sandbox environment</div>
 </ng-container>
 
 <ng-container *ngIf="isUserCheckDone && !isInstitutionAllowed">
   <div class="institution-now-allowed">
     <h1>
-      <mat-icon inline=true>error</mat-icon>
+      <mat-icon inline="true">error</mat-icon>
       {{ 'Welcome.AccessDenied' | translate }}
     </h1>
     <p>
@@ -23,42 +21,53 @@
 <ng-container *ngIf="isUserCheckDone && isInstitutionAllowed && !isUserHasRole">
   <div class="user-not-allowed">
     <h1>
-      <mat-icon inline=true>error</mat-icon>
+      <mat-icon inline="true">error</mat-icon>
       {{ 'Welcome.AccessDenied' | translate }}
     </h1>
-    <p> {{ 'Welcome.NoRole' | translate }} </p>
+    <p>{{ 'Welcome.NoRole' | translate }}</p>
     <ul>
-      <li> {{ 'Welcome.Fulfillment' | translate }} </li>
-      <li> {{ 'Welcome.UserManager' | translate }} </li>
-      <li> {{ 'Welcome.GeneralSystem' | translate }} </li>
+      <li>{{ 'Welcome.Fulfillment' | translate }}</li>
+      <li>{{ 'Welcome.UserManager' | translate }}</li>
+      <li>{{ 'Welcome.GeneralSystem' | translate }}</li>
     </ul>
   </div>
 </ng-container>
 
 <ng-container *ngIf="isUserHasRole && isInstitutionAllowed">
-  <ng-container *ngIf="(entities$ | async)?.length > 0; then entities; else noentities"></ng-container>
+  <ng-container
+    *ngIf="(entities$ | async)?.length > 0; then entities; else noentities"
+  ></ng-container>
 
   <ng-template #noentities>
     <div class="select-entities">
       <h1>
         {{ 'Welcome.Welcome' | translate }}
       </h1>
-      <p> {{ 'Welcome.LetsGo' | translate }} </p>
+      <p>{{ 'Welcome.LetsGo' | translate }}</p>
       <ul>
-        <li> {{ 'Welcome.Instructions1' | translate }} </li>
-        <li> {{ 'Welcome.Instructions2' | translate }} </li>
-        <li> {{ 'Welcome.Instructions3' | translate }} </li>
+        <li>{{ 'Welcome.Instructions1' | translate }}</li>
+        <li>{{ 'Welcome.Instructions2' | translate }}</li>
+        <li>{{ 'Welcome.Instructions3' | translate }}</li>
       </ul>
     </div>
   </ng-template>
 
   <ng-template #entities>
     <div class="select-entities" *ngIf="!selectedEntity">
-      <label id="entities-radio-group-label">{{ 'Welcome.SelectUser' | translate }}</label>
-      <mat-radio-group aria-labelledby="entities-radio-group-label" class="entities-radio-group"
-        [(ngModel)]="selectedEntity" (change)="entitySelected($event)">
-        <mat-radio-button *ngFor="let entity of entities$ | async" [value]="entity">
-          {{entity.description}}
+      <label id="entities-radio-group-label">{{
+        'Welcome.SelectUser' | translate
+      }}</label>
+      <mat-radio-group
+        aria-labelledby="entities-radio-group-label"
+        class="entities-radio-group"
+        [(ngModel)]="selectedEntity"
+        (change)="entitySelected($event)"
+      >
+        <mat-radio-button
+          *ngFor="let entity of entities$ | async"
+          [value]="entity"
+        >
+          {{ entity.description }}
         </mat-radio-button>
       </mat-radio-group>
     </div>
