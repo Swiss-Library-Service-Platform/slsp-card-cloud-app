@@ -1,4 +1,4 @@
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -17,7 +17,6 @@ import { BlockComponent } from './block/block.component';
 import { SettingsComponent } from './settings/settings.component';
 import { LibrarycardnumberComponent } from './librarycardnumber/librarycardnumber.component';
 import { UsermenuComponent } from './usermenu/usermenu.component';
-import { APIInterceptor } from './services/api-interceptor';
 import { ConfirmationdialogComponent } from './confirmationdialog/confirmationdialog.component';
 
 @NgModule({
@@ -47,11 +46,6 @@ import { ConfirmationdialogComponent } from './confirmationdialog/confirmationdi
       useValue: {
         appearance: 'fill',
       },
-    },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: APIInterceptor,
-      multi: true,
     },
   ],
   bootstrap: [AppComponent],

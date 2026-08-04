@@ -205,7 +205,6 @@
         "cloudapp/src/app/main/main.component.ts",
         "cloudapp/src/app/model/librarycardnumber.model.ts",
         "cloudapp/src/app/model/user.model.ts",
-        "cloudapp/src/app/services/api-interceptor.ts",
         "cloudapp/src/app/services/library-management.service.ts",
         "cloudapp/src/app/settings/settings.component.ts",
         "cloudapp/src/app/usermenu/usermenu.component.ts",
