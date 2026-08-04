@@ -2,6 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { CloudAppEventsService } from '@exlibris/exl-cloudapp-angular-lib';
 import {
+  catchError,
   combineLatest,
   finalize,
   map,
@@ -11,6 +12,8 @@ import {
   switchMap,
   take,
   tap,
+  throwError,
+  throwIfEmpty,
 } from 'rxjs';
 
 interface BackendEnvironment {
@@ -24,6 +27,7 @@ export class BackendHttpService {
   private static readonly SANDBOX_URL = 'https://card-test.swisscovery.network';
   private static readonly PROD_URL = 'https://card.swisscovery.network';
   private static readonly TOKEN_TTL_MS = 30_000;
+  private static readonly PATH_ORIGIN = 'https://card-backend.invalid';
 
   private readonly events = inject(CloudAppEventsService);
   private readonly http = inject(HttpClient);
@@ -88,6 +92,18 @@ export class BackendHttpService {
     if (!path.startsWith('/api/v1/')) {
       throw new Error(`Card backend path must begin with /api/v1/: ${path}`);
     }
+
+    const parsedPath = new URL(path, BackendHttpService.PATH_ORIGIN);
+
+    if (
+      parsedPath.origin !== BackendHttpService.PATH_ORIGIN ||
+      parsedPath.search !== '' ||
+      parsedPath.hash !== '' ||
+      parsedPath.pathname !== path ||
+      !parsedPath.pathname.startsWith('/api/v1/')
+    ) {
+      throw new Error('Card backend path must be canonical within /api/v1/.');
+    }
   }
 
   private getToken(): Observable<string> {
@@ -98,6 +114,16 @@ export class BackendHttpService {
     if (!this.tokenInFlight$) {
       const tokenRequest$ = this.events.getAuthToken().pipe(
         take(1),
+        map((token) => {
+          if (token.trim() === '') {
+            throw new Error('Card backend authentication token was empty.');
+          }
+
+          return token;
+        }),
+        throwIfEmpty(
+          () => new Error('Card backend authentication token was empty.'),
+        ),
         tap((token) => {
           this.cachedToken = token;
           this.tokenExpiry =
@@ -119,12 +145,16 @@ export class BackendHttpService {
 
   private getEnvironment(): Observable<BackendEnvironment> {
     if (!this.environmentCache$) {
-      this.environmentCache$ = this.events.getInitData().pipe(
+      const environmentRequest$ = this.events.getInitData().pipe(
         take(1),
+        throwIfEmpty(
+          () => new Error('Card backend environment data was empty.'),
+        ),
         map((data): BackendEnvironment => {
           const almaUrl = data.urls.alma;
-          const sandbox = /psb/i.test(almaUrl);
-          const baseUrl = /localhost/i.test(almaUrl)
+          const local = /localhost/i.test(almaUrl);
+          const sandbox = local || /psb/i.test(almaUrl);
+          const baseUrl = local
             ? BackendHttpService.LOCAL_URL
             : sandbox
               ? BackendHttpService.SANDBOX_URL
@@ -132,8 +162,17 @@ export class BackendHttpService {
 
           return { baseUrl, sandbox };
         }),
+        catchError((error: unknown) => {
+          if (this.environmentCache$ === environmentRequest$) {
+            this.environmentCache$ = null;
+          }
+
+          return throwError(() => error);
+        }),
         shareReplay({ bufferSize: 1, refCount: false }),
       );
+
+      this.environmentCache$ = environmentRequest$;
     }
 
     return this.environmentCache$;
