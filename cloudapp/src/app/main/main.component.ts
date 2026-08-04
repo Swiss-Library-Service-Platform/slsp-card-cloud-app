@@ -1,111 +1,127 @@
-// @ts-nocheck -- Removed in Task 5 when the legacy component is rewritten.
-import { Observable } from 'rxjs';
-import { finalize, map, switchMap, tap } from 'rxjs/operators';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { DestroyRef, Component, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AlertService, Entity } from '@exlibris/exl-cloudapp-angular-lib';
+import { TranslateService } from '@ngx-translate/core';
 import {
-  CloudAppRestService,
-  CloudAppEventsService,
-  Request,
-  HttpMethod,
-  Entity,
-  RestErrorResponse,
-  AlertService,
-  EntityType,
-} from '@exlibris/exl-cloudapp-angular-lib';
-import { MatRadioChange } from '@angular/material/radio';
-import { Router, ActivatedRoute, Params } from '@angular/router';
-import { LibraryManagementService } from '../services/library-management.service';
+  Observable,
+  combineLatest,
+  distinctUntilChanged,
+  filter,
+  map,
+  shareReplay,
+} from 'rxjs';
+
+import { AuthorizationResult } from '../services/authorization.service';
+import { BackendHttpService } from '../services/backend-http.service';
+import {
+  PatronState,
+  PatronStateService,
+} from '../services/patron-state.service';
+
+interface MainViewModel {
+  readonly authorization: AuthorizationResult;
+  readonly entities: readonly Entity[];
+  readonly patron: PatronState;
+  readonly sandbox: boolean;
+}
+
+interface EntitySelectionChange {
+  readonly value: unknown;
+}
 
 @Component({
   selector: 'app-main',
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.scss'],
 })
-export class MainComponent implements OnInit, OnDestroy {
-  loading = false;
-  selectedEntity: Entity;
-  apiResult: any;
-  isAutoSelect: string;
-  isUserHasRole = false;
-  isUserCheckDone = false;
-  isInstitutionAllowed = false;
-  isProdEnvironment = true;
+export class MainComponent implements OnInit {
+  public readonly vm$: Observable<MainViewModel>;
 
-  entities$: Observable<Entity[]>;
+  private readonly alert = inject(AlertService);
+  private readonly backend = inject(BackendHttpService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly state = inject(PatronStateService);
+  private readonly translate = inject(TranslateService);
 
-  constructor(
-    private _libraryManagementService: LibraryManagementService,
-    private eventsService: CloudAppEventsService,
-    private route: ActivatedRoute,
-    private router: Router,
-  ) {
-    this.entities$ = this.eventsService.entities$.pipe(
-      tap(() => this.clear()),
-      map((entities) => entities.filter((e) => e.type == EntityType.USER)),
+  public constructor() {
+    this.vm$ = combineLatest([
+      this.state.authorization$,
+      this.state.userEntities$,
+      this.state.patronState$,
+      this.backend.isSandbox$(),
+    ]).pipe(
+      map(([authorization, entities, patron, sandbox]) => ({
+        authorization,
+        entities,
+        patron,
+        sandbox,
+      })),
+      shareReplay({ bufferSize: 1, refCount: true }),
     );
   }
 
-  async ngOnInit() {
-    this.loading = true;
+  public ngOnInit(): void {
+    this.state.autoSelect(this.route.snapshot.params['isAutoSelect']);
+    this.state.patronState$
+      .pipe(
+        filter(
+          (patronState) =>
+            patronState.status === 'ready' ||
+            patronState.status === 'not-found' ||
+            patronState.status === 'error',
+        ),
+        distinctUntilChanged(),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((patronState) => this.handlePatronState(patronState));
+  }
 
-    const initData = await this.eventsService.getInitData().toPromise();
-    const regExp = new RegExp('^https(.*)psb(.*)com/?$|.*localhost.*'), // contains "PSB" (Premium Sandbox) or "localhost"
-      currentUrl = initData['urls']['alma'];
-
-    console.log(currentUrl);
-    this.isProdEnvironment = !regExp.test(currentUrl);
-    await this._libraryManagementService.init(initData, this.isProdEnvironment);
-    // check if current institution is allowed to use this cloud app
-    this.isInstitutionAllowed =
-      await this._libraryManagementService.getIsCurrentInstitutionAllowed();
-
-    // check if current user has a role
-    if (this.isInstitutionAllowed) {
-      this.isUserHasRole =
-        await this._libraryManagementService.getIsCurrentUserAllowed();
-    }
-    this.isUserCheckDone = true;
-
-    // auto select the user if only one user is visible
-    if (this.isUserHasRole) {
-      if (this.route.snapshot.params.isAutoSelect == 'true') {
-        this.entities$.subscribe(async (availableEntities) => {
-          if (availableEntities.length == 1) {
-            await this.setUser(availableEntities[0]);
-          }
-          this.loading = false;
-        });
-      } else {
-        this.loading = false;
-      }
-    } else {
-      this.loading = false;
+  public entitySelected(event: EntitySelectionChange): void {
+    if (isEntity(event.value)) {
+      this.state.select(event.value);
     }
   }
 
-  ngOnDestroy(): void {}
-
-  async entitySelected(event: MatRadioChange) {
-    const value = event.value as Entity;
-
-    this.loading = true;
-    await this.setUser(value);
-    this.loading = false;
+  public trackEntity(_index: number, entity: Entity): string {
+    return `${entity.type}:${entity.id}:${entity.link}`;
   }
 
-  clear() {
-    this.apiResult = null;
-    this.selectedEntity = null;
-  }
+  private handlePatronState(patronState: PatronState): void {
+    if (patronState.status === 'ready') {
+      void this.router.navigate(['usermenu']);
 
-  async setUser(entity: Entity) {
-    const userFound =
-      await this._libraryManagementService.getUserFromEntity(entity);
-
-    if (userFound) {
-      this.router.navigate(['usermenu']);
-    } else {
-      this.clear();
+      return;
     }
+
+    if (patronState.status === 'not-found') {
+      this.alert.warn(
+        `${patronState.entity.description}${this.translate.instant('Main.UserNotFound')}`,
+        { autoClose: false },
+      );
+
+      return;
+    }
+
+    this.alert.error(this.translate.instant('Main.TemporarilyUnavailable'), {
+      autoClose: false,
+    });
   }
+}
+
+function isEntity(value: unknown): value is Entity {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    return false;
+  }
+
+  const candidate = value as Record<string, unknown>;
+
+  return (
+    typeof candidate['id'] === 'string' &&
+    typeof candidate['link'] === 'string' &&
+    typeof candidate['type'] === 'string' &&
+    typeof candidate['description'] === 'string'
+  );
 }

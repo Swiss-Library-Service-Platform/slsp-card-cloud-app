@@ -202,12 +202,10 @@
         "cloudapp/src/app/block/block.component.ts",
         "cloudapp/src/app/confirmationdialog/confirmationdialog.component.ts",
         "cloudapp/src/app/librarycardnumber/librarycardnumber.component.ts",
-        "cloudapp/src/app/main/main.component.ts",
         "cloudapp/src/app/model/librarycardnumber.model.ts",
         "cloudapp/src/app/model/user.model.ts",
         "cloudapp/src/app/services/library-management.service.ts",
         "cloudapp/src/app/settings/settings.component.ts",
-        "cloudapp/src/app/usermenu/usermenu.component.ts",
         "cloudapp/src/app/validators/librarycardnumber.validator.ts"
       ],
       "rules": {
@@ -226,9 +224,7 @@
       "files": [
         "cloudapp/src/app/block/block.component.html",
         "cloudapp/src/app/librarycardnumber/librarycardnumber.component.html",
-        "cloudapp/src/app/main/main.component.html",
-        "cloudapp/src/app/settings/settings.component.html",
-        "cloudapp/src/app/usermenu/usermenu.component.html"
+        "cloudapp/src/app/settings/settings.component.html"
       ],
       "rules": {
         "@angular-eslint/template/eqeqeq": "warn",

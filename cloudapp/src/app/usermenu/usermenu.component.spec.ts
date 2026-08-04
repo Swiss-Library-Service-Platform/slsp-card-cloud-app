@@ -1,40 +1,85 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
+import { Entity, EntityType } from '@exlibris/exl-cloudapp-angular-lib';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 
-import { AppModule } from '../app.module';
-import { LibraryManagementService } from '../services/library-management.service';
-import { createLibraryManagementStub } from '../../testing/library-management.stub';
+import { BackendHttpService } from '../services/backend-http.service';
+import {
+  PatronState,
+  PatronStateService,
+} from '../services/patron-state.service';
 import { UsermenuComponent } from './usermenu.component';
 
 describe('UsermenuComponent', () => {
-  let component: UsermenuComponent;
-  let fixture: ComponentFixture<UsermenuComponent>;
+  let state: jasmine.SpyObj<PatronStateService>;
+  let patronState$: BehaviorSubject<PatronState>;
+  let router: jasmine.SpyObj<Router>;
+  const selected: Entity = {
+    id: 'one',
+    type: EntityType.USER,
+    link: '/users/one',
+    description: 'Selected user',
+  };
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [AppModule],
+  beforeEach(() => {
+    patronState$ = new BehaviorSubject<PatronState>({
+      status: 'ready',
+      entity: selected,
+      patron: {
+        fullName: 'Test Patron',
+        external: false,
+        libraryCardNumbers: [],
+        matriculationNumber: null,
+        dashedMatriculationNumber: null,
+        blocks: {
+          '02': {
+            code: '02',
+            createdDate: null,
+            expiryDate: null,
+            note: null,
+            selector: 'block-selector',
+          },
+        },
+        postalAddresses: [],
+      },
+    });
+    state = jasmine.createSpyObj<PatronStateService>(
+      'PatronStateService',
+      ['clear'],
+      { patronState$ },
+    );
+    router = jasmine.createSpyObj<Router>('Router', ['navigate']);
+
+    TestBed.configureTestingModule({
       providers: [
+        UsermenuComponent,
+        { provide: PatronStateService, useValue: state },
+        { provide: Router, useValue: router },
         {
-          provide: LibraryManagementService,
-          useFactory: createLibraryManagementStub,
+          provide: BackendHttpService,
+          useValue: { isSandbox$: (): Observable<boolean> => of(true) },
         },
       ],
-    }).compileComponents();
+    });
   });
 
-  beforeEach(async () => {
-    fixture = TestBed.createComponent(UsermenuComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-    await Promise.resolve();
-    await Promise.resolve();
-    await Promise.resolve();
-    await Promise.resolve();
-    fixture.detectChanges();
+  it('exposes the ready Card DTO as a declarative menu view model', (done) => {
+    const component = TestBed.inject(UsermenuComponent);
+
+    component.vm$.subscribe((vm) => {
+      expect(vm?.patron.fullName).toBe('Test Patron');
+      expect(vm?.hasBlocks).toBeTrue();
+      expect(vm?.sandbox).toBeTrue();
+      done();
+    });
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-    expect(component.currentFullName).toBe('Test Patron');
-    expect(component.currentUserBlocks).toEqual(new Map());
+  it('clears Card state before returning to the selection route', () => {
+    const component = TestBed.inject(UsermenuComponent);
+
+    component.navigateBack();
+
+    expect(state.clear).toHaveBeenCalledTimes(1);
+    expect(router.navigate).toHaveBeenCalledOnceWith(['root/false']);
   });
 });

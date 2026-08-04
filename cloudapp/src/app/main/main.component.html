@@ -1,9 +1,15 @@
-<ng-container *ngIf="!isProdEnvironment">
-  <div class="info-test-env">Test instance using Alma Sandbox environment</div>
-</ng-container>
+<ng-container *ngIf="vm$ | async as vm; else loading">
+  <div *ngIf="vm.sandbox" class="info-test-env">
+    Test instance using Alma Sandbox environment
+  </div>
 
-<ng-container *ngIf="isUserCheckDone && !isInstitutionAllowed">
-  <div class="institution-now-allowed">
+  <div
+    *ngIf="
+      vm.authorization.status === 'denied' &&
+      vm.authorization.reason === 'authentication'
+    "
+    class="institution-now-allowed"
+  >
     <h1>
       <mat-icon inline="true">error</mat-icon>
       {{ 'Welcome.AccessDenied' | translate }}
@@ -16,10 +22,14 @@
       {{ 'Welcome.InstitutionDenied3' | translate }}
     </p>
   </div>
-</ng-container>
 
-<ng-container *ngIf="isUserCheckDone && isInstitutionAllowed && !isUserHasRole">
-  <div class="user-not-allowed">
+  <div
+    *ngIf="
+      vm.authorization.status === 'denied' &&
+      vm.authorization.reason === 'authorization'
+    "
+    class="user-not-allowed"
+  >
     <h1>
       <mat-icon inline="true">error</mat-icon>
       {{ 'Welcome.AccessDenied' | translate }}
@@ -31,18 +41,18 @@
       <li>{{ 'Welcome.GeneralSystem' | translate }}</li>
     </ul>
   </div>
-</ng-container>
 
-<ng-container *ngIf="isUserHasRole && isInstitutionAllowed">
-  <ng-container
-    *ngIf="$any(entities$ | async)?.length > 0; then entities; else noentities"
-  ></ng-container>
+  <div *ngIf="vm.authorization.status === 'error'" class="user-not-allowed">
+    <h1>
+      <mat-icon inline="true">error</mat-icon>
+      {{ 'Welcome.AccessDenied' | translate }}
+    </h1>
+    <p>{{ 'Main.TemporarilyUnavailable' | translate }}</p>
+  </div>
 
-  <ng-template #noentities>
-    <div class="select-entities">
-      <h1>
-        {{ 'Welcome.Welcome' | translate }}
-      </h1>
+  <ng-container *ngIf="vm.authorization.status === 'allowed'">
+    <div *ngIf="vm.entities.length === 0" class="select-entities">
+      <h1>{{ 'Welcome.Welcome' | translate }}</h1>
       <p>{{ 'Welcome.LetsGo' | translate }}</p>
       <ul>
         <li>{{ 'Welcome.Instructions1' | translate }}</li>
@@ -50,30 +60,36 @@
         <li>{{ 'Welcome.Instructions3' | translate }}</li>
       </ul>
     </div>
-  </ng-template>
 
-  <ng-template #entities>
-    <div class="select-entities" *ngIf="!selectedEntity">
-      <label id="entities-radio-group-label">{{
-        'Welcome.SelectUser' | translate
-      }}</label>
+    <div
+      *ngIf="vm.entities.length > 0 && vm.patron.status === 'empty'"
+      class="select-entities"
+    >
+      <p id="entities-radio-group-label">
+        {{ 'Welcome.SelectUser' | translate }}
+      </p>
       <mat-radio-group
         aria-labelledby="entities-radio-group-label"
         class="entities-radio-group"
-        [(ngModel)]="selectedEntity"
         (change)="entitySelected($event)"
       >
         <mat-radio-button
-          *ngFor="let entity of entities$ | async"
+          *ngFor="let entity of vm.entities; trackBy: trackEntity"
           [value]="entity"
         >
           {{ entity.description }}
         </mat-radio-button>
       </mat-radio-group>
     </div>
-  </ng-template>
+  </ng-container>
+
+  <div class="loading-shade" *ngIf="vm.patron.status === 'loading'">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
 </ng-container>
 
-<div class="loading-shade" *ngIf="loading">
-  <mat-spinner diameter="50"></mat-spinner>
-</div>
+<ng-template #loading>
+  <div class="loading-shade">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+</ng-template>
