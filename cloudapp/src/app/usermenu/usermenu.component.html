@@ -1,4 +1,4 @@
-<ng-container *ngIf="vm$ | async as vm">
+<ng-container *ngIf="vm$ | async as vm; else loading">
   <div *ngIf="vm.sandbox" class="info-test-env">
     Test instance using Alma Sandbox environment
   </div>
@@ -14,7 +14,7 @@
     </span>
   </div>
 
-  <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
+  <mat-tab-group mat-stretch-tabs>
     <mat-tab [label]="'Main.LibraryCardNumber' | translate">
       <app-librarycardnumber></app-librarycardnumber>
     </mat-tab>
@@ -37,3 +37,9 @@
     {{ 'Main.TakesAFewMinutes' | translate }}
   </div>
 </ng-container>
+
+<ng-template #loading>
+  <div class="loading-shade">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+</ng-template>

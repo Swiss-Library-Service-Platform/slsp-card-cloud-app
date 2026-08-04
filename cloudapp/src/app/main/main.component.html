@@ -62,7 +62,12 @@
     </div>
 
     <div
-      *ngIf="vm.entities.length > 0 && vm.patron.status === 'empty'"
+      *ngIf="
+        vm.entities.length > 0 &&
+        (vm.patron.status === 'empty' ||
+          vm.patron.status === 'not-found' ||
+          vm.patron.status === 'error')
+      "
       class="select-entities"
     >
       <p id="entities-radio-group-label">

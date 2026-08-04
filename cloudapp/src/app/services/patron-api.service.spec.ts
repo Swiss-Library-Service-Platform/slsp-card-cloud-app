@@ -48,6 +48,15 @@ describe('PatronApiService', () => {
     });
   });
 
+  ['.', '..'].forEach((unsafeId) => {
+    it(`rejects the traversal patron id ${unsafeId} before endpoint interpolation`, () => {
+      expect(() => service.getPatron(unsafeId)).toThrowError(
+        'Unsafe patron identifier',
+      );
+      expect(backend.get).not.toHaveBeenCalled();
+    });
+  });
+
   it('adds a library card number with its typed request body', (done) => {
     service.addLibraryCardNumber('p/q', 'ABC').subscribe((result) => {
       expect(result).toBe(patron);

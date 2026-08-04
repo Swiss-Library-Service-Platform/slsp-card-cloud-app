@@ -5,10 +5,12 @@ import { AlertService, Entity } from '@exlibris/exl-cloudapp-angular-lib';
 import { TranslateService } from '@ngx-translate/core';
 import {
   Observable,
+  asapScheduler,
   combineLatest,
   distinctUntilChanged,
   filter,
   map,
+  observeOn,
   shareReplay,
 } from 'rxjs';
 
@@ -64,7 +66,10 @@ export class MainComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.state.autoSelect(this.route.snapshot.params['isAutoSelect']);
+    this.state
+      .autoSelect$(this.route.snapshot.params['isAutoSelect'])
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe();
     this.state.patronState$
       .pipe(
         filter(
@@ -74,6 +79,7 @@ export class MainComponent implements OnInit {
             patronState.status === 'error',
         ),
         distinctUntilChanged(),
+        observeOn(asapScheduler),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe((patronState) => this.handlePatronState(patronState));
@@ -101,6 +107,7 @@ export class MainComponent implements OnInit {
         `${patronState.entity.description}${this.translate.instant('Main.UserNotFound')}`,
         { autoClose: false },
       );
+      this.state.clear();
 
       return;
     }
@@ -108,6 +115,7 @@ export class MainComponent implements OnInit {
     this.alert.error(this.translate.instant('Main.TemporarilyUnavailable'), {
       autoClose: false,
     });
+    this.state.clear();
   }
 }
 

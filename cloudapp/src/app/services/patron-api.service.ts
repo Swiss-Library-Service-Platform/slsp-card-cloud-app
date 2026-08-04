@@ -16,7 +16,7 @@ export class PatronApiService {
 
   public getPatron(patronId: string): Observable<CardPatron> {
     return this.backend.get<CardPatron>(
-      `/api/v1/patrons/${encodeURIComponent(patronId)}`,
+      `/api/v1/patrons/${encodePatronId(patronId)}`,
     );
   }
 
@@ -27,7 +27,7 @@ export class PatronApiService {
     const request: AddLibraryCardNumberRequest = { value };
 
     return this.backend.post<CardPatron, AddLibraryCardNumberRequest>(
-      `/api/v1/patrons/${encodeURIComponent(patronId)}/library-card-numbers`,
+      `/api/v1/patrons/${encodePatronId(patronId)}/library-card-numbers`,
       request,
     );
   }
@@ -37,7 +37,7 @@ export class PatronApiService {
     selector: string,
   ): Observable<CardPatron> {
     return this.backend.delete<CardPatron>(
-      `/api/v1/patrons/${encodeURIComponent(patronId)}/library-card-numbers/${encodeURIComponent(selector)}`,
+      `/api/v1/patrons/${encodePatronId(patronId)}/library-card-numbers/${encodeURIComponent(selector)}`,
     );
   }
 
@@ -49,7 +49,7 @@ export class PatronApiService {
     const request: AddBlockRequest = { code, comment };
 
     return this.backend.post<CardPatron, AddBlockRequest>(
-      `/api/v1/patrons/${encodeURIComponent(patronId)}/blocks`,
+      `/api/v1/patrons/${encodePatronId(patronId)}/blocks`,
       request,
     );
   }
@@ -59,7 +59,7 @@ export class PatronApiService {
     selector: string,
   ): Observable<CardPatron> {
     return this.backend.delete<CardPatron>(
-      `/api/v1/patrons/${encodeURIComponent(patronId)}/blocks/${encodeURIComponent(selector)}`,
+      `/api/v1/patrons/${encodePatronId(patronId)}/blocks/${encodeURIComponent(selector)}`,
     );
   }
 
@@ -70,8 +70,16 @@ export class PatronApiService {
     const request: SetPreferredAddressRequest = { selector };
 
     return this.backend.put<CardPatron, SetPreferredAddressRequest>(
-      `/api/v1/patrons/${encodeURIComponent(patronId)}/preferred-address`,
+      `/api/v1/patrons/${encodePatronId(patronId)}/preferred-address`,
       request,
     );
   }
+}
+
+function encodePatronId(patronId: string): string {
+  if (patronId === '.' || patronId === '..') {
+    throw new Error('Unsafe patron identifier');
+  }
+
+  return encodeURIComponent(patronId);
 }

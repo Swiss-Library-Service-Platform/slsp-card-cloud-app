@@ -8,20 +8,23 @@ import {
 } from '@exlibris/exl-cloudapp-angular-lib';
 import {
   BehaviorSubject,
+  EMPTY,
   Observable,
   Subject,
   catchError,
   combineLatest,
-  concat,
   defer,
   distinctUntilChanged,
   filter,
   map,
   merge,
   of,
+  share,
   shareReplay,
   switchMap,
   take,
+  takeUntil,
+  tap,
 } from 'rxjs';
 
 import {
@@ -50,9 +53,21 @@ export type PatronState =
       readonly error: CardApiError;
     };
 
+declare const patronMutationContextBrand: unique symbol;
+
+export interface PatronMutationContext {
+  readonly patronId: string;
+  readonly [patronMutationContextBrand]: true;
+}
+
+interface PatronSelection {
+  readonly entity: Entity;
+  readonly mutationContext: PatronMutationContext;
+}
+
 interface PatronReplacement {
   readonly patron: CardPatron;
-  readonly patronId: string;
+  readonly mutationContext: PatronMutationContext;
 }
 
 const CARD_ERROR_TYPES: readonly CardErrorType[] = [
@@ -88,6 +103,8 @@ export function extractPatronId(entity: Entity): string | null {
 
     if (
       decodedId === '' ||
+      decodedId === '.' ||
+      decodedId === '..' ||
       decodedId !== decodedId.trim() ||
       decodedId !== entity.id ||
       /[\\/\u0000-\u001f\u007f]/u.test(decodedId) ||
@@ -115,7 +132,9 @@ export class PatronStateService {
   private readonly destroyRef = inject(DestroyRef);
   private readonly events = inject(CloudAppEventsService);
   private readonly replacements$ = new Subject<PatronReplacement>();
-  private readonly selection$ = new BehaviorSubject<Entity | null>(null);
+  private readonly selection$ = new BehaviorSubject<PatronSelection | null>(
+    null,
+  );
 
   public constructor() {
     this.authorization$ = defer(() => this.authorization.check()).pipe(
@@ -128,24 +147,22 @@ export class PatronStateService {
       shareReplay({ bufferSize: 1, refCount: true }),
     );
     this.selectedEntity$ = this.selection$.pipe(
+      map((selection) => selection?.entity ?? null),
       distinctUntilChanged(sameEntity),
       shareReplay({ bufferSize: 1, refCount: true }),
     );
-    this.selectedPatronId$ = this.selectedEntity$.pipe(
-      map((entity) => (entity ? extractPatronId(entity) : null)),
+    this.selectedPatronId$ = this.selection$.pipe(
+      map((selection) => selection?.mutationContext.patronId ?? null),
       distinctUntilChanged(),
       shareReplay({ bufferSize: 1, refCount: true }),
     );
     this.patronState$ = this.selection$.pipe(
-      distinctUntilChanged(sameEntity),
-      switchMap((entity) => {
-        const patronId = entity ? extractPatronId(entity) : null;
-
-        return entity && patronId
-          ? this.load(entity, patronId)
-          : of<PatronState>({ status: 'empty' });
-      }),
-      shareReplay({ bufferSize: 1, refCount: true }),
+      switchMap((selection) =>
+        selection ? this.load(selection) : of<PatronState>({ status: 'empty' }),
+      ),
+      // This root singleton intentionally owns one bounded replay so route
+      // teardown cannot discard the selected Card DTO or restart its GET.
+      shareReplay({ bufferSize: 1, refCount: false }),
     );
     this.events.entities$
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -153,35 +170,51 @@ export class PatronStateService {
   }
 
   public select(entity: Entity): void {
-    if (!extractPatronId(entity)) {
+    const patronId = extractPatronId(entity);
+
+    if (!patronId) {
       this.clear();
 
       return;
     }
 
-    this.selection$.next(entity);
+    const mutationContext = {
+      patronId,
+    } as PatronMutationContext;
+
+    this.selection$.next({ entity, mutationContext });
   }
 
-  public autoSelect(routeFlag: string | undefined): void {
+  public autoSelect$(routeFlag: string | undefined): Observable<void> {
     if (routeFlag !== 'true') {
-      return;
+      return EMPTY;
     }
 
-    combineLatest([this.authorization$, this.userEntities$])
-      .pipe(
-        filter(
-          ([authorization, entities]) =>
-            authorization.status === 'allowed' && entities.length === 1,
-        ),
-        take(1),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe(([, entities]) => this.select(entities[0]));
+    return combineLatest([this.authorization$, this.userEntities$]).pipe(
+      filter(([, entities]) => entities.length > 0),
+      take(1),
+      takeUntil(
+        this.selection$.pipe(filter((selection) => selection !== null)),
+      ),
+      tap(([authorization, entities]) => {
+        if (
+          authorization.status === 'allowed' &&
+          entities.length === 1 &&
+          this.currentPatronId() === null
+        ) {
+          this.select(entities[0]);
+        }
+      }),
+      map(() => undefined),
+    );
   }
 
-  public replacePatron(patron: CardPatron, expectedPatronId: string): void {
-    if (this.currentPatronId() === expectedPatronId) {
-      this.replacements$.next({ patron, patronId: expectedPatronId });
+  public replacePatron(
+    patron: CardPatron,
+    mutationContext: PatronMutationContext,
+  ): void {
+    if (this.selection$.value?.mutationContext === mutationContext) {
+      this.replacements$.next({ patron, mutationContext });
     }
   }
 
@@ -190,32 +223,41 @@ export class PatronStateService {
   }
 
   public currentPatronId(): string | null {
-    const entity = this.selection$.value;
+    return this.selection$.value?.mutationContext.patronId ?? null;
+  }
 
-    return entity ? extractPatronId(entity) : null;
+  public currentMutationContext(): PatronMutationContext | null {
+    return this.selection$.value?.mutationContext ?? null;
   }
 
   private clearMissingSelection(entities: readonly Entity[]): void {
     const selected = this.selection$.value;
 
-    if (selected && !entities.some((entity) => sameEntity(entity, selected))) {
+    if (
+      selected &&
+      !entities.some((entity) => sameEntity(entity, selected.entity))
+    ) {
       this.clear();
     }
   }
 
-  private load(entity: Entity, patronId: string): Observable<PatronState> {
-    const initial$ = this.api.getPatron(patronId).pipe(
+  private load(selection: PatronSelection): Observable<PatronState> {
+    const { entity, mutationContext } = selection;
+    const replacement$ = this.replacements$.pipe(
+      filter((replacement) => replacement.mutationContext === mutationContext),
+      map(({ patron }): PatronState => ({ status: 'ready', entity, patron })),
+      share(),
+    );
+    const initial$ = this.api.getPatron(mutationContext.patronId).pipe(
       map((patron): PatronState => ({ status: 'ready', entity, patron })),
       catchError((error: unknown) => of(this.errorState(entity, error))),
-    );
-    const replacement$ = this.replacements$.pipe(
-      filter((replacement) => replacement.patronId === patronId),
-      map(({ patron }): PatronState => ({ status: 'ready', entity, patron })),
+      takeUntil(replacement$),
     );
 
-    return concat(
+    return merge(
       of<PatronState>({ status: 'loading', entity }),
-      merge(initial$, replacement$),
+      initial$,
+      replacement$,
     );
   }
 
@@ -235,13 +277,14 @@ function sameEntity(left: Entity | null, right: Entity | null): boolean {
       !!right &&
       left.type === right.type &&
       left.id === right.id &&
-      left.link === right.link)
+      left.link === right.link &&
+      left.description === right.description)
   );
 }
 
 function normalizeCardError(error: unknown): CardApiError {
   if (error instanceof HttpErrorResponse) {
-    if (isCardApiError(error.error)) {
+    if (isCardApiError(error.error, error.status)) {
       return error.error;
     }
 
@@ -257,7 +300,7 @@ function normalizeCardError(error: unknown): CardApiError {
   return emptyError('UNEXPECTED_FAILURE');
 }
 
-function isCardApiError(value: unknown): value is CardApiError {
+function isCardApiError(value: unknown, status: number): value is CardApiError {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) {
     return false;
   }
@@ -268,10 +311,51 @@ function isCardApiError(value: unknown): value is CardApiError {
     typeof candidate['type'] === 'string' &&
     CARD_ERROR_TYPES.includes(candidate['type'] as CardErrorType) &&
     typeof candidate['errorId'] === 'string' &&
+    candidate['errorId'].trim() !== '' &&
     typeof candidate['context'] === 'object' &&
     candidate['context'] !== null &&
-    !Array.isArray(candidate['context'])
+    !Array.isArray(candidate['context']) &&
+    hasOnlyStringValues(candidate['context']) &&
+    errorStatus(candidate['type'] as CardErrorType) === status
   );
+}
+
+function hasOnlyStringValues(value: object): boolean {
+  const record = value as Record<string, unknown>;
+
+  for (const key in record) {
+    if (typeof record[key] !== 'string') {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function errorStatus(type: CardErrorType): number {
+  switch (type) {
+    case 'AUTHENTICATION_FAILED':
+      return 401;
+    case 'ACCESS_DENIED':
+      return 403;
+    case 'INVALID_PATRON_ID':
+    case 'INVALID_LIBRARY_CARD_FORMAT':
+    case 'UNSUPPORTED_BLOCK':
+    case 'BLOCK_COMMENT_REQUIRED':
+      return 400;
+    case 'PATRON_NOT_FOUND':
+      return 404;
+    case 'DUPLICATE_LIBRARY_CARD_NUMBER':
+    case 'STALE_SELECTION':
+    case 'INVALID_SETTINGS_NOTE':
+      return 409;
+    case 'UPSTREAM_FAILURE':
+      return 502;
+    case 'DEPENDENCY_UNAVAILABLE':
+      return 503;
+    case 'UNEXPECTED_FAILURE':
+      return 500;
+  }
 }
 
 function emptyError(type: CardErrorType): CardApiError {
