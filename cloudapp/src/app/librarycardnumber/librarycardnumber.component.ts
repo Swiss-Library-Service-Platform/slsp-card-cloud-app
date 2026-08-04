@@ -114,6 +114,7 @@ export class LibraryCardNumberComponent {
       return;
     }
 
+    const mutationContext = this.state.currentMutationContext();
     const data: ConfirmationDialogData = {
       confirmMessage: this.translate.instant('LibraryCardNumber.Sure'),
     };
@@ -124,9 +125,12 @@ export class LibraryCardNumberComponent {
       .pipe(
         filter((confirmed): confirmed is true => confirmed === true),
         switchMap(() => {
-          const mutationContext = this.state.currentMutationContext();
-
-          if (this.loading || !mutationContext || !item.selector) {
+          if (
+            this.loading ||
+            !mutationContext ||
+            this.state.currentMutationContext() !== mutationContext ||
+            !item.selector
+          ) {
             return EMPTY;
           }
 

@@ -179,6 +179,24 @@ describe('LibraryCardNumberComponent', () => {
     expect(api.removeLibraryCardNumber).not.toHaveBeenCalled();
   });
 
+  it('does not combine a displayed card selector with a context selected while confirmation is open', () => {
+    const confirmation$ = new Subject<boolean>();
+    const changedContext = {
+      patronId: 'patron-2',
+    } as PatronMutationContext;
+
+    dialogRef.afterClosed.and.returnValue(confirmation$);
+    api.removeLibraryCardNumber.and.returnValue(of(updatedPatron));
+
+    component.remove(removableCard);
+    state.currentMutationContext.and.returnValue(changedContext);
+    confirmation$.next(true);
+    confirmation$.complete();
+
+    expect(api.removeLibraryCardNumber).not.toHaveBeenCalled();
+    expect(state.replacePatron).not.toHaveBeenCalled();
+  });
+
   it('sends the entered value, replaces state, and resets the form on success', () => {
     const formDirective = jasmine.createSpyObj<FormGroupDirective>(
       'FormGroupDirective',
