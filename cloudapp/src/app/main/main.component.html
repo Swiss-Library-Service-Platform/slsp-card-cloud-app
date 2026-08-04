@@ -35,7 +35,7 @@
 
 <ng-container *ngIf="isUserHasRole && isInstitutionAllowed">
   <ng-container
-    *ngIf="(entities$ | async)?.length > 0; then entities; else noentities"
+    *ngIf="$any(entities$ | async)?.length > 0; then entities; else noentities"
   ></ng-container>
 
   <ng-template #noentities>

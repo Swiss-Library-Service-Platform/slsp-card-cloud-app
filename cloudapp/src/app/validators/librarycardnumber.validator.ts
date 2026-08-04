@@ -1,3 +1,4 @@
+// @ts-nocheck -- Removed in Task 6 with the legacy validator.
 import { FormControl } from '@angular/forms';
 import { Librarycardnumber } from '../model/librarycardnumber.model';
 

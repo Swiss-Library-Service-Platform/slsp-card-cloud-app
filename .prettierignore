@@ -5,5 +5,4 @@ build/
 .ng/
 coverage/
 package-lock.json
-README.md
 .superpowers/

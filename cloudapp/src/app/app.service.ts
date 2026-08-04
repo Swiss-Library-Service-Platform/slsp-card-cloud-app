@@ -1,9 +1,9 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { InitService } from '@exlibris/exl-cloudapp-angular-lib';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AppService {
-  constructor(private initService: InitService) {}
+  private readonly initService: InitService = inject(InitService);
 }

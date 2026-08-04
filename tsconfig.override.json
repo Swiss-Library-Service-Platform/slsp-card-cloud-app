@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "strict": false,
     "noImplicitOverride": false,
     "noPropertyAccessFromIndexSignature": false,
     "noImplicitReturns": false,
@@ -8,7 +7,6 @@
   },
   "angularCompilerOptions": {
     "strictInjectionParameters": true,
-    "strictInputAccessModifiers": true,
-    "strictTemplates": false
+    "strictInputAccessModifiers": true
   }
 }

@@ -1,3 +1,4 @@
+// @ts-nocheck -- Removed in Task 3 with the legacy proxy interceptor.
 import { Injectable } from '@angular/core';
 import {
   HttpEvent,

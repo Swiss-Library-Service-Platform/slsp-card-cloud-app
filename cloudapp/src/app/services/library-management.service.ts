@@ -1,3 +1,4 @@
+// @ts-nocheck -- Removed in Task 6 with the legacy service.
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import {

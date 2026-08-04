@@ -1,3 +1,4 @@
+// @ts-nocheck -- Removed in Task 6 when the legacy component is rewritten.
 import { Observable, Subscription } from 'rxjs';
 import { finalize, tap } from 'rxjs/operators';
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
@@ -35,7 +36,7 @@ export class BlockComponent implements OnInit, OnDestroy {
   ) {}
   currentFullName: string;
   currentUser: User = null;
-  currentUserBlocks: Map<string, any> = null;
+  currentUserBlocks: Record<string, any> = null;
   subscription = new Subscription();
   collapsedDouble = true;
   collapsedWrongPostal = true;

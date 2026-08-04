@@ -37,7 +37,7 @@
       <br /><br />
       <table>
         <tr *ngFor="let item of currentLibraryCardNumbers">
-          <td>{{ item['value'].toUpperCase() }}</td>
+          <td>{{ $any(item).value.toUpperCase() }}</td>
           <td class="table-cell-remove">
             <div
               *ngIf="isNumberDashedLibraryCardNumber(item)"

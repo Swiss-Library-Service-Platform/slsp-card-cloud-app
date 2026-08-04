@@ -1,3 +1,4 @@
+// @ts-nocheck -- Removed in Task 6 when the legacy component is rewritten.
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
@@ -46,7 +47,7 @@ export class LibrarycardnumberComponent implements OnInit, OnDestroy {
   }
   loading = false;
   currentFullName: string;
-  currentLibraryCardNumbers: Array<string>;
+  currentLibraryCardNumbers: Array<object>;
   currentMatriculationNumber: string;
   subscription = new Subscription();
   newLibraryCardNumber = '';
@@ -79,7 +80,7 @@ export class LibrarycardnumberComponent implements OnInit, OnDestroy {
     this._location.back();
   }
 
-  async deleteLibraryCardNumber(libraryCardNumber: string): Promise<void> {
+  async deleteLibraryCardNumber(libraryCardNumber: object): Promise<void> {
     this.dialogRef = this.dialog.open(ConfirmationdialogComponent, {
       disableClose: false,
     });

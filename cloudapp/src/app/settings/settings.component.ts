@@ -1,3 +1,4 @@
+// @ts-nocheck -- Removed in Task 6 when the legacy component is rewritten.
 import { Observable, Subscription } from 'rxjs';
 import { finalize, tap } from 'rxjs/operators';
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';

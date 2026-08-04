@@ -199,8 +199,6 @@
     },
     {
       "files": [
-        "cloudapp/src/app/app.component.ts",
-        "cloudapp/src/app/app.service.ts",
         "cloudapp/src/app/block/block.component.ts",
         "cloudapp/src/app/confirmationdialog/confirmationdialog.component.ts",
         "cloudapp/src/app/librarycardnumber/librarycardnumber.component.ts",
@@ -214,6 +212,7 @@
         "cloudapp/src/app/validators/librarycardnumber.validator.ts"
       ],
       "rules": {
+        "@typescript-eslint/ban-ts-comment": "warn",
         "@angular-eslint/no-empty-lifecycle-method": "warn",
         "@angular-eslint/prefer-inject": "warn",
         "@typescript-eslint/explicit-member-accessibility": "warn",

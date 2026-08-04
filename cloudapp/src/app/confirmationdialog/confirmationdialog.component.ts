@@ -1,3 +1,4 @@
+// @ts-nocheck -- Removed in Task 6 when the legacy component is rewritten.
 import { Component, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 

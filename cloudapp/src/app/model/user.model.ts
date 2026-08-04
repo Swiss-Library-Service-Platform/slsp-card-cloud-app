@@ -1,3 +1,4 @@
+// @ts-nocheck -- Removed in Task 6 with the legacy model.
 import { Librarycardnumber } from './librarycardnumber.model';
 
 /**

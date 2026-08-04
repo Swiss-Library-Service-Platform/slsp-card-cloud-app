@@ -28,7 +28,7 @@
       {{ 'Settings.NoAddresses' | translate }}
     </div>
     <mat-card
-      class="{{ item.preferred == true ? 'mat-card-purple' : '' }}"
+      class="{{ $any(item).preferred == true ? 'mat-card-purple' : '' }}"
       *ngFor="let item of currentUserAddresses"
     >
       <mat-card-content>
@@ -39,7 +39,10 @@
             </td>
             <td>
               <span
-                *ngFor="let addresstype of item.address_type; let i = index"
+                *ngFor="
+                  let addresstype of $any(item).address_type;
+                  let i = index
+                "
               >
                 <span *ngIf="i > 0">, </span>
                 {{ addresstype.desc }}
@@ -51,8 +54,9 @@
               {{ 'Settings.Address' | translate }}
             </td>
             <td>
-              {{ item.line1 }}, {{ item.postal_code }}, {{ item.city }},
-              {{ item.country ? item.country.desc : '' }}
+              {{ $any(item).line1 }}, {{ $any(item).postal_code }},
+              {{ $any(item).city }},
+              {{ $any(item).country ? $any(item).country.desc : '' }}
             </td>
           </tr>
           <!--
@@ -70,14 +74,14 @@
         <br />
         <mat-action-row>
           <button
-            *ngIf="!item.preferred"
+            *ngIf="!$any(item).preferred"
             mat-flat-button
             (click)="changePreferredAddress(item)"
             class="slsp-purple-button"
           >
             {{ 'Settings.UseAsPreferred' | translate }}
           </button>
-          <span *ngIf="item.preferred" class="label-preferred-address">
+          <span *ngIf="$any(item).preferred" class="label-preferred-address">
             <mat-icon size="20">check</mat-icon>
             {{ 'Settings.PreferredAddress' | translate }}
           </span>

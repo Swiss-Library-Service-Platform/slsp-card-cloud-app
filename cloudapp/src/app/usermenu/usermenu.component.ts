@@ -1,3 +1,4 @@
+// @ts-nocheck -- Removed in Task 3 when the legacy component is rewritten.
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';

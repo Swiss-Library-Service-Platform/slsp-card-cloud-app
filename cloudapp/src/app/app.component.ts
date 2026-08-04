@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { AppService } from './app.service';
 
 @Component({
@@ -6,5 +6,5 @@ import { AppService } from './app.service';
   template: '<cloudapp-alert></cloudapp-alert><router-outlet></router-outlet>',
 })
 export class AppComponent {
-  constructor(private appService: AppService) {}
+  private readonly appService: AppService = inject(AppService);
 }

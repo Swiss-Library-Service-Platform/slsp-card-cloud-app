@@ -18,9 +18,12 @@ describe('ConfirmationdialogComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ConfirmationdialogComponent);
     component = fixture.componentInstance;
+    component.confirmMessage = 'Delete this item?';
+    fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+    expect(fixture.nativeElement.textContent).toContain('Delete this item?');
   });
 });
