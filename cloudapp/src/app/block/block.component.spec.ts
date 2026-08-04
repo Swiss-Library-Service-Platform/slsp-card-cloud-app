@@ -1,4 +1,5 @@
 import { Location } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import {
   AlertService,
@@ -83,6 +84,7 @@ describe('BlockComponent', () => {
     alert = jasmine.createSpyObj<AlertService>('AlertService', [
       'error',
       'success',
+      'warn',
     ]);
 
     await TestBed.configureTestingModule({
@@ -133,6 +135,12 @@ describe('BlockComponent', () => {
         RemoveSuccess: 'Block removed',
       },
       General: { BackToMenu: 'Back' },
+      Errors: {
+        DependencyUnavailable: 'Service temporarily unavailable.',
+        UnexpectedFailure: 'An unexpected error occurred.',
+        SelectedPatron: 'The selected patron',
+        SupportId: 'Support ID: {{errorId}}',
+      },
     });
     translate.use('en');
 
@@ -249,16 +257,45 @@ describe('BlockComponent', () => {
     expect(component.loading).toBeFalse();
   });
 
-  it('reports backend failures without replacing state', () => {
+  it('uses a generic safe error for an unknown failure without replacing state', () => {
     api.removeBlock.and.returnValue(
       throwError(() => new Error('private backend detail')),
     );
 
     component.remove(block('02'));
 
-    expect(alert.error).toHaveBeenCalledOnceWith('Block removal failed', {
-      autoClose: false,
-    });
+    expect(alert.error).toHaveBeenCalledOnceWith(
+      'An unexpected error occurred.',
+      { autoClose: false },
+    );
+    expect(alert.error.calls.mostRecent().args[0]).not.toContain(
+      'private backend detail',
+    );
+    expect(state.replacePatron).not.toHaveBeenCalled();
+    expect(component.loading).toBeFalse();
+  });
+
+  it('presents a typed dependency failure as temporary-unavailable with its support id', () => {
+    api.removeBlock.and.returnValue(
+      throwError(
+        () =>
+          new HttpErrorResponse({
+            status: 503,
+            error: {
+              type: 'DEPENDENCY_UNAVAILABLE',
+              errorId: 'support-block-503',
+              context: {},
+            },
+          }),
+      ),
+    );
+
+    component.remove(block('02'));
+
+    expect(alert.error).toHaveBeenCalledOnceWith(
+      'Service temporarily unavailable. Support ID: support-block-503',
+      { autoClose: false },
+    );
     expect(state.replacePatron).not.toHaveBeenCalled();
     expect(component.loading).toBeFalse();
   });

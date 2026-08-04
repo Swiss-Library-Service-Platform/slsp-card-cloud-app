@@ -6,6 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { EMPTY, Observable, catchError, finalize, map, tap } from 'rxjs';
 
 import { CardPatron, PostalAddressView } from '../models/card-api.model';
+import { CardErrorService } from '../services/card-error.service';
 import { PatronApiService } from '../services/patron-api.service';
 import { PatronStateService } from '../services/patron-state.service';
 
@@ -20,6 +21,7 @@ export class SettingsComponent {
 
   private readonly alert = inject(AlertService);
   private readonly api = inject(PatronApiService);
+  private readonly cardErrors = inject(CardErrorService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly location = inject(Location);
   private readonly state = inject(PatronStateService);
@@ -55,10 +57,8 @@ export class SettingsComponent {
             autoClose: false,
           });
         }),
-        catchError((_error: unknown) => {
-          this.alert.error(this.translate.instant('Settings.SetError'), {
-            autoClose: false,
-          });
+        catchError((error: unknown) => {
+          this.presentError(error);
 
           return EMPTY;
         }),
@@ -76,5 +76,17 @@ export class SettingsComponent {
 
   public trackAddress(index: number, address: PostalAddressView): string {
     return address.selector ?? `${index}:${address.types.join(',')}`;
+  }
+
+  private presentError(error: unknown): void {
+    const presentation = this.cardErrors.presentation(error);
+
+    if (presentation.kind === 'warning') {
+      this.alert.warn(presentation.message, { autoClose: false });
+
+      return;
+    }
+
+    this.alert.error(presentation.message, { autoClose: false });
   }
 }

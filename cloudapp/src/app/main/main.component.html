@@ -21,6 +21,7 @@
       </a>
       {{ 'Welcome.InstitutionDenied3' | translate }}
     </p>
+    <p>{{ vm.authorizationMessage }}</p>
   </div>
 
   <div
@@ -40,6 +41,7 @@
       <li>{{ 'Welcome.UserManager' | translate }}</li>
       <li>{{ 'Welcome.GeneralSystem' | translate }}</li>
     </ul>
+    <p>{{ vm.authorizationMessage }}</p>
   </div>
 
   <div *ngIf="vm.authorization.status === 'error'" class="user-not-allowed">
@@ -47,7 +49,7 @@
       <mat-icon inline="true">error</mat-icon>
       {{ 'Welcome.AccessDenied' | translate }}
     </h1>
-    <p>{{ 'Main.TemporarilyUnavailable' | translate }}</p>
+    <p>{{ vm.authorizationMessage }}</p>
   </div>
 
   <ng-container *ngIf="vm.authorization.status === 'allowed'">

@@ -2,7 +2,6 @@ import { DestroyRef, Component, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertService, Entity } from '@exlibris/exl-cloudapp-angular-lib';
-import { TranslateService } from '@ngx-translate/core';
 import {
   Observable,
   asapScheduler,
@@ -16,6 +15,7 @@ import {
 
 import { AuthorizationResult } from '../services/authorization.service';
 import { BackendHttpService } from '../services/backend-http.service';
+import { CardErrorService } from '../services/card-error.service';
 import {
   PatronState,
   PatronStateService,
@@ -23,6 +23,7 @@ import {
 
 interface MainViewModel {
   readonly authorization: AuthorizationResult;
+  readonly authorizationMessage: string | null;
   readonly entities: readonly Entity[];
   readonly patron: PatronState;
   readonly sandbox: boolean;
@@ -42,11 +43,11 @@ export class MainComponent implements OnInit {
 
   private readonly alert = inject(AlertService);
   private readonly backend = inject(BackendHttpService);
+  private readonly cardErrors = inject(CardErrorService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly state = inject(PatronStateService);
-  private readonly translate = inject(TranslateService);
 
   public constructor() {
     this.vm$ = combineLatest([
@@ -55,12 +56,34 @@ export class MainComponent implements OnInit {
       this.state.patronState$,
       this.backend.isSandbox$(),
     ]).pipe(
-      map(([authorization, entities, patron, sandbox]) => ({
-        authorization,
-        entities,
-        patron,
-        sandbox,
-      })),
+      map(([authorization, entities, patron, sandbox]) => {
+        const presentation =
+          patron.status === 'error'
+            ? this.cardErrors.presentation(
+                patron.error,
+                patron.entity.description,
+              )
+            : null;
+        const effectiveAuthorization: AuthorizationResult =
+          patron.status === 'error' && presentation?.kind === 'access'
+            ? {
+                status: 'denied',
+                reason: presentation.reason,
+                error: patron.error,
+              }
+            : authorization;
+
+        return {
+          authorization: effectiveAuthorization,
+          authorizationMessage:
+            effectiveAuthorization.status === 'allowed'
+              ? null
+              : this.cardErrors.message(effectiveAuthorization.error),
+          entities,
+          patron,
+          sandbox,
+        };
+      }),
       shareReplay({ bufferSize: 1, refCount: true }),
     );
   }
@@ -103,19 +126,38 @@ export class MainComponent implements OnInit {
     }
 
     if (patronState.status === 'not-found') {
-      this.alert.warn(
-        `${patronState.entity.description}${this.translate.instant('Main.UserNotFound')}`,
-        { autoClose: false },
+      const notFoundPresentation = this.cardErrors.presentation(
+        patronState.error,
+        patronState.entity.description,
       );
+
+      this.alert.warn(notFoundPresentation.message, { autoClose: false });
       this.state.clear();
 
       return;
     }
 
-    this.alert.error(this.translate.instant('Main.TemporarilyUnavailable'), {
-      autoClose: false,
-    });
-    this.state.clear();
+    if (patronState.status !== 'error') {
+      return;
+    }
+
+    const presentation = this.cardErrors.presentation(
+      patronState.error,
+      patronState.entity.description,
+    );
+
+    if (presentation.kind === 'warning') {
+      this.alert.warn(presentation.message, { autoClose: false });
+      this.state.clear();
+
+      return;
+    }
+
+    this.alert.error(presentation.message, { autoClose: false });
+
+    if (presentation.kind !== 'access') {
+      this.state.clear();
+    }
   }
 }
 

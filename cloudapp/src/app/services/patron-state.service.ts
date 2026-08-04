@@ -1,4 +1,3 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { DestroyRef, inject, Injectable } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -27,15 +26,12 @@ import {
   tap,
 } from 'rxjs';
 
-import {
-  CardApiError,
-  CardErrorType,
-  CardPatron,
-} from '../models/card-api.model';
+import { CardApiError, CardPatron } from '../models/card-api.model';
 import {
   AuthorizationResult,
   AuthorizationService,
 } from './authorization.service';
+import { normalizeCardError } from './card-error.service';
 import { PatronApiService } from './patron-api.service';
 
 export type PatronState =
@@ -46,7 +42,11 @@ export type PatronState =
       readonly entity: Entity;
       readonly patron: CardPatron;
     }
-  | { readonly status: 'not-found'; readonly entity: Entity }
+  | {
+      readonly status: 'not-found';
+      readonly entity: Entity;
+      readonly error: CardApiError;
+    }
   | {
       readonly status: 'error';
       readonly entity: Entity;
@@ -69,22 +69,6 @@ interface PatronReplacement {
   readonly patron: CardPatron;
   readonly mutationContext: PatronMutationContext;
 }
-
-const CARD_ERROR_TYPES: readonly CardErrorType[] = [
-  'AUTHENTICATION_FAILED',
-  'ACCESS_DENIED',
-  'INVALID_PATRON_ID',
-  'PATRON_NOT_FOUND',
-  'INVALID_LIBRARY_CARD_FORMAT',
-  'DUPLICATE_LIBRARY_CARD_NUMBER',
-  'UNSUPPORTED_BLOCK',
-  'BLOCK_COMMENT_REQUIRED',
-  'STALE_SELECTION',
-  'INVALID_SETTINGS_NOTE',
-  'UPSTREAM_FAILURE',
-  'DEPENDENCY_UNAVAILABLE',
-  'UNEXPECTED_FAILURE',
-];
 
 export function extractPatronId(entity: Entity): string | null {
   if (entity.type !== EntityType.USER) {
@@ -265,7 +249,7 @@ export class PatronStateService {
     const apiError = normalizeCardError(error);
 
     return apiError.type === 'PATRON_NOT_FOUND'
-      ? { status: 'not-found', entity }
+      ? { status: 'not-found', entity, error: apiError }
       : { status: 'error', entity, error: apiError };
   }
 }
@@ -280,84 +264,4 @@ function sameEntity(left: Entity | null, right: Entity | null): boolean {
       left.link === right.link &&
       left.description === right.description)
   );
-}
-
-function normalizeCardError(error: unknown): CardApiError {
-  if (error instanceof HttpErrorResponse) {
-    if (isCardApiError(error.error, error.status)) {
-      return error.error;
-    }
-
-    if (error.status === 502) {
-      return emptyError('UPSTREAM_FAILURE');
-    }
-
-    if (error.status === 0 || error.status === 503 || error.status === 504) {
-      return emptyError('DEPENDENCY_UNAVAILABLE');
-    }
-  }
-
-  return emptyError('UNEXPECTED_FAILURE');
-}
-
-function isCardApiError(value: unknown, status: number): value is CardApiError {
-  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
-    return false;
-  }
-
-  const candidate = value as Record<string, unknown>;
-
-  return (
-    typeof candidate['type'] === 'string' &&
-    CARD_ERROR_TYPES.includes(candidate['type'] as CardErrorType) &&
-    typeof candidate['errorId'] === 'string' &&
-    candidate['errorId'].trim() !== '' &&
-    typeof candidate['context'] === 'object' &&
-    candidate['context'] !== null &&
-    !Array.isArray(candidate['context']) &&
-    hasOnlyStringValues(candidate['context']) &&
-    errorStatus(candidate['type'] as CardErrorType) === status
-  );
-}
-
-function hasOnlyStringValues(value: object): boolean {
-  const record = value as Record<string, unknown>;
-
-  for (const key in record) {
-    if (typeof record[key] !== 'string') {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-function errorStatus(type: CardErrorType): number {
-  switch (type) {
-    case 'AUTHENTICATION_FAILED':
-      return 401;
-    case 'ACCESS_DENIED':
-      return 403;
-    case 'INVALID_PATRON_ID':
-    case 'INVALID_LIBRARY_CARD_FORMAT':
-    case 'UNSUPPORTED_BLOCK':
-    case 'BLOCK_COMMENT_REQUIRED':
-      return 400;
-    case 'PATRON_NOT_FOUND':
-      return 404;
-    case 'DUPLICATE_LIBRARY_CARD_NUMBER':
-    case 'STALE_SELECTION':
-    case 'INVALID_SETTINGS_NOTE':
-      return 409;
-    case 'UPSTREAM_FAILURE':
-      return 502;
-    case 'DEPENDENCY_UNAVAILABLE':
-      return 503;
-    case 'UNEXPECTED_FAILURE':
-      return 500;
-  }
-}
-
-function emptyError(type: CardErrorType): CardApiError {
-  return { type, errorId: '', context: {} };
 }

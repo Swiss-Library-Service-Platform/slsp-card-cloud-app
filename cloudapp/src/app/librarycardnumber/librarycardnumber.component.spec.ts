@@ -1,4 +1,5 @@
 import { Location } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormGroupDirective } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
@@ -82,6 +83,7 @@ describe('LibraryCardNumberComponent', () => {
     alert = jasmine.createSpyObj<AlertService>('AlertService', [
       'error',
       'success',
+      'warn',
     ]);
     dialogRef = jasmine.createSpyObj<MatDialogRef<ConfirmationdialogComponent>>(
       'MatDialogRef',
@@ -126,6 +128,12 @@ describe('LibraryCardNumberComponent', () => {
       },
       Main: { LibraryCardNumber: 'Card Number' },
       General: { BackToMenu: 'Back' },
+      Errors: {
+        DuplicateLibraryCardNumber: 'This card number is already in use.',
+        UnexpectedFailure: 'An unexpected error occurred.',
+        SelectedPatron: 'The selected patron',
+        SupportId: 'Support ID: {{errorId}}',
+      },
     });
     translate.use('en');
 
@@ -246,7 +254,7 @@ describe('LibraryCardNumberComponent', () => {
     expect(component.loading).toBeFalse();
   });
 
-  it('reports backend errors and always releases the loading state', () => {
+  it('uses a generic safe error and always releases loading for an unknown failure', () => {
     api.addLibraryCardNumber.and.returnValue(
       throwError(() => new Error('backend detail must not render')),
     );
@@ -258,9 +266,46 @@ describe('LibraryCardNumberComponent', () => {
       ]),
     );
 
-    expect(alert.error).toHaveBeenCalledOnceWith('Card addition failed', {
-      autoClose: false,
-    });
+    expect(alert.error).toHaveBeenCalledOnceWith(
+      'An unexpected error occurred.',
+      {
+        autoClose: false,
+      },
+    );
+    expect(alert.error.calls.mostRecent().args[0]).not.toContain(
+      'backend detail must not render',
+    );
+    expect(state.replacePatron).not.toHaveBeenCalled();
+    expect(component.loading).toBeFalse();
+  });
+
+  it('presents a duplicate-card backend conflict as a warning with its support id', () => {
+    api.addLibraryCardNumber.and.returnValue(
+      throwError(
+        () =>
+          new HttpErrorResponse({
+            status: 409,
+            error: {
+              type: 'DUPLICATE_LIBRARY_CARD_NUMBER',
+              errorId: 'support-card-409',
+              context: { detail: 'private backend detail' },
+            },
+          }),
+      ),
+    );
+    component.numberForm.setValue({ newLibraryCardNumber: 'NEW-CARD' });
+
+    component.add(
+      jasmine.createSpyObj<FormGroupDirective>('FormGroupDirective', [
+        'resetForm',
+      ]),
+    );
+
+    expect(alert.warn).toHaveBeenCalledOnceWith(
+      'This card number is already in use. Support ID: support-card-409',
+      { autoClose: false },
+    );
+    expect(alert.error).not.toHaveBeenCalled();
     expect(state.replacePatron).not.toHaveBeenCalled();
     expect(component.loading).toBeFalse();
   });

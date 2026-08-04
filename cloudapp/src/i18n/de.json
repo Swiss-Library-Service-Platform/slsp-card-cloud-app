@@ -32,6 +32,23 @@
     "TemporarilyUnavailable": "Dienst vorübergehend nicht verfügbar.",
     "Help": "Hilfe"
   },
+  "Errors": {
+    "AuthenticationFailed": "Ihre Sitzung konnte nicht authentifiziert werden. Bitte öffnen Sie die App erneut.",
+    "AccessDenied": "Sie sind nicht berechtigt, SLSP Card zu verwenden.",
+    "InvalidPatronId": "Der ausgewählte Benutzer kann nicht geladen werden.",
+    "PatronNotFound": "{{entityDescription}} wurde nicht in der Network Zone gefunden.",
+    "InvalidLibraryCardFormat": "Das Format der Bibliothekskarten-Nummer ist ungültig.",
+    "DuplicateLibraryCardNumber": "Diese Bibliothekskarten-Nummer wird bereits verwendet.",
+    "UnsupportedBlock": "Dieser Sperrentyp wird nicht unterstützt.",
+    "BlockCommentRequired": "Für diese Sperre ist ein Kommentar erforderlich.",
+    "StaleSelection": "Das ausgewählte Element wurde geändert. Laden Sie den Benutzer neu und versuchen Sie es erneut.",
+    "InvalidSettingsNote": "Die bevorzugte Adresse konnte nicht geändert werden, weil die gemeinsamen Einstellungen ungültig sind.",
+    "UpstreamFailure": "Dienst vorübergehend nicht verfügbar.",
+    "DependencyUnavailable": "Dienst vorübergehend nicht verfügbar.",
+    "UnexpectedFailure": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+    "SelectedPatron": "Der ausgewählte Benutzer",
+    "SupportId": "Support-ID: {{errorId}}"
+  },
   "LibraryCardNumber": {
     "Add": "Hinzufügen",
     "Alias": "Alias",

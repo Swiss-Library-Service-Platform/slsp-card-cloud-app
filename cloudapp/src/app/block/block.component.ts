@@ -10,6 +10,7 @@ import {
   BlockView,
   CardPatron,
 } from '../models/card-api.model';
+import { CardErrorService } from '../services/card-error.service';
 import { PatronApiService } from '../services/patron-api.service';
 import { PatronStateService } from '../services/patron-state.service';
 
@@ -33,6 +34,7 @@ export class BlockComponent {
 
   private readonly alert = inject(AlertService);
   private readonly api = inject(PatronApiService);
+  private readonly cardErrors = inject(CardErrorService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly location = inject(Location);
   private readonly state = inject(PatronStateService);
@@ -68,10 +70,8 @@ export class BlockComponent {
             autoClose: false,
           });
         }),
-        catchError((_error: unknown) => {
-          this.alert.error(this.translate.instant('Blocks.AddError'), {
-            autoClose: false,
-          });
+        catchError((error: unknown) => {
+          this.presentError(error);
 
           return EMPTY;
         }),
@@ -118,10 +118,8 @@ export class BlockComponent {
             autoClose: false,
           });
         }),
-        catchError((_error: unknown) => {
-          this.alert.error(this.translate.instant('Blocks.RemoveError'), {
-            autoClose: false,
-          });
+        catchError((error: unknown) => {
+          this.presentError(error);
 
           return EMPTY;
         }),
@@ -131,5 +129,17 @@ export class BlockComponent {
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe();
+  }
+
+  private presentError(error: unknown): void {
+    const presentation = this.cardErrors.presentation(error);
+
+    if (presentation.kind === 'warning') {
+      this.alert.warn(presentation.message, { autoClose: false });
+
+      return;
+    }
+
+    this.alert.error(presentation.message, { autoClose: false });
   }
 }

@@ -32,6 +32,23 @@
     "TemporarilyUnavailable": "Service temporairement non disponible.",
     "Help": "Aide"
   },
+  "Errors": {
+    "AuthenticationFailed": "Votre session n'a pas pu être authentifiée. Veuillez rouvrir l'application.",
+    "AccessDenied": "Vous n'êtes pas autorisé à utiliser SLSP Card.",
+    "InvalidPatronId": "Le compte sélectionné ne peut pas être chargé.",
+    "PatronNotFound": "{{entityDescription}} n'a pas été trouvé dans la zone réseau.",
+    "InvalidLibraryCardFormat": "Le format du numéro de carte n'est pas valide.",
+    "DuplicateLibraryCardNumber": "Ce numéro de carte est déjà utilisé.",
+    "UnsupportedBlock": "Ce type de blocage n'est pas pris en charge.",
+    "BlockCommentRequired": "Un commentaire est requis pour ce blocage.",
+    "StaleSelection": "L'élément sélectionné a changé. Rechargez le compte et réessayez.",
+    "InvalidSettingsNote": "L'adresse préférée n'a pas pu être modifiée, car les paramètres partagés ne sont pas valides.",
+    "UpstreamFailure": "Service temporairement non disponible.",
+    "DependencyUnavailable": "Service temporairement non disponible.",
+    "UnexpectedFailure": "Une erreur inattendue s'est produite. Veuillez réessayer.",
+    "SelectedPatron": "Le compte sélectionné",
+    "SupportId": "Identifiant d'assistance: {{errorId}}"
+  },
   "LibraryCardNumber": {
     "Add": "Ajouter",
     "Alias": "Alias",

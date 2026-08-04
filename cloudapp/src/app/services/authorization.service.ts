@@ -1,16 +1,18 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { catchError, map, Observable, of } from 'rxjs';
 
+import { CardApiError } from '../models/card-api.model';
 import { BackendHttpService } from './backend-http.service';
+import { normalizeCardError } from './card-error.service';
 
 export type AuthorizationResult =
   | { readonly status: 'allowed' }
   | {
       readonly status: 'denied';
       readonly reason: 'authentication' | 'authorization';
+      readonly error: CardApiError;
     }
-  | { readonly status: 'error'; readonly error: unknown };
+  | { readonly status: 'error'; readonly error: CardApiError };
 
 @Injectable({ providedIn: 'root' })
 export class AuthorizationService {
@@ -20,15 +22,25 @@ export class AuthorizationService {
     return this.backend.get<void>('/api/v1/allowed').pipe(
       map((): AuthorizationResult => ({ status: 'allowed' })),
       catchError((error: unknown): Observable<AuthorizationResult> => {
-        if (error instanceof HttpErrorResponse && error.status === 401) {
-          return of({ status: 'denied', reason: 'authentication' });
+        const apiError = normalizeCardError(error);
+
+        if (apiError.type === 'AUTHENTICATION_FAILED') {
+          return of({
+            status: 'denied',
+            reason: 'authentication',
+            error: apiError,
+          });
         }
 
-        if (error instanceof HttpErrorResponse && error.status === 403) {
-          return of({ status: 'denied', reason: 'authorization' });
+        if (apiError.type === 'ACCESS_DENIED') {
+          return of({
+            status: 'denied',
+            reason: 'authorization',
+            error: apiError,
+          });
         }
 
-        return of({ status: 'error', error });
+        return of({ status: 'error', error: apiError });
       }),
     );
   }

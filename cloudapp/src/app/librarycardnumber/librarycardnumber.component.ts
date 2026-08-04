@@ -29,6 +29,7 @@ import {
   ConfirmationdialogComponent,
 } from '../confirmationdialog/confirmationdialog.component';
 import { CardPatron, LibraryCardNumberView } from '../models/card-api.model';
+import { CardErrorService } from '../services/card-error.service';
 import { PatronApiService } from '../services/patron-api.service';
 import { PatronStateService } from '../services/patron-state.service';
 
@@ -48,6 +49,7 @@ export class LibraryCardNumberComponent {
 
   private readonly alert = inject(AlertService);
   private readonly api = inject(PatronApiService);
+  private readonly cardErrors = inject(CardErrorService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly dialog = inject(MatDialog);
   private readonly formBuilder = inject(FormBuilder);
@@ -89,11 +91,8 @@ export class LibraryCardNumberComponent {
             { autoClose: false },
           );
         }),
-        catchError((_error: unknown) => {
-          this.alert.error(
-            this.translate.instant('LibraryCardNumber.AddError'),
-            { autoClose: false },
-          );
+        catchError((error: unknown) => {
+          this.presentError(error);
 
           return EMPTY;
         }),
@@ -146,11 +145,8 @@ export class LibraryCardNumberComponent {
                   { autoClose: false },
                 );
               }),
-              catchError((_error: unknown) => {
-                this.alert.error(
-                  this.translate.instant('LibraryCardNumber.RemoveError'),
-                  { autoClose: false },
-                );
+              catchError((error: unknown) => {
+                this.presentError(error);
 
                 return EMPTY;
               }),
@@ -169,6 +165,18 @@ export class LibraryCardNumberComponent {
     item: LibraryCardNumberView,
   ): string {
     return item.selector ?? `${index}:${item.value ?? ''}`;
+  }
+
+  private presentError(error: unknown): void {
+    const presentation = this.cardErrors.presentation(error);
+
+    if (presentation.kind === 'warning') {
+      this.alert.warn(presentation.message, { autoClose: false });
+
+      return;
+    }
+
+    this.alert.error(presentation.message, { autoClose: false });
   }
 }
 

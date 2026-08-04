@@ -32,6 +32,23 @@
     "TemporarilyUnavailable": "Service temporarily unavailable",
     "Help": "Help"
   },
+  "Errors": {
+    "AuthenticationFailed": "Your session could not be authenticated. Please reopen the app.",
+    "AccessDenied": "You are not authorized to use SLSP Card.",
+    "InvalidPatronId": "The selected patron cannot be loaded.",
+    "PatronNotFound": "{{entityDescription}} was not found in the Network Zone.",
+    "InvalidLibraryCardFormat": "The library card number format is invalid.",
+    "DuplicateLibraryCardNumber": "This library card number is already in use.",
+    "UnsupportedBlock": "This block type is not supported.",
+    "BlockCommentRequired": "A comment is required for this block.",
+    "StaleSelection": "The selected item changed. Reload the patron and try again.",
+    "InvalidSettingsNote": "The preferred address could not be changed because the shared settings are invalid.",
+    "UpstreamFailure": "Service temporarily unavailable",
+    "DependencyUnavailable": "Service temporarily unavailable",
+    "UnexpectedFailure": "An unexpected error occurred. Please try again.",
+    "SelectedPatron": "The selected patron",
+    "SupportId": "Support ID: {{errorId}}"
+  },
   "LibraryCardNumber": {
     "Add": "Add",
     "Alias": "Alias",

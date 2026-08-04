@@ -32,6 +32,23 @@
     "TemporarilyUnavailable": "Servizio temporaneamente non disponibile",
     "Help": "Aiuto"
   },
+  "Errors": {
+    "AuthenticationFailed": "Non è stato possibile autenticare la sessione. Riapri l'app.",
+    "AccessDenied": "Non sei autorizzato a utilizzare SLSP Card.",
+    "InvalidPatronId": "Non è possibile caricare l'utente selezionato.",
+    "PatronNotFound": "{{entityDescription}} non è stato trovato nella Network Zone.",
+    "InvalidLibraryCardFormat": "Il formato del numero di tessera non è valido.",
+    "DuplicateLibraryCardNumber": "Questo numero di tessera è già in uso.",
+    "UnsupportedBlock": "Questo tipo di blocco non è supportato.",
+    "BlockCommentRequired": "È necessario un commento per questo blocco.",
+    "StaleSelection": "L'elemento selezionato è cambiato. Ricarica l'utente e riprova.",
+    "InvalidSettingsNote": "Non è stato possibile modificare l'indirizzo preferito perché le impostazioni condivise non sono valide.",
+    "UpstreamFailure": "Servizio temporaneamente non disponibile",
+    "DependencyUnavailable": "Servizio temporaneamente non disponibile",
+    "UnexpectedFailure": "Si è verificato un errore imprevisto. Riprova.",
+    "SelectedPatron": "L'utente selezionato",
+    "SupportId": "ID assistenza: {{errorId}}"
+  },
   "LibraryCardNumber": {
     "Add": "Aggiungere",
     "Alias": "Alias",

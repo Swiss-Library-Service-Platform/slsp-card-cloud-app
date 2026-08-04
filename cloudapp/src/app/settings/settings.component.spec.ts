@@ -1,4 +1,5 @@
 import { Location } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import {
   AlertService,
@@ -95,6 +96,7 @@ describe('SettingsComponent', () => {
     alert = jasmine.createSpyObj<AlertService>('AlertService', [
       'error',
       'success',
+      'warn',
     ]);
 
     await TestBed.configureTestingModule({
@@ -125,6 +127,12 @@ describe('SettingsComponent', () => {
         SetSuccess: 'Address changed',
       },
       General: { BackToMenu: 'Back' },
+      Errors: {
+        InvalidSettingsNote: 'The shared settings are invalid.',
+        UnexpectedFailure: 'An unexpected error occurred.',
+        SelectedPatron: 'The selected patron',
+        SupportId: 'Support ID: {{errorId}}',
+      },
     });
     translate.use('en');
 
@@ -202,16 +210,46 @@ describe('SettingsComponent', () => {
     expect(component.loading).toBeFalse();
   });
 
-  it('reports backend failures without replacing state', () => {
+  it('uses a generic safe error for an unknown failure without replacing state', () => {
     api.setPreferredAddress.and.returnValue(
       throwError(() => new Error('private backend detail')),
     );
 
     component.changePreferredAddress(selectable);
 
-    expect(alert.error).toHaveBeenCalledOnceWith('Address change failed', {
-      autoClose: false,
-    });
+    expect(alert.error).toHaveBeenCalledOnceWith(
+      'An unexpected error occurred.',
+      { autoClose: false },
+    );
+    expect(alert.error.calls.mostRecent().args[0]).not.toContain(
+      'private backend detail',
+    );
+    expect(state.replacePatron).not.toHaveBeenCalled();
+    expect(component.loading).toBeFalse();
+  });
+
+  it('presents invalid shared settings as a warning with its support id', () => {
+    api.setPreferredAddress.and.returnValue(
+      throwError(
+        () =>
+          new HttpErrorResponse({
+            status: 409,
+            error: {
+              type: 'INVALID_SETTINGS_NOTE',
+              errorId: 'support-settings-409',
+              context: { detail: 'private backend detail' },
+            },
+          }),
+      ),
+    );
+
+    component.changePreferredAddress(selectable);
+
+    expect(alert.warn).toHaveBeenCalledOnceWith(
+      'The shared settings are invalid. Support ID: support-settings-409',
+      { autoClose: false },
+    );
+    expect(alert.error).not.toHaveBeenCalled();
     expect(state.replacePatron).not.toHaveBeenCalled();
     expect(component.loading).toBeFalse();
   });

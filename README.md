@@ -24,6 +24,31 @@ In order to use this app
 
 tex
 
+## Local development
+
+Local development requires this frontend and `slsp-card-backend` as sibling
+repositories. Configure the backend with uncommitted Alma sandbox/test
+credentials before starting it. Never put credentials in this repository.
+
+Start the backend and frontend in two terminals:
+
+```bash
+cd ../slsp-card-backend && ./gradlew quarkusDev
+```
+
+```bash
+cd ../slsp-card-cloud-app && npm run start
+```
+
+Use the local URL printed by the Cloud App development server from a real Alma
+sandbox Cloud App session. Run the manual parity checklist in
+`docs/plans/steps/step1.md` only with safe test patrons, and record only
+pass/fail plus sanitized support correlation IDs. Do not record patron or
+operator details.
+
+Beta deployment and production cutover are later work. Local development does
+not replace or modify the currently released production Cloud App.
+
 ## Daily Use
 
 Start Screen of the app:

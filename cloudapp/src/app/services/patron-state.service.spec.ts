@@ -261,7 +261,15 @@ describe('PatronStateService', () => {
     const service = configure('true');
 
     authorization.check.and.returnValue(
-      of({ status: 'denied', reason: 'authorization' }),
+      of({
+        status: 'denied',
+        reason: 'authorization',
+        error: {
+          type: 'ACCESS_DENIED',
+          errorId: 'support-403',
+          context: {},
+        },
+      }),
     );
     api.getPatron.and.returnValue(of(patron('One')));
     service.patronState$.subscribe();
@@ -321,7 +329,15 @@ describe('PatronStateService', () => {
     let disabledComplete = false;
 
     authorization.check.and.returnValue(
-      of({ status: 'denied', reason: 'authorization' }),
+      of({
+        status: 'denied',
+        reason: 'authorization',
+        error: {
+          type: 'ACCESS_DENIED',
+          errorId: 'support-403',
+          context: {},
+        },
+      }),
     );
     service.autoSelect$('true').subscribe({
       complete: () => {
@@ -437,6 +453,7 @@ describe('PatronStateService', () => {
     expect(observed as PatronState).toEqual({
       status: 'not-found',
       entity: selected,
+      error,
     });
   });
 
@@ -552,6 +569,7 @@ describe('PatronStateService', () => {
         expect(observed as PatronState).toEqual({
           status: 'not-found',
           entity: selected,
+          error,
         });
       } else {
         expect(observed as PatronState).toEqual({

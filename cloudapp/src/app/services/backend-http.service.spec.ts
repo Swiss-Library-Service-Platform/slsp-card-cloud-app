@@ -189,7 +189,7 @@ describe('BackendHttpService', () => {
     expect(events.getAuthToken).toHaveBeenCalledTimes(2);
   });
 
-  it('sends authorization without a legacy environment query parameter', () => {
+  it('sends authorization with only the caller-supplied query parameters', () => {
     service
       .get<TestResponse>(
         '/api/v1/patrons/123',
@@ -206,7 +206,8 @@ describe('BackendHttpService', () => {
     expect(request.request.headers.get('Authorization')).toBe(
       'Bearer signed-token',
     );
-    expect(request.request.params.has('isProdEnvironment')).toBeFalse();
+    expect(request.request.params.keys()).toEqual(['view']);
+    expect(request.request.params.get('view')).toBe('complete');
     request.flush({ result: 'ok' });
   });
 
