@@ -57,3 +57,6 @@ Thumbs.db
 build
 cloudapp/src/assets/manifest*.json
 config.json
+
+# Local agent execution reports
+/.superpowers/sdd/
