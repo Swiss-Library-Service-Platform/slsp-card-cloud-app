@@ -1,132 +1,135 @@
-// @ts-nocheck -- Removed in Task 6 when the legacy component is rewritten.
-import { Observable, Subscription } from 'rxjs';
-import { finalize, tap } from 'rxjs/operators';
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
-import {
-  CloudAppRestService,
-  CloudAppEventsService,
-  Request,
-  HttpMethod,
-  Entity,
-  RestErrorResponse,
-  AlertService,
-} from '@exlibris/exl-cloudapp-angular-lib';
-import { MatRadioChange } from '@angular/material/radio';
-import { Router, ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
-import { LibraryManagementService } from '../services/library-management.service';
-import { User } from '../model/user.model';
-import { ElementRef, ViewChild } from '@angular/core';
+import { DestroyRef, Component, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { AlertService } from '@exlibris/exl-cloudapp-angular-lib';
 import { TranslateService } from '@ngx-translate/core';
+import { EMPTY, Observable, catchError, finalize, map, tap } from 'rxjs';
+
+import {
+  AddableBlockCode,
+  BlockView,
+  CardPatron,
+} from '../models/card-api.model';
+import { PatronApiService } from '../services/patron-api.service';
+import { PatronStateService } from '../services/patron-state.service';
 
 @Component({
   selector: 'app-block',
   templateUrl: './block.component.html',
   styleUrls: ['block.component.scss'],
 })
-export class BlockComponent implements OnInit, OnDestroy {
-  @Input() primary_id: string;
+export class BlockComponent {
+  public readonly patron$: Observable<CardPatron | null>;
+  public collapseGlobal = true;
+  public collapsedDouble = true;
+  public collapsedNew = true;
+  public collapsedWrongEmail = true;
+  public collapsedWrongPostal = true;
+  public commentDouble = '';
+  public commentGlobal = '';
+  public commentWrongEmail = '';
+  public commentWrongPostal = '';
+  public loading = false;
 
-  constructor(
-    private _libraryManagementService: LibraryManagementService,
-    private eventsService: CloudAppEventsService,
-    private alert: AlertService,
-    private _location: Location,
-    private translate: TranslateService,
-  ) {}
-  currentFullName: string;
-  currentUser: User = null;
-  currentUserBlocks: Record<string, any> = null;
-  subscription = new Subscription();
-  collapsedDouble = true;
-  collapsedWrongPostal = true;
-  collapsedWrongEmail = true;
-  collapseGlobal = true;
-  collapsedNew = true;
-  commentDouble = '';
-  commentWrongPostal = '';
-  commentWrongEmail = '';
-  commentGlobal = '';
-  loading: boolean;
+  private readonly alert = inject(AlertService);
+  private readonly api = inject(PatronApiService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly location = inject(Location);
+  private readonly state = inject(PatronStateService);
+  private readonly translate = inject(TranslateService);
 
-  ngOnInit(): void {
-    this.subscription = this._libraryManagementService
-      .getUserObject()
-      .subscribe(
-        (res) => {
-          this.currentFullName = res.getFullName();
-          this.currentUser = res;
-          this.currentUserBlocks =
-            this._libraryManagementService.user.getUserBlocks();
-        },
-        (err) => {
-          console.error(`An error occurred: ${err.message}`);
-        },
-      );
+  public constructor() {
+    this.patron$ = this.state.patronState$.pipe(
+      map((patronState) =>
+        patronState.status === 'ready' ? patronState.patron : null,
+      ),
+    );
   }
 
-  async addUserBlock(blockType: string, comment: string): Promise<void> {
-    if (blockType == '09' && !comment) {
-      this.alert.error('Comment must not be empty on global block!', {
-        autoClose: false,
-      });
+  public add(code: AddableBlockCode, comment: string): void {
+    const trimmedComment = comment.trim();
+    const mutationContext = this.state.currentMutationContext();
 
+    if (
+      this.loading ||
+      !mutationContext ||
+      (code === '09' && trimmedComment === '')
+    ) {
       return;
     }
-    this.loading = true;
 
-    const isAdded = await this._libraryManagementService.addUserblock(
-      blockType,
-      comment,
+    this.loading = true;
+    this.api
+      .addBlock(mutationContext.patronId, code, trimmedComment)
+      .pipe(
+        tap((patron) => {
+          this.state.replacePatron(patron, mutationContext);
+          this.alert.success(this.translate.instant('Blocks.AddSuccess'), {
+            autoClose: false,
+          });
+        }),
+        catchError((_error: unknown) => {
+          this.alert.error(this.translate.instant('Blocks.AddError'), {
+            autoClose: false,
+          });
+
+          return EMPTY;
+        }),
+        finalize(() => {
+          this.loading = false;
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe();
+  }
+
+  public getDateString(date: string | null): string {
+    return date ? new Date(date).toUTCString() : '';
+  }
+
+  public hasBlocks(blocks: CardPatron['blocks']): boolean {
+    return !!(
+      blocks['02'] ||
+      blocks['03'] ||
+      blocks['03.1'] ||
+      blocks['09'] ||
+      blocks['08']
     );
-
-    if (!isAdded) {
-      const errMessage = await this.translate
-        .get('Blocks.AddError')
-        .toPromise();
-
-      this.alert.error(errMessage, { autoClose: false });
-    } else {
-      const succMessage = await this.translate
-        .get('Blocks.AddSuccess')
-        .toPromise();
-
-      this.alert.success(succMessage, { autoClose: false });
-    }
-    this.loading = false;
   }
 
-  async removeUserBlock(blockType: string): Promise<void> {
+  public navigateBack(): void {
+    this.location.back();
+  }
+
+  public remove(block: BlockView): void {
+    const mutationContext = this.state.currentMutationContext();
+
+    if (this.loading || !mutationContext) {
+      return;
+    }
+
     this.loading = true;
+    this.api
+      .removeBlock(mutationContext.patronId, block.selector)
+      .pipe(
+        tap((patron) => {
+          this.state.replacePatron(patron, mutationContext);
+          this.alert.success(this.translate.instant('Blocks.RemoveSuccess'), {
+            autoClose: false,
+          });
+        }),
+        catchError((_error: unknown) => {
+          this.alert.error(this.translate.instant('Blocks.RemoveError'), {
+            autoClose: false,
+          });
 
-    const isRemoved =
-      await this._libraryManagementService.removeUserblock(blockType);
-
-    if (!isRemoved) {
-      const errMessage = await this.translate
-        .get('Blocks.RemoveError')
-        .toPromise();
-
-      this.alert.error(errMessage, { autoClose: false });
-    } else {
-      const succMessage = await this.translate
-        .get('Blocks.RemoveSuccess')
-        .toPromise();
-
-      this.alert.success(succMessage, { autoClose: false });
-    }
-    this.loading = false;
-  }
-
-  ngOnDestroy(): void {
-    this.subscription.unsubscribe();
-  }
-
-  navigateBack(): void {
-    this._location.back();
-  }
-
-  getDateString(date: string): string {
-    return new Date(date).toUTCString();
+          return EMPTY;
+        }),
+        finalize(() => {
+          this.loading = false;
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe();
   }
 }

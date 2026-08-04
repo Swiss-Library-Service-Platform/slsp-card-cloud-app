@@ -1,35 +1,265 @@
+import { Location } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  AlertService,
+  Entity,
+  EntityType,
+} from '@exlibris/exl-cloudapp-angular-lib';
+import { TranslateService } from '@ngx-translate/core';
+import { BehaviorSubject, Subject, of, throwError } from 'rxjs';
 
 import { AppModule } from '../app.module';
-import { LibraryManagementService } from '../services/library-management.service';
-import { createLibraryManagementStub } from '../../testing/library-management.stub';
+import {
+  AddableBlockCode,
+  BlockView,
+  CardPatron,
+} from '../models/card-api.model';
+import { PatronApiService } from '../services/patron-api.service';
+import {
+  PatronMutationContext,
+  PatronState,
+  PatronStateService,
+} from '../services/patron-state.service';
 import { BlockComponent } from './block.component';
 
 describe('BlockComponent', () => {
+  let alert: jasmine.SpyObj<AlertService>;
+  let api: jasmine.SpyObj<PatronApiService>;
   let component: BlockComponent;
   let fixture: ComponentFixture<BlockComponent>;
+  let patronState$: BehaviorSubject<PatronState>;
+  let state: jasmine.SpyObj<PatronStateService>;
+  const selected: Entity = {
+    id: 'patron-1',
+    type: EntityType.USER,
+    link: '/users/patron-1',
+    description: 'Selected patron',
+  };
+  const context = { patronId: 'patron-1' } as PatronMutationContext;
+  const block = (
+    code: BlockView['code'],
+    selector = `${code}-selector`,
+  ): BlockView => ({
+    code,
+    createdDate: '2026-08-01T12:00:00Z',
+    expiryDate: null,
+    note: `note-${code}`,
+    selector,
+  });
+  const allBlocks: CardPatron['blocks'] = {
+    '02': block('02'),
+    '03': block('03'),
+    '03.1': block('03.1'),
+    '09': block('09'),
+    '08': block('08'),
+  };
+  const patron = (external: boolean, blocks = allBlocks): CardPatron => ({
+    fullName: 'Test Patron',
+    external,
+    libraryCardNumbers: [],
+    matriculationNumber: null,
+    dashedMatriculationNumber: null,
+    blocks,
+    postalAddresses: [],
+  });
+  const updatedPatron = patron(false, { '03': block('03', 'fresh') });
 
   beforeEach(async () => {
+    patronState$ = new BehaviorSubject<PatronState>({
+      status: 'ready',
+      entity: selected,
+      patron: patron(true),
+    });
+    state = jasmine.createSpyObj<PatronStateService>(
+      'PatronStateService',
+      ['currentMutationContext', 'replacePatron'],
+      { patronState$ },
+    );
+    state.currentMutationContext.and.returnValue(context);
+    api = jasmine.createSpyObj<PatronApiService>('PatronApiService', [
+      'addBlock',
+      'removeBlock',
+    ]);
+    alert = jasmine.createSpyObj<AlertService>('AlertService', [
+      'error',
+      'success',
+    ]);
+
     await TestBed.configureTestingModule({
       imports: [AppModule],
       providers: [
+        { provide: PatronApiService, useValue: api },
+        { provide: PatronStateService, useValue: state },
+        { provide: AlertService, useValue: alert },
         {
-          provide: LibraryManagementService,
-          useFactory: createLibraryManagementStub,
+          provide: Location,
+          useValue: jasmine.createSpyObj<Location>('Location', ['back']),
         },
       ],
     }).compileComponents();
-  });
 
-  beforeEach(() => {
+    const translate = TestBed.inject(TranslateService);
+
+    translate.setTranslation('en', {
+      Blocks: {
+        Status: 'Status:',
+        ExistingBlocks: 'Account is blocked!',
+        NoBlocks: 'User has no blocks.',
+        DoubleRegistrations: 'Double Registration',
+        WrongAddress: 'Wrong Postal Address',
+        WrongEmail: 'Wrong E-mail',
+        GlobalBlock: 'Global block',
+        NewAccount: 'New Account',
+        DoubleRegistrationsDescription: 'Double guidance',
+        WrongAddressDescription: 'Address guidance',
+        WrongEmailDescription: 'Email guidance',
+        GlobalBlockDescription: 'Global guidance',
+        NewAccountDescription: 'New account guidance',
+        CreatedOn: 'Created on:',
+        ExpiringOn: 'Expiring on:',
+        NoExpiringDate: 'Not expiring',
+        Note: 'Note',
+        GlobalBlockNote: 'Reason for blocking',
+        RemoveBlock: 'Remove Block',
+        AddBlock: 'Add Block',
+        Comment: 'Comment',
+        'address-block-external-info': 'External address guidance',
+        'address-block-internal-info': 'Internal address guidance',
+        'email-block-external-info': 'External email guidance',
+        'email-block-internal-info': 'Internal email guidance',
+        AddError: 'Block addition failed',
+        AddSuccess: 'Block added',
+        RemoveError: 'Block removal failed',
+        RemoveSuccess: 'Block removed',
+      },
+      General: { BackToMenu: 'Back' },
+    });
+    translate.use('en');
+
     fixture = TestBed.createComponent(BlockComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-    expect(component.currentFullName).toBe('Test Patron');
-    expect(component.currentUserBlocks).toEqual(new Map());
+  it('renders all five typed block slots and never offers add for code 08', () => {
+    const text = fixture.nativeElement.textContent as string;
+    const code08 = fixture.nativeElement.querySelector(
+      '[data-block-code="08"]',
+    ) as HTMLElement;
+
+    expect(text).toContain('Double Registration');
+    expect(text).toContain('Wrong Postal Address');
+    expect(text).toContain('Wrong E-mail');
+    expect(text).toContain('Global block');
+    expect(text).toContain('New Account');
+    expect(code08.querySelector('[data-action="add"]')).toBeNull();
+    expect(code08.querySelector('[data-action="remove"]')).not.toBeNull();
+  });
+
+  it('renders external and internal DTO guidance without a browser User model', () => {
+    let text = fixture.nativeElement.textContent as string;
+
+    expect(text).toContain('External address guidance');
+    expect(text).toContain('External email guidance');
+    expect(text).not.toContain('Internal address guidance');
+
+    patronState$.next({
+      status: 'ready',
+      entity: selected,
+      patron: patron(false),
+    });
+    fixture.detectChanges();
+    text = fixture.nativeElement.textContent as string;
+
+    expect(text).toContain('Internal address guidance');
+    expect(text).toContain('Internal email guidance');
+    expect(text).not.toContain('External address guidance');
+  });
+
+  it('requires a nonblank global comment in both presentation and action', () => {
+    patronState$.next({
+      status: 'ready',
+      entity: selected,
+      patron: patron(false, {}),
+    });
+    fixture.detectChanges();
+
+    const globalButton = fixture.nativeElement.querySelector(
+      '[data-block-code="09"] [data-action="add"]',
+    ) as HTMLButtonElement;
+
+    expect(globalButton.disabled).toBeTrue();
+
+    component.add('09', '   ');
+
+    expect(api.addBlock).not.toHaveBeenCalled();
+  });
+
+  it('adds an allowed block, trims its comment, and replaces refreshed state', () => {
+    api.addBlock.and.returnValue(of(updatedPatron));
+
+    component.add('03' satisfies AddableBlockCode, '  returned mail  ');
+
+    expect(api.addBlock).toHaveBeenCalledOnceWith(
+      'patron-1',
+      '03',
+      'returned mail',
+    );
+    expect(state.replacePatron).toHaveBeenCalledOnceWith(
+      updatedPatron,
+      context,
+    );
+    expect(alert.success).toHaveBeenCalledOnceWith('Block added', {
+      autoClose: false,
+    });
+  });
+
+  it('removes the exact displayed block by selector and replaces refreshed state', () => {
+    const displayed = block('03', 'opaque-block-selector');
+
+    api.removeBlock.and.returnValue(of(updatedPatron));
+
+    component.remove(displayed);
+
+    expect(api.removeBlock).toHaveBeenCalledOnceWith(
+      'patron-1',
+      'opaque-block-selector',
+    );
+    expect(state.replacePatron).toHaveBeenCalledOnceWith(
+      updatedPatron,
+      context,
+    );
+  });
+
+  it('does not mutate without a context or issue duplicate requests while loading', () => {
+    const response$ = new Subject<CardPatron>();
+
+    api.addBlock.and.returnValue(response$);
+    component.add('02', 'one');
+    component.add('02', 'two');
+
+    expect(api.addBlock).toHaveBeenCalledTimes(1);
+
+    response$.next(updatedPatron);
+    response$.complete();
+    state.currentMutationContext.and.returnValue(null);
+    component.remove(block('02'));
+
+    expect(api.removeBlock).not.toHaveBeenCalled();
+    expect(component.loading).toBeFalse();
+  });
+
+  it('reports backend failures without replacing state', () => {
+    api.removeBlock.and.returnValue(
+      throwError(() => new Error('private backend detail')),
+    );
+
+    component.remove(block('02'));
+
+    expect(alert.error).toHaveBeenCalledOnceWith('Block removal failed', {
+      autoClose: false,
+    });
+    expect(state.replacePatron).not.toHaveBeenCalled();
+    expect(component.loading).toBeFalse();
   });
 });

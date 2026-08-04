@@ -1,35 +1,249 @@
+import { Location } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormGroupDirective } from '@angular/forms';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import {
+  AlertService,
+  Entity,
+  EntityType,
+} from '@exlibris/exl-cloudapp-angular-lib';
+import { TranslateService } from '@ngx-translate/core';
+import { BehaviorSubject, Subject, of, throwError } from 'rxjs';
 
 import { AppModule } from '../app.module';
-import { LibraryManagementService } from '../services/library-management.service';
-import { createLibraryManagementStub } from '../../testing/library-management.stub';
-import { LibrarycardnumberComponent } from './librarycardnumber.component';
+import { CardPatron, LibraryCardNumberView } from '../models/card-api.model';
+import { PatronApiService } from '../services/patron-api.service';
+import {
+  PatronMutationContext,
+  PatronState,
+  PatronStateService,
+} from '../services/patron-state.service';
+import { ConfirmationdialogComponent } from '../confirmationdialog/confirmationdialog.component';
+import { LibraryCardNumberComponent } from './librarycardnumber.component';
 
-describe('LibrarycardnumberComponent', () => {
-  let component: LibrarycardnumberComponent;
-  let fixture: ComponentFixture<LibrarycardnumberComponent>;
+describe('LibraryCardNumberComponent', () => {
+  let alert: jasmine.SpyObj<AlertService>;
+  let api: jasmine.SpyObj<PatronApiService>;
+  let component: LibraryCardNumberComponent;
+  let dialog: jasmine.SpyObj<MatDialog>;
+  let dialogRef: jasmine.SpyObj<MatDialogRef<ConfirmationdialogComponent>>;
+  let fixture: ComponentFixture<LibraryCardNumberComponent>;
+  let patronState$: BehaviorSubject<PatronState>;
+  let state: jasmine.SpyObj<PatronStateService>;
+  const selected: Entity = {
+    id: 'patron-1',
+    type: EntityType.USER,
+    link: '/users/patron-1',
+    description: 'Selected patron',
+  };
+  const context = { patronId: 'patron-1' } as PatronMutationContext;
+  const removableCard: LibraryCardNumberView = {
+    value: 'slsp123456789',
+    alias: false,
+    removable: true,
+    selector: 'card-selector',
+  };
+  const aliasCard: LibraryCardNumberView = {
+    value: '12-345-678',
+    alias: true,
+    removable: false,
+    selector: null,
+  };
+  const patron: CardPatron = {
+    fullName: 'Test Patron',
+    external: false,
+    libraryCardNumbers: [removableCard, aliasCard],
+    matriculationNumber: '12345678',
+    dashedMatriculationNumber: '12-345-678',
+    blocks: {},
+    postalAddresses: [],
+  };
+  const updatedPatron: CardPatron = {
+    ...patron,
+    libraryCardNumbers: [aliasCard],
+  };
 
   beforeEach(async () => {
+    patronState$ = new BehaviorSubject<PatronState>({
+      status: 'ready',
+      entity: selected,
+      patron,
+    });
+    state = jasmine.createSpyObj<PatronStateService>(
+      'PatronStateService',
+      ['currentMutationContext', 'replacePatron'],
+      { patronState$ },
+    );
+    state.currentMutationContext.and.returnValue(context);
+    api = jasmine.createSpyObj<PatronApiService>('PatronApiService', [
+      'addLibraryCardNumber',
+      'removeLibraryCardNumber',
+    ]);
+    alert = jasmine.createSpyObj<AlertService>('AlertService', [
+      'error',
+      'success',
+    ]);
+    dialogRef = jasmine.createSpyObj<MatDialogRef<ConfirmationdialogComponent>>(
+      'MatDialogRef',
+      ['afterClosed'],
+    );
+    dialogRef.afterClosed.and.returnValue(of(true));
+    dialog = jasmine.createSpyObj<MatDialog>('MatDialog', ['open']);
+    dialog.open.and.returnValue(dialogRef);
+
     await TestBed.configureTestingModule({
       imports: [AppModule],
       providers: [
+        { provide: PatronApiService, useValue: api },
+        { provide: PatronStateService, useValue: state },
+        { provide: AlertService, useValue: alert },
+        { provide: MatDialog, useValue: dialog },
         {
-          provide: LibraryManagementService,
-          useFactory: createLibraryManagementStub,
+          provide: Location,
+          useValue: jasmine.createSpyObj<Location>('Location', ['back']),
         },
       ],
     }).compileComponents();
-  });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(LibrarycardnumberComponent);
+    const translate = TestBed.inject(TranslateService);
+
+    translate.setTranslation('en', {
+      LibraryCardNumber: {
+        Add: 'Add',
+        Alias: 'Alias',
+        AddLibraryCardNumber: 'Add Library Card Number',
+        CurrentLibraryCardNumbers: 'Current Library Card Numbers',
+        CurrentMatriculationNumber: 'Current matriculation number',
+        CurrentLibraryCardNumbersDescription: 'Current card numbers:',
+        NoCurrentLibraryCardNumbers: 'No card numbers',
+        Remove: 'Remove',
+        Sure: 'Remove this exact number?',
+        RemoveSuccess: 'Card removed',
+        RemoveError: 'Card removal failed',
+        FomatError: 'Required card number',
+        AddError: 'Card addition failed',
+        AddSuccess: 'Card added',
+      },
+      Main: { LibraryCardNumber: 'Card Number' },
+      General: { BackToMenu: 'Back' },
+    });
+    translate.use('en');
+
+    fixture = TestBed.createComponent(LibraryCardNumberComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-    expect(component.currentFullName).toBe('Test Patron');
-    expect(component.currentLibraryCardNumbers).toEqual([]);
+  it('renders DTO matriculation, alias, and removability flags', () => {
+    const text = fixture.nativeElement.textContent as string;
+    const removeButtons = fixture.nativeElement.querySelectorAll(
+      '.table-cell-remove button',
+    ) as NodeListOf<HTMLButtonElement>;
+
+    expect(text).toContain('12345678');
+    expect(text).toContain('12-345-678');
+    expect(text).toContain('Alias');
+    expect(removeButtons.length).toBe(1);
+  });
+
+  it('confirms and removes the exact displayed card by opaque selector', () => {
+    api.removeLibraryCardNumber.and.returnValue(of(updatedPatron));
+
+    component.remove(removableCard);
+
+    expect(dialog.open).toHaveBeenCalledOnceWith(
+      ConfirmationdialogComponent,
+      jasmine.objectContaining({
+        data: { confirmMessage: 'Remove this exact number?' },
+      }),
+    );
+    expect(api.removeLibraryCardNumber).toHaveBeenCalledOnceWith(
+      'patron-1',
+      'card-selector',
+    );
+    expect(state.replacePatron).toHaveBeenCalledOnceWith(
+      updatedPatron,
+      context,
+    );
+    expect(alert.success).toHaveBeenCalledOnceWith('Card removed', {
+      autoClose: false,
+    });
+  });
+
+  it('does not remove a non-removable DTO or mutate without a current context', () => {
+    component.remove(aliasCard);
+    state.currentMutationContext.and.returnValue(null);
+    component.remove(removableCard);
+
+    expect(dialog.open).toHaveBeenCalledTimes(1);
+    expect(api.removeLibraryCardNumber).not.toHaveBeenCalled();
+  });
+
+  it('sends the entered value, replaces state, and resets the form on success', () => {
+    const formDirective = jasmine.createSpyObj<FormGroupDirective>(
+      'FormGroupDirective',
+      ['resetForm'],
+    );
+
+    api.addLibraryCardNumber.and.returnValue(of(updatedPatron));
+    component.numberForm.setValue({ newLibraryCardNumber: '  NEW-CARD  ' });
+
+    component.add(formDirective);
+
+    expect(api.addLibraryCardNumber).toHaveBeenCalledOnceWith(
+      'patron-1',
+      'NEW-CARD',
+    );
+    expect(state.replacePatron).toHaveBeenCalledOnceWith(
+      updatedPatron,
+      context,
+    );
+    expect(formDirective.resetForm).toHaveBeenCalledTimes(1);
+    expect(component.numberForm.value.newLibraryCardNumber).toBeNull();
+    expect(alert.success).toHaveBeenCalledOnceWith('Card added', {
+      autoClose: false,
+    });
+  });
+
+  it('rejects blank card input and prevents a duplicate submit while loading', () => {
+    const response$ = new Subject<CardPatron>();
+    const formDirective = jasmine.createSpyObj<FormGroupDirective>(
+      'FormGroupDirective',
+      ['resetForm'],
+    );
+
+    api.addLibraryCardNumber.and.returnValue(response$);
+    component.numberForm.setValue({ newLibraryCardNumber: '   ' });
+    component.add(formDirective);
+    component.numberForm.setValue({ newLibraryCardNumber: 'NEW-CARD' });
+    component.add(formDirective);
+    component.add(formDirective);
+
+    expect(api.addLibraryCardNumber).toHaveBeenCalledTimes(1);
+    expect(component.loading).toBeTrue();
+
+    response$.next(updatedPatron);
+    response$.complete();
+
+    expect(component.loading).toBeFalse();
+  });
+
+  it('reports backend errors and always releases the loading state', () => {
+    api.addLibraryCardNumber.and.returnValue(
+      throwError(() => new Error('backend detail must not render')),
+    );
+    component.numberForm.setValue({ newLibraryCardNumber: 'NEW-CARD' });
+
+    component.add(
+      jasmine.createSpyObj<FormGroupDirective>('FormGroupDirective', [
+        'resetForm',
+      ]),
+    );
+
+    expect(alert.error).toHaveBeenCalledOnceWith('Card addition failed', {
+      autoClose: false,
+    });
+    expect(state.replacePatron).not.toHaveBeenCalled();
+    expect(component.loading).toBeFalse();
   });
 });

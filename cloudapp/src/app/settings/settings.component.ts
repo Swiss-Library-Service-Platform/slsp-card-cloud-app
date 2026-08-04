@@ -1,83 +1,80 @@
-// @ts-nocheck -- Removed in Task 6 when the legacy component is rewritten.
-import { Observable, Subscription } from 'rxjs';
-import { finalize, tap } from 'rxjs/operators';
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
-import {
-  CloudAppRestService,
-  CloudAppEventsService,
-  Request,
-  HttpMethod,
-  Entity,
-  RestErrorResponse,
-  AlertService,
-} from '@exlibris/exl-cloudapp-angular-lib';
-import { MatRadioChange } from '@angular/material/radio';
-import { Router, ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
-import { LibraryManagementService } from '../services/library-management.service';
+import { DestroyRef, Component, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { AlertService } from '@exlibris/exl-cloudapp-angular-lib';
 import { TranslateService } from '@ngx-translate/core';
+import { EMPTY, Observable, catchError, finalize, map, tap } from 'rxjs';
+
+import { CardPatron, PostalAddressView } from '../models/card-api.model';
+import { PatronApiService } from '../services/patron-api.service';
+import { PatronStateService } from '../services/patron-state.service';
 
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],
 })
-export class SettingsComponent implements OnInit, OnDestroy {
-  constructor(
-    private alert: AlertService,
-    private translate: TranslateService,
-    private _location: Location,
-    private _libraryManagementService: LibraryManagementService,
-    private eventsService: CloudAppEventsService,
-  ) {}
+export class SettingsComponent {
+  public readonly patron$: Observable<CardPatron | null>;
+  public loading = false;
 
-  currentFullName: string;
-  currentUserAddresses: Array<object>;
-  subscription = new Subscription();
-  loading: boolean;
+  private readonly alert = inject(AlertService);
+  private readonly api = inject(PatronApiService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly location = inject(Location);
+  private readonly state = inject(PatronStateService);
+  private readonly translate = inject(TranslateService);
 
-  ngOnInit() {
-    this.subscription = this._libraryManagementService
-      .getUserObject()
-      .subscribe(
-        (res) => {
-          this.currentFullName = res.getFullName();
-          this.currentUserAddresses =
-            this._libraryManagementService.getUserAddresses();
-        },
-        (err) => {
-          console.error(`An error occurred: ${err.message}`);
-        },
-      );
+  public constructor() {
+    this.patron$ = this.state.patronState$.pipe(
+      map((patronState) =>
+        patronState.status === 'ready' ? patronState.patron : null,
+      ),
+    );
   }
 
-  ngOnDestroy(): void {
-    this.subscription.unsubscribe();
-  }
+  public changePreferredAddress(address: PostalAddressView): void {
+    const mutationContext = this.state.currentMutationContext();
 
-  async changePreferredAddress(address: object): Promise<void> {
-    this.loading = true;
-
-    const isAdded =
-      await this._libraryManagementService.setUserPreferredAddress(address);
-
-    if (!isAdded) {
-      const errMessage = await this.translate
-        .get('Settings.SetError')
-        .toPromise();
-
-      this.alert.error(errMessage, { autoClose: false });
-    } else {
-      const succMessage = await this.translate
-        .get('Settings.SetSuccess')
-        .toPromise();
-
-      this.alert.success(succMessage, { autoClose: false });
+    if (
+      this.loading ||
+      address.preferred ||
+      !address.selector ||
+      !mutationContext
+    ) {
+      return;
     }
-    this.loading = false;
+
+    this.loading = true;
+    this.api
+      .setPreferredAddress(mutationContext.patronId, address.selector)
+      .pipe(
+        tap((patron) => {
+          this.state.replacePatron(patron, mutationContext);
+          this.alert.success(this.translate.instant('Settings.SetSuccess'), {
+            autoClose: false,
+          });
+        }),
+        catchError((_error: unknown) => {
+          this.alert.error(this.translate.instant('Settings.SetError'), {
+            autoClose: false,
+          });
+
+          return EMPTY;
+        }),
+        finalize(() => {
+          this.loading = false;
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe();
   }
 
-  navigateBack(): void {
-    this._location.back();
+  public navigateBack(): void {
+    this.location.back();
+  }
+
+  public trackAddress(index: number, address: PostalAddressView): string {
+    return address.selector ?? `${index}:${address.types.join(',')}`;
   }
 }

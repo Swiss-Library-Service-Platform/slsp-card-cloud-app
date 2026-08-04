@@ -1,163 +1,176 @@
-// @ts-nocheck -- Removed in Task 6 when the legacy component is rewritten.
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
-import { LibraryManagementService } from '../services/library-management.service';
-import { libraryCardValidator } from '../validators/librarycardnumber.validator';
+import { DestroyRef, Component, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
-  AlertService,
-  CloudAppEventsService,
-} from '@exlibris/exl-cloudapp-angular-lib';
-import { Librarycardnumber } from '../model/librarycardnumber.model';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { ConfirmationdialogComponent } from '../confirmationdialog/confirmationdialog.component';
-import {
+  AbstractControl,
   FormBuilder,
-  Validators,
   FormControl,
   FormGroup,
   FormGroupDirective,
+  ValidationErrors,
+  ValidatorFn,
 } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { AlertService } from '@exlibris/exl-cloudapp-angular-lib';
 import { TranslateService } from '@ngx-translate/core';
-import { Subscription } from 'rxjs';
+import {
+  EMPTY,
+  Observable,
+  catchError,
+  filter,
+  finalize,
+  map,
+  switchMap,
+  tap,
+} from 'rxjs';
+
+import {
+  ConfirmationDialogData,
+  ConfirmationdialogComponent,
+} from '../confirmationdialog/confirmationdialog.component';
+import { CardPatron, LibraryCardNumberView } from '../models/card-api.model';
+import { PatronApiService } from '../services/patron-api.service';
+import { PatronStateService } from '../services/patron-state.service';
+
+interface LibraryCardNumberForm {
+  readonly newLibraryCardNumber: FormControl<string | null>;
+}
+
 @Component({
   selector: 'app-librarycardnumber',
   templateUrl: './librarycardnumber.component.html',
   styleUrls: ['./librarycardnumber.component.scss'],
 })
-export class LibrarycardnumberComponent implements OnInit, OnDestroy {
-  @Input() primary_id: string;
+export class LibraryCardNumberComponent {
+  public readonly numberForm: FormGroup<LibraryCardNumberForm>;
+  public readonly patron$: Observable<CardPatron | null>;
+  public loading = false;
 
-  constructor(
-    private _Activatedroute: ActivatedRoute,
-    private _location: Location,
-    private _libraryManagementService: LibraryManagementService,
-    private alert: AlertService,
-    private dialog: MatDialog,
-    private formBuilder: FormBuilder,
-    private eventsService: CloudAppEventsService,
-    private translate: TranslateService,
-  ) {
-    this.numberForm = this.formBuilder.group({
-      newLibraryCardNumber: new FormControl('', {
-        validators: [libraryCardValidator],
-        updateOn: 'change',
+  private readonly alert = inject(AlertService);
+  private readonly api = inject(PatronApiService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly dialog = inject(MatDialog);
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly location = inject(Location);
+  private readonly state = inject(PatronStateService);
+  private readonly translate = inject(TranslateService);
+
+  public constructor() {
+    this.numberForm = this.formBuilder.group<LibraryCardNumberForm>({
+      newLibraryCardNumber: new FormControl<string | null>('', {
+        validators: [nonBlankValidator],
       }),
     });
-  }
-  loading = false;
-  currentFullName: string;
-  currentLibraryCardNumbers: Array<object>;
-  currentMatriculationNumber: string;
-  subscription = new Subscription();
-  newLibraryCardNumber = '';
-  dialogRef: MatDialogRef<ConfirmationdialogComponent>;
-
-  numberForm: FormGroup;
-
-  ngOnInit(): void {
-    this.subscription = this._libraryManagementService
-      .getUserObject()
-      .subscribe(
-        (res) => {
-          this.currentFullName = res.getFullName();
-          this.currentLibraryCardNumbers =
-            this._libraryManagementService.getUserLibraryCardNumbers();
-          this.currentMatriculationNumber =
-            this._libraryManagementService.getUserMatriculationNumber();
-        },
-        (err) => {
-          console.error(`An error occurred: ${err.message}`);
-        },
-      );
+    this.patron$ = this.state.patronState$.pipe(
+      map((patronState) =>
+        patronState.status === 'ready' ? patronState.patron : null,
+      ),
+    );
   }
 
-  ngOnDestroy(): void {
-    this.subscription.unsubscribe();
-  }
+  public add(formDirective: FormGroupDirective): void {
+    const value = this.numberForm.controls.newLibraryCardNumber.value?.trim();
+    const mutationContext = this.state.currentMutationContext();
 
-  navigateBack(): void {
-    this._location.back();
-  }
-
-  async deleteLibraryCardNumber(libraryCardNumber: object): Promise<void> {
-    this.dialogRef = this.dialog.open(ConfirmationdialogComponent, {
-      disableClose: false,
-    });
-
-    const sureMessage = await this.translate
-      .get('LibraryCardNumber.Sure')
-      .toPromise();
-
-    this.dialogRef.componentInstance.confirmMessage = sureMessage;
-
-    this.dialogRef.afterClosed().subscribe(async (result) => {
-      if (result) {
-        this.loading = true;
-
-        const isRemoved =
-          await this._libraryManagementService.removeUserLibraryCardNumber(
-            libraryCardNumber,
-          );
-
-        if (!isRemoved) {
-          const errMessage = await this.translate
-            .get('LibraryCardNumber.RemoveError')
-            .toPromise();
-
-          this.alert.error(errMessage, { autoClose: false });
-        } else {
-          const succMessage = await this.translate
-            .get('LibraryCardNumber.RemoveSuccess')
-            .toPromise();
-
-          this.alert.success(succMessage, { autoClose: false });
-        }
-        this.loading = false;
-      }
-      this.dialogRef = null;
-    });
-  }
-
-  async addLibraryCardNumber(
-    formData: any,
-    formDirective: FormGroupDirective,
-  ): Promise<void> {
-    const libaryCardNumber = formData.value.newLibraryCardNumber;
-
-    if (!this.numberForm.valid) {
+    if (this.loading || this.numberForm.invalid || !value || !mutationContext) {
       return;
     }
+
     this.loading = true;
+    this.api
+      .addLibraryCardNumber(mutationContext.patronId, value)
+      .pipe(
+        tap((patron) => {
+          this.state.replacePatron(patron, mutationContext);
+          formDirective.resetForm();
+          this.numberForm.reset();
+          this.alert.success(
+            this.translate.instant('LibraryCardNumber.AddSuccess'),
+            { autoClose: false },
+          );
+        }),
+        catchError((_error: unknown) => {
+          this.alert.error(
+            this.translate.instant('LibraryCardNumber.AddError'),
+            { autoClose: false },
+          );
 
-    const isAdded =
-      await this._libraryManagementService.addUserLibraryCardNumber(
-        libaryCardNumber,
-      );
+          return EMPTY;
+        }),
+        finalize(() => {
+          this.loading = false;
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe();
+  }
 
-    if (!isAdded) {
-      const errMessage = await this.translate
-        .get('LibraryCardNumber.AddError')
-        .toPromise();
+  public navigateBack(): void {
+    this.location.back();
+  }
 
-      this.alert.error(errMessage, { autoClose: false });
-    } else {
-      const succMessage = await this.translate
-        .get('LibraryCardNumber.AddSuccess')
-        .toPromise();
-
-      formDirective.resetForm();
-      this.numberForm.reset();
-      this.alert.success(succMessage, { autoClose: false });
+  public remove(item: LibraryCardNumberView): void {
+    if (this.loading || !item.removable || !item.selector) {
+      return;
     }
-    this.loading = false;
+
+    const data: ConfirmationDialogData = {
+      confirmMessage: this.translate.instant('LibraryCardNumber.Sure'),
+    };
+
+    this.dialog
+      .open(ConfirmationdialogComponent, { disableClose: false, data })
+      .afterClosed()
+      .pipe(
+        filter((confirmed): confirmed is true => confirmed === true),
+        switchMap(() => {
+          const mutationContext = this.state.currentMutationContext();
+
+          if (this.loading || !mutationContext || !item.selector) {
+            return EMPTY;
+          }
+
+          this.loading = true;
+
+          return this.api
+            .removeLibraryCardNumber(mutationContext.patronId, item.selector)
+            .pipe(
+              tap((patron) => {
+                this.state.replacePatron(patron, mutationContext);
+                this.alert.success(
+                  this.translate.instant('LibraryCardNumber.RemoveSuccess'),
+                  { autoClose: false },
+                );
+              }),
+              catchError((_error: unknown) => {
+                this.alert.error(
+                  this.translate.instant('LibraryCardNumber.RemoveError'),
+                  { autoClose: false },
+                );
+
+                return EMPTY;
+              }),
+              finalize(() => {
+                this.loading = false;
+              }),
+            );
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe();
   }
 
-  isNumberRemovable(libraryCardNumber: object): boolean {
-    return Librarycardnumber.isRemovable(libraryCardNumber);
-  }
-
-  isNumberDashedLibraryCardNumber(libraryCardNumber: object): boolean {
-    return Librarycardnumber.isDashedLibraryCardNumber(libraryCardNumber);
+  public trackLibraryCardNumber(
+    index: number,
+    item: LibraryCardNumberView,
+  ): string {
+    return item.selector ?? `${index}:${item.value ?? ''}`;
   }
 }
+
+const nonBlankValidator: ValidatorFn = (
+  control: AbstractControl,
+): ValidationErrors | null =>
+  typeof control.value === 'string' && control.value.trim() !== ''
+    ? null
+    : { required: true };

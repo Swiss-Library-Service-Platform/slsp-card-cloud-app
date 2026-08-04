@@ -78,7 +78,7 @@ describe('Card API models', () => {
       context: { operation: 'card_remove' },
     };
 
-    expect(Object.keys(errorTypes)).toHaveSize(13);
+    expect(Reflect.ownKeys(errorTypes)).toHaveSize(13);
     expect(error).toEqual({
       type: 'STALE_SELECTION',
       errorId: 'error-id',

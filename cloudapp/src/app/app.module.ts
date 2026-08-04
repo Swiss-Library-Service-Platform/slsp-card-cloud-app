@@ -15,7 +15,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { MainComponent } from './main/main.component';
 import { BlockComponent } from './block/block.component';
 import { SettingsComponent } from './settings/settings.component';
-import { LibrarycardnumberComponent } from './librarycardnumber/librarycardnumber.component';
+import { LibraryCardNumberComponent } from './librarycardnumber/librarycardnumber.component';
 import { UsermenuComponent } from './usermenu/usermenu.component';
 import { ConfirmationdialogComponent } from './confirmationdialog/confirmationdialog.component';
 
@@ -25,7 +25,7 @@ import { ConfirmationdialogComponent } from './confirmationdialog/confirmationdi
     MainComponent,
     BlockComponent,
     SettingsComponent,
-    LibrarycardnumberComponent,
+    LibraryCardNumberComponent,
     UsermenuComponent,
     ConfirmationdialogComponent,
   ],
