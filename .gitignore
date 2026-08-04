@@ -3,6 +3,7 @@
 # some local stuff
 .vscode/
 .ng/
+/docs/
 
 # environment variables
 /cloudapp/environment.ts
@@ -57,3 +58,6 @@ Thumbs.db
 build
 cloudapp/src/assets/manifest*.json
 config.json
+
+# Local agent execution reports
+/.superpowers/sdd/
