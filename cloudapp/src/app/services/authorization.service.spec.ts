@@ -58,7 +58,13 @@ describe('AuthorizationService', () => {
     backend.get.and.returnValue(throwError(() => error));
 
     service.check().subscribe((result) => {
-      expect(result).toEqual({ status: 'error', error });
+      if (result.status !== 'error') {
+        done.fail(`expected an error result, got ${result.status}`);
+
+        return;
+      }
+
+      expect(result.error).toBe(error);
       done();
     });
   });
@@ -69,7 +75,13 @@ describe('AuthorizationService', () => {
     backend.get.and.returnValue(throwError(() => error));
 
     service.check().subscribe((result) => {
-      expect(result).toEqual({ status: 'error', error });
+      if (result.status !== 'error') {
+        done.fail(`expected an error result, got ${result.status}`);
+
+        return;
+      }
+
+      expect(result.error).toBe(error);
       done();
     });
   });

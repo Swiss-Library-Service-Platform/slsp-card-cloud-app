@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 
 import { CardPatron } from '../models/card-api.model';
 import { BackendHttpService } from './backend-http.service';
@@ -49,10 +49,10 @@ describe('PatronApiService', () => {
   });
 
   it('adds a library card number with its typed request body', (done) => {
-    service.addLibraryCardNumber('p', 'ABC').subscribe((result) => {
+    service.addLibraryCardNumber('p/q', 'ABC').subscribe((result) => {
       expect(result).toBe(patron);
       expect(backend.post).toHaveBeenCalledOnceWith(
-        '/api/v1/patrons/p/library-card-numbers',
+        '/api/v1/patrons/p%2Fq/library-card-numbers',
         { value: 'ABC' },
       );
       done();
@@ -60,18 +60,22 @@ describe('PatronApiService', () => {
   });
 
   it('removes a library card number with encoded path segments', (done) => {
-    service.removeLibraryCardNumber('p/q', 'selector/value').subscribe(() => {
-      expect(backend.delete).toHaveBeenCalledOnceWith(
-        '/api/v1/patrons/p%2Fq/library-card-numbers/selector%2Fvalue',
-      );
-      done();
-    });
+    service
+      .removeLibraryCardNumber('p/q', 'selector/value')
+      .subscribe((result) => {
+        expect(result).toBe(patron);
+        expect(backend.delete).toHaveBeenCalledOnceWith(
+          '/api/v1/patrons/p%2Fq/library-card-numbers/selector%2Fvalue',
+        );
+        done();
+      });
   });
 
   it('adds a block with its typed request body', (done) => {
-    service.addBlock('p', '09', 'reason').subscribe(() => {
+    service.addBlock('p/q', '09', 'reason').subscribe((result) => {
+      expect(result).toBe(patron);
       expect(backend.post).toHaveBeenCalledOnceWith(
-        '/api/v1/patrons/p/blocks',
+        '/api/v1/patrons/p%2Fq/blocks',
         { code: '09', comment: 'reason' },
       );
       done();
@@ -79,7 +83,8 @@ describe('PatronApiService', () => {
   });
 
   it('removes a block with encoded path segments', (done) => {
-    service.removeBlock('p/q', 'selector/value').subscribe(() => {
+    service.removeBlock('p/q', 'selector/value').subscribe((result) => {
+      expect(result).toBe(patron);
       expect(backend.delete).toHaveBeenCalledOnceWith(
         '/api/v1/patrons/p%2Fq/blocks/selector%2Fvalue',
       );
@@ -88,12 +93,59 @@ describe('PatronApiService', () => {
   });
 
   it('sets a preferred address with an encoded patron path segment', (done) => {
-    service.setPreferredAddress('p/q', 'selector').subscribe(() => {
+    service.setPreferredAddress('p/q', 'selector').subscribe((result) => {
+      expect(result).toBe(patron);
       expect(backend.put).toHaveBeenCalledOnceWith(
         '/api/v1/patrons/p%2Fq/preferred-address',
         { selector: 'selector' },
       );
       done();
+    });
+  });
+
+  const operations = [
+    ['getPatron', (): Observable<CardPatron> => service.getPatron('p')],
+    [
+      'addLibraryCardNumber',
+      (): Observable<CardPatron> => service.addLibraryCardNumber('p', 'ABC'),
+    ],
+    [
+      'removeLibraryCardNumber',
+      (): Observable<CardPatron> =>
+        service.removeLibraryCardNumber('p', 'selector'),
+    ],
+    [
+      'addBlock',
+      (): Observable<CardPatron> => service.addBlock('p', '09', 'reason'),
+    ],
+    [
+      'removeBlock',
+      (): Observable<CardPatron> => service.removeBlock('p', 'selector'),
+    ],
+    [
+      'setPreferredAddress',
+      (): Observable<CardPatron> =>
+        service.setPreferredAddress('p', 'selector'),
+    ],
+  ] as const;
+
+  operations.forEach(([methodName, invoke]) => {
+    it(`${methodName} forwards the exact backend error`, (done) => {
+      const error = new Error(`${methodName} sentinel`);
+
+      backend.get.and.returnValue(throwError(() => error));
+      backend.post.and.returnValue(throwError(() => error));
+      backend.put.and.returnValue(throwError(() => error));
+      backend.delete.and.returnValue(throwError(() => error));
+
+      invoke().subscribe({
+        next: () => done.fail('expected the subscriber error channel'),
+        error: (result: unknown) => {
+          expect(result).toBe(error);
+          done();
+        },
+        complete: () => done.fail('expected the subscriber error channel'),
+      });
     });
   });
 });
