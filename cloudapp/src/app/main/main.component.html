@@ -72,21 +72,26 @@
       "
       class="select-entities"
     >
-      <p id="entities-radio-group-label">
+      <p id="entities-list-label" class="entities-list-label">
         {{ 'Welcome.SelectUser' | translate }}
       </p>
-      <mat-radio-group
-        aria-labelledby="entities-radio-group-label"
-        class="entities-radio-group"
-        (change)="entitySelected($event)"
+      <mat-action-list
+        aria-labelledby="entities-list-label"
+        class="entities-action-list"
       >
-        <mat-radio-button
+        <button
+          mat-list-item
           *ngFor="let entity of vm.entities; trackBy: trackEntity"
-          [value]="entity"
+          class="entity-action"
+          type="button"
+          (click)="entitySelected(entity)"
         >
-          {{ entity.description }}
-        </mat-radio-button>
-      </mat-radio-group>
+          <span class="entity-content">
+            <span class="entity-name">{{ entity.description }}</span>
+            <span class="entity-id">{{ entityPatronId(entity) }}</span>
+          </span>
+        </button>
+      </mat-action-list>
     </div>
   </ng-container>
 

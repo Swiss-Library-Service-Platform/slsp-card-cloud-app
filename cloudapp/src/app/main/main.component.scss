@@ -1,7 +1,49 @@
-.entities-radio-group {
+.entities-list-label {
+  margin-bottom: 0.75rem;
+}
+
+.entities-action-list {
+  padding: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.entity-action {
+  --mdc-list-list-item-one-line-container-height: 56px;
+
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--slsp-purple-light);
+  }
+}
+
+.entity-content {
   display: flex;
+  min-width: 0;
   flex-direction: column;
-  margin: 15px 0;
+  align-items: flex-start;
+  line-height: 1.25;
+}
+
+.entity-name,
+.entity-id {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.entity-name {
+  color: rgba(0, 0, 0, 0.8);
+  font-weight: 500;
+}
+
+.entity-id {
+  margin-top: 2px;
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 0.78rem;
+  font-weight: 400;
 }
 
 textarea {

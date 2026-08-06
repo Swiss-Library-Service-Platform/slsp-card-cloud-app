@@ -90,7 +90,6 @@ export function extractPatronId(entity: Entity): string | null {
       decodedId === '.' ||
       decodedId === '..' ||
       decodedId !== decodedId.trim() ||
-      decodedId !== entity.id ||
       /[\\/\u0000-\u001f\u007f]/u.test(decodedId) ||
       /%[0-9a-f]{2}/iu.test(decodedId)
     ) {

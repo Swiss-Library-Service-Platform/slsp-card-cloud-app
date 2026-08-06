@@ -19,6 +19,7 @@ import { CardErrorService } from '../services/card-error.service';
 import {
   PatronState,
   PatronStateService,
+  extractPatronId,
 } from '../services/patron-state.service';
 
 interface MainViewModel {
@@ -27,10 +28,6 @@ interface MainViewModel {
   readonly entities: readonly Entity[];
   readonly patron: PatronState;
   readonly sandbox: boolean;
-}
-
-interface EntitySelectionChange {
-  readonly value: unknown;
 }
 
 @Component({
@@ -108,10 +105,12 @@ export class MainComponent implements OnInit {
       .subscribe((patronState) => this.handlePatronState(patronState));
   }
 
-  public entitySelected(event: EntitySelectionChange): void {
-    if (isEntity(event.value)) {
-      this.state.select(event.value);
-    }
+  public entitySelected(entity: Entity): void {
+    this.state.select(entity);
+  }
+
+  public entityPatronId(entity: Entity): string {
+    return extractPatronId(entity) ?? '';
   }
 
   public trackEntity(_index: number, entity: Entity): string {
@@ -159,19 +158,4 @@ export class MainComponent implements OnInit {
       this.state.clear();
     }
   }
-}
-
-function isEntity(value: unknown): value is Entity {
-  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
-    return false;
-  }
-
-  const candidate = value as Record<string, unknown>;
-
-  return (
-    typeof candidate['id'] === 'string' &&
-    typeof candidate['link'] === 'string' &&
-    typeof candidate['type'] === 'string' &&
-    typeof candidate['description'] === 'string'
-  );
 }

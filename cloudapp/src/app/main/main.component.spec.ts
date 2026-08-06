@@ -29,9 +29,9 @@ describe('MainComponent', () => {
   let alert: jasmine.SpyObj<AlertService>;
   let autoSelect$: Subject<void>;
   const selected: Entity = {
-    id: 'one',
+    id: 'entity-metadata',
     type: EntityType.USER,
-    link: '/users/one',
+    link: '/users/primary-id',
     description: 'Selected user',
   };
 
@@ -135,10 +135,22 @@ describe('MainComponent', () => {
     expect(state.autoSelect$).toHaveBeenCalledOnceWith('true');
   });
 
-  it('selects the USER metadata from a radio change', () => {
-    const component = TestBed.createComponent(MainComponent).componentInstance;
+  it('selects the USER metadata when its action row is clicked', () => {
+    const fixture = TestBed.createComponent(MainComponent);
 
-    component.entitySelected({ value: selected });
+    fixture.detectChanges();
+
+    const userAction: HTMLButtonElement | null =
+      fixture.nativeElement.querySelector('button.entity-action');
+
+    expect(userAction).not.toBeNull();
+    expect(userAction?.querySelector('.entity-name')?.textContent).toContain(
+      'Selected user',
+    );
+    expect(userAction?.querySelector('.entity-id')?.textContent).toContain(
+      'primary-id',
+    );
+    userAction?.click();
 
     expect(state.select).toHaveBeenCalledOnceWith(selected);
   });
@@ -201,8 +213,9 @@ describe('MainComponent', () => {
       expect(patronState$.value).toEqual({ status: 'empty' });
       expect(alert.warn.calls.count() + alert.error.calls.count()).toBe(1);
       expect(
-        fixture.nativeElement.querySelector('mat-radio-group'),
+        fixture.nativeElement.querySelector('mat-action-list'),
       ).not.toBeNull();
+      expect(fixture.nativeElement.querySelector('mat-radio-group')).toBeNull();
       expect(fixture.nativeElement.textContent).toContain('Select a user:');
     });
   });
@@ -348,8 +361,9 @@ describe('MainComponent', () => {
     patronState$.next({ status: 'empty' });
     fixture.detectChanges();
     expect(
-      fixture.nativeElement.querySelector('mat-radio-group'),
+      fixture.nativeElement.querySelector('mat-action-list'),
     ).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('mat-radio-group')).toBeNull();
     expect(fixture.nativeElement.textContent).toContain('Selected user');
     expect(fixture.nativeElement.textContent).toContain('Select a user:');
   });

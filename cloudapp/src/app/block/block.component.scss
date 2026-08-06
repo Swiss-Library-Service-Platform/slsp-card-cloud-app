@@ -2,6 +2,7 @@ mat-action-row {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  gap: 0.75rem;
   width: 100%;
 
   mat-form-field {
@@ -19,10 +20,6 @@ mat-action-row {
 .mat-action-row-single {
   padding-top: 1rem;
   justify-content: flex-end;
-}
-
-mat-form-field-wrapper {
-  padding-bottom: 1rem;
 }
 
 .user-status {

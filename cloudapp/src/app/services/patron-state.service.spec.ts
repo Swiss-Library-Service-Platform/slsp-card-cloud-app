@@ -52,9 +52,15 @@ const mutationContext = (
 };
 
 describe('extractPatronId', () => {
-  it('extracts an id from the canonical USER link when it matches Entity.id', () => {
+  it('extracts an id from a canonical USER link', () => {
     expect(extractPatronId(entity('user@example.org'))).toBe(
       'user@example.org',
+    );
+  });
+
+  it('uses the USER link id when Entity.id contains different SDK metadata', () => {
+    expect(extractPatronId(entity('entity-metadata', '/users/patron-id'))).toBe(
+      'patron-id',
     );
   });
 
@@ -73,7 +79,6 @@ describe('extractPatronId', () => {
   });
 
   [
-    entity('other', '/users/user'),
     entity('user', '/users/user/'),
     entity('user', '/users/group/user'),
     entity('user', 'https://alma.example/users/user'),
@@ -222,7 +227,7 @@ describe('PatronStateService', () => {
     service.patronState$.subscribe((state) => {
       observed = state;
     });
-    service.select(entity('secret-id', '/users/different'));
+    service.select(entity('secret-id', '/users/different?expand=full'));
 
     expect(observed as PatronState).toEqual({ status: 'empty' });
     expect(api.getPatron).not.toHaveBeenCalled();
