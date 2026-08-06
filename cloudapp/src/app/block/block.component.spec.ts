@@ -39,13 +39,13 @@ describe('BlockComponent', () => {
   const context = { patronId: 'patron-1' } as PatronMutationContext;
   const block = (
     code: BlockView['code'],
-    selector = `${code}-selector`,
+    elementReference = `${code}-reference`,
   ): BlockView => ({
     code,
     createdDate: '2026-08-01T12:00:00Z',
     expiryDate: null,
     note: `note-${code}`,
-    selector,
+    elementReference,
   });
   const allBlocks: CardPatron['blocks'] = {
     '02': block('02'),
@@ -222,8 +222,8 @@ describe('BlockComponent', () => {
     });
   });
 
-  it('removes the exact displayed block by selector and replaces refreshed state', () => {
-    const displayed = block('03', 'opaque-block-selector');
+  it('removes the exact displayed block by element reference and replaces refreshed state', () => {
+    const displayed = block('03', 'opaque-block-reference');
 
     api.removeBlock.and.returnValue(of(updatedPatron));
 
@@ -231,7 +231,7 @@ describe('BlockComponent', () => {
 
     expect(api.removeBlock).toHaveBeenCalledOnceWith(
       'patron-1',
-      'opaque-block-selector',
+      'opaque-block-reference',
     );
     expect(state.replacePatron).toHaveBeenCalledOnceWith(
       updatedPatron,

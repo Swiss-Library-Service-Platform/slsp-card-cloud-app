@@ -41,7 +41,7 @@
     "DuplicateLibraryCardNumber": "Questo numero di tessera è già in uso.",
     "UnsupportedBlock": "Questo tipo di blocco non è supportato.",
     "BlockCommentRequired": "È necessario un commento per questo blocco.",
-    "StaleSelection": "L'elemento selezionato è cambiato. Ricarica l'utente e riprova.",
+    "StaleElementReference": "L'elemento selezionato è cambiato. Ricarica l'utente e riprova.",
     "InvalidSettingsNote": "Non è stato possibile modificare l'indirizzo preferito perché le impostazioni condivise non sono valide.",
     "UpstreamFailure": "Servizio temporaneamente non disponibile",
     "DependencyUnavailable": "Servizio temporaneamente non disponibile",

@@ -115,7 +115,7 @@ describe('MainComponent', () => {
         DuplicateLibraryCardNumber: 'The card number is already in use.',
         UnsupportedBlock: 'The block is unsupported.',
         BlockCommentRequired: 'A block comment is required.',
-        StaleSelection: 'The selection is stale.',
+        StaleElementReference: 'The element reference is stale.',
         InvalidSettingsNote: 'The shared settings are invalid.',
         UpstreamFailure: 'Service temporarily unavailable',
         DependencyUnavailable: 'Service temporarily unavailable',
@@ -239,7 +239,7 @@ describe('MainComponent', () => {
       status: 'error',
       entity: selected,
       error: {
-        type: 'STALE_SELECTION',
+        type: 'STALE_ELEMENT_REFERENCE',
         errorId: 'support-409',
         context: { detail: 'private backend detail' },
       },
@@ -247,7 +247,7 @@ describe('MainComponent', () => {
     await fixture.whenStable();
 
     expect(alert.warn).toHaveBeenCalledOnceWith(
-      'The selection is stale. Support ID: support-409',
+      'The element reference is stale. Support ID: support-409',
       { autoClose: false },
     );
     expect(alert.error).not.toHaveBeenCalled();

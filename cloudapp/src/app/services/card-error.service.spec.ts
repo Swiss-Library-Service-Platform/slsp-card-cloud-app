@@ -14,7 +14,7 @@ const ALL_CARD_ERROR_TYPES = [
   'DUPLICATE_LIBRARY_CARD_NUMBER',
   'UNSUPPORTED_BLOCK',
   'BLOCK_COMMENT_REQUIRED',
-  'STALE_SELECTION',
+  'STALE_ELEMENT_REFERENCE',
   'INVALID_SETTINGS_NOTE',
   'UPSTREAM_FAILURE',
   'DEPENDENCY_UNAVAILABLE',
@@ -40,7 +40,7 @@ describe('CardErrorService', () => {
         DuplicateLibraryCardNumber: 'The card number is already in use.',
         UnsupportedBlock: 'The block is unsupported.',
         BlockCommentRequired: 'A block comment is required.',
-        StaleSelection: 'The selection is stale.',
+        StaleElementReference: 'The element reference is stale.',
         InvalidSettingsNote: 'The shared settings are invalid.',
         UpstreamFailure: 'Service temporarily unavailable.',
         DependencyUnavailable: 'Service temporarily unavailable.',
@@ -94,7 +94,7 @@ describe('CardErrorService', () => {
       'DUPLICATE_LIBRARY_CARD_NUMBER',
       'UNSUPPORTED_BLOCK',
       'BLOCK_COMMENT_REQUIRED',
-      'STALE_SELECTION',
+      'STALE_ELEMENT_REFERENCE',
       'INVALID_SETTINGS_NOTE',
     ];
 
@@ -159,19 +159,19 @@ describe('CardErrorService', () => {
   it('accepts a typed HTTP error only when its type matches the exact status', () => {
     const valid = new HttpErrorResponse({
       status: 409,
-      error: cardError('STALE_SELECTION'),
+      error: cardError('STALE_ELEMENT_REFERENCE'),
     });
     const mismatched = new HttpErrorResponse({
       status: 500,
       error: {
-        ...cardError('STALE_SELECTION'),
+        ...cardError('STALE_ELEMENT_REFERENCE'),
         context: { detail: 'private backend detail' },
       },
     });
 
     expect(service.presentation(valid)).toEqual({
       kind: 'warning',
-      message: 'The selection is stale. Support ID: support-123',
+      message: 'The element reference is stale. Support ID: support-123',
     });
     expect(service.presentation(mismatched)).toEqual({
       kind: 'error',
@@ -190,11 +190,11 @@ describe('CardErrorService', () => {
 
   it('omits correlation ids containing characters outside the support-id allowlist', () => {
     const message = service.message({
-      ...cardError('STALE_SELECTION'),
+      ...cardError('STALE_ELEMENT_REFERENCE'),
       errorId: 'support-123<script>',
     });
 
-    expect(message).toBe('The selection is stale.');
+    expect(message).toBe('The element reference is stale.');
   });
 });
 

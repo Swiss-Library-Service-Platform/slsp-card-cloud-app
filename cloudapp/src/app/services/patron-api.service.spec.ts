@@ -70,11 +70,11 @@ describe('PatronApiService', () => {
 
   it('removes a library card number with encoded path segments', (done) => {
     service
-      .removeLibraryCardNumber('p/q', 'selector/value')
+      .removeLibraryCardNumber('p/q', 'reference/value')
       .subscribe((result) => {
         expect(result).toBe(patron);
         expect(backend.delete).toHaveBeenCalledOnceWith(
-          '/api/v1/patrons/p%2Fq/library-card-numbers/selector%2Fvalue',
+          '/api/v1/patrons/p%2Fq/library-card-numbers/reference%2Fvalue',
         );
         done();
       });
@@ -92,21 +92,21 @@ describe('PatronApiService', () => {
   });
 
   it('removes a block with encoded path segments', (done) => {
-    service.removeBlock('p/q', 'selector/value').subscribe((result) => {
+    service.removeBlock('p/q', 'reference/value').subscribe((result) => {
       expect(result).toBe(patron);
       expect(backend.delete).toHaveBeenCalledOnceWith(
-        '/api/v1/patrons/p%2Fq/blocks/selector%2Fvalue',
+        '/api/v1/patrons/p%2Fq/blocks/reference%2Fvalue',
       );
       done();
     });
   });
 
   it('sets a preferred address with an encoded patron path segment', (done) => {
-    service.setPreferredAddress('p/q', 'selector').subscribe((result) => {
+    service.setPreferredAddress('p/q', 'reference').subscribe((result) => {
       expect(result).toBe(patron);
       expect(backend.put).toHaveBeenCalledOnceWith(
         '/api/v1/patrons/p%2Fq/preferred-address',
-        { selector: 'selector' },
+        { elementReference: 'reference' },
       );
       done();
     });
@@ -121,7 +121,7 @@ describe('PatronApiService', () => {
     [
       'removeLibraryCardNumber',
       (): Observable<CardPatron> =>
-        service.removeLibraryCardNumber('p', 'selector'),
+        service.removeLibraryCardNumber('p', 'reference'),
     ],
     [
       'addBlock',
@@ -129,12 +129,12 @@ describe('PatronApiService', () => {
     ],
     [
       'removeBlock',
-      (): Observable<CardPatron> => service.removeBlock('p', 'selector'),
+      (): Observable<CardPatron> => service.removeBlock('p', 'reference'),
     ],
     [
       'setPreferredAddress',
       (): Observable<CardPatron> =>
-        service.setPreferredAddress('p', 'selector'),
+        service.setPreferredAddress('p', 'reference'),
     ],
   ] as const;
 

@@ -34,10 +34,10 @@ export class PatronApiService {
 
   public removeLibraryCardNumber(
     patronId: string,
-    selector: string,
+    elementReference: string,
   ): Observable<CardPatron> {
     return this.backend.delete<CardPatron>(
-      `/api/v1/patrons/${encodePatronId(patronId)}/library-card-numbers/${encodeURIComponent(selector)}`,
+      `/api/v1/patrons/${encodePatronId(patronId)}/library-card-numbers/${encodeURIComponent(elementReference)}`,
     );
   }
 
@@ -56,18 +56,18 @@ export class PatronApiService {
 
   public removeBlock(
     patronId: string,
-    selector: string,
+    elementReference: string,
   ): Observable<CardPatron> {
     return this.backend.delete<CardPatron>(
-      `/api/v1/patrons/${encodePatronId(patronId)}/blocks/${encodeURIComponent(selector)}`,
+      `/api/v1/patrons/${encodePatronId(patronId)}/blocks/${encodeURIComponent(elementReference)}`,
     );
   }
 
   public setPreferredAddress(
     patronId: string,
-    selector: string,
+    elementReference: string,
   ): Observable<CardPatron> {
-    const request: SetPreferredAddressRequest = { selector };
+    const request: SetPreferredAddressRequest = { elementReference };
 
     return this.backend.put<CardPatron, SetPreferredAddressRequest>(
       `/api/v1/patrons/${encodePatronId(patronId)}/preferred-address`,

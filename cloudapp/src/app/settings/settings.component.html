@@ -67,7 +67,7 @@
             <button
               mat-flat-button
               data-action="prefer"
-              [disabled]="item.preferred || !item.selector || loading"
+              [disabled]="item.preferred || !item.elementReference || loading"
               (click)="changePreferredAddress(item)"
               class="slsp-purple-button"
             >

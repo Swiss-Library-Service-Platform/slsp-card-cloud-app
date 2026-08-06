@@ -109,7 +109,7 @@ export class LibraryCardNumberComponent {
   }
 
   public remove(item: LibraryCardNumberView): void {
-    if (this.loading || !item.removable || !item.selector) {
+    if (this.loading || !item.removable || !item.elementReference) {
       return;
     }
 
@@ -128,7 +128,7 @@ export class LibraryCardNumberComponent {
             this.loading ||
             !mutationContext ||
             this.state.currentMutationContext() !== mutationContext ||
-            !item.selector
+            !item.elementReference
           ) {
             return EMPTY;
           }
@@ -136,7 +136,10 @@ export class LibraryCardNumberComponent {
           this.loading = true;
 
           return this.api
-            .removeLibraryCardNumber(mutationContext.patronId, item.selector)
+            .removeLibraryCardNumber(
+              mutationContext.patronId,
+              item.elementReference,
+            )
             .pipe(
               tap((patron) => {
                 this.state.replacePatron(patron, mutationContext);
@@ -164,7 +167,7 @@ export class LibraryCardNumberComponent {
     index: number,
     item: LibraryCardNumberView,
   ): string {
-    return item.selector ?? `${index}:${item.value ?? ''}`;
+    return item.elementReference ?? `${index}:${item.value ?? ''}`;
   }
 
   private presentError(error: unknown): void {

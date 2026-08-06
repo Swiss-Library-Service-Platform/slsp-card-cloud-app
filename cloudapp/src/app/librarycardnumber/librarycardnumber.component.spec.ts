@@ -42,13 +42,13 @@ describe('LibraryCardNumberComponent', () => {
     value: 'slsp123456789',
     alias: false,
     removable: true,
-    selector: 'card-selector',
+    elementReference: 'card-reference',
   };
   const aliasCard: LibraryCardNumberView = {
     value: '12-345-678',
     alias: true,
     removable: false,
-    selector: null,
+    elementReference: null,
   };
   const patron: CardPatron = {
     fullName: 'Test Patron',
@@ -154,7 +154,7 @@ describe('LibraryCardNumberComponent', () => {
     expect(removeButtons.length).toBe(1);
   });
 
-  it('confirms and removes the exact displayed card by opaque selector', () => {
+  it('confirms and removes the exact displayed card by element reference', () => {
     api.removeLibraryCardNumber.and.returnValue(of(updatedPatron));
 
     component.remove(removableCard);
@@ -167,7 +167,7 @@ describe('LibraryCardNumberComponent', () => {
     );
     expect(api.removeLibraryCardNumber).toHaveBeenCalledOnceWith(
       'patron-1',
-      'card-selector',
+      'card-reference',
     );
     expect(state.replacePatron).toHaveBeenCalledOnceWith(
       updatedPatron,
@@ -187,7 +187,7 @@ describe('LibraryCardNumberComponent', () => {
     expect(api.removeLibraryCardNumber).not.toHaveBeenCalled();
   });
 
-  it('does not combine a displayed card selector with a context selected while confirmation is open', () => {
+  it('does not combine an element reference with a context selected while confirmation is open', () => {
     const confirmation$ = new Subject<boolean>();
     const changedContext = {
       patronId: 'patron-2',

@@ -22,7 +22,7 @@ const ERROR_KEYS: Record<CardErrorType, string> = {
   DUPLICATE_LIBRARY_CARD_NUMBER: 'Errors.DuplicateLibraryCardNumber',
   UNSUPPORTED_BLOCK: 'Errors.UnsupportedBlock',
   BLOCK_COMMENT_REQUIRED: 'Errors.BlockCommentRequired',
-  STALE_SELECTION: 'Errors.StaleSelection',
+  STALE_ELEMENT_REFERENCE: 'Errors.StaleElementReference',
   INVALID_SETTINGS_NOTE: 'Errors.InvalidSettingsNote',
   UPSTREAM_FAILURE: 'Errors.UpstreamFailure',
   DEPENDENCY_UNAVAILABLE: 'Errors.DependencyUnavailable',
@@ -37,7 +37,7 @@ const ERROR_KINDS: Record<CardErrorType, 'access' | 'warning' | 'error'> = {
   DUPLICATE_LIBRARY_CARD_NUMBER: 'warning',
   UNSUPPORTED_BLOCK: 'warning',
   BLOCK_COMMENT_REQUIRED: 'warning',
-  STALE_SELECTION: 'warning',
+  STALE_ELEMENT_REFERENCE: 'warning',
   INVALID_SETTINGS_NOTE: 'warning',
   UPSTREAM_FAILURE: 'error',
   DEPENDENCY_UNAVAILABLE: 'error',
@@ -183,7 +183,7 @@ function errorStatus(type: CardErrorType): number {
     case 'PATRON_NOT_FOUND':
       return 404;
     case 'DUPLICATE_LIBRARY_CARD_NUMBER':
-    case 'STALE_SELECTION':
+    case 'STALE_ELEMENT_REFERENCE':
     case 'INVALID_SETTINGS_NOTE':
       return 409;
     case 'UPSTREAM_FAILURE':

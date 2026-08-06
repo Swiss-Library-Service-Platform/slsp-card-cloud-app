@@ -16,13 +16,13 @@ describe('Card API models', () => {
         value: 'abc',
         alias: false,
         removable: true,
-        selector: 'opaque-card-selector',
+        elementReference: '0.opaque-card-fingerprint',
       },
       {
         value: 'imported',
         alias: false,
         removable: false,
-        selector: null,
+        elementReference: null,
       },
     ],
     matriculationNumber: '12345678',
@@ -33,12 +33,12 @@ describe('Card API models', () => {
         createdDate: null,
         expiryDate: null,
         note: '',
-        selector: 'opaque-block-selector',
+        elementReference: '0.opaque-block-fingerprint',
       },
     },
     postalAddresses: [
       {
-        selector: null,
+        elementReference: null,
         types: [],
         line1: null,
         postalCode: null,
@@ -57,7 +57,7 @@ describe('Card API models', () => {
     DUPLICATE_LIBRARY_CARD_NUMBER: true,
     UNSUPPORTED_BLOCK: true,
     BLOCK_COMMENT_REQUIRED: true,
-    STALE_SELECTION: true,
+    STALE_ELEMENT_REFERENCE: true,
     INVALID_SETTINGS_NOTE: true,
     UPSTREAM_FAILURE: true,
     DEPENDENCY_UNAVAILABLE: true,
@@ -66,21 +66,21 @@ describe('Card API models', () => {
 
   it('represents only the backend Card patron contract', () => {
     expect(patron.fullName).toBe('Test Patron');
-    expect(patron.libraryCardNumbers[1].selector).toBeNull();
-    expect(patron.postalAddresses[0].selector).toBeNull();
+    expect(patron.libraryCardNumbers[1].elementReference).toBeNull();
+    expect(patron.postalAddresses[0].elementReference).toBeNull();
     expect('contact_info' in patron).toBeFalse();
   });
 
   it('represents all stable backend error types and safe error fields', () => {
     const error: CardApiError = {
-      type: 'STALE_SELECTION',
+      type: 'STALE_ELEMENT_REFERENCE',
       errorId: 'error-id',
       context: { operation: 'card_remove' },
     };
 
     expect(Reflect.ownKeys(errorTypes)).toHaveSize(13);
     expect(error).toEqual({
-      type: 'STALE_SELECTION',
+      type: 'STALE_ELEMENT_REFERENCE',
       errorId: 'error-id',
       context: { operation: 'card_remove' },
     });
@@ -90,13 +90,13 @@ describe('Card API models', () => {
     const addCard: AddLibraryCardNumberRequest = { value: 'SLSP-123456789' };
     const addBlock: AddBlockRequest = { code: '09', comment: 'comment' };
     const preferredAddress: SetPreferredAddressRequest = {
-      selector: 'opaque-address-selector',
+      elementReference: '0.opaque-address-fingerprint',
     };
 
     expect([addCard, addBlock, preferredAddress]).toEqual([
       { value: 'SLSP-123456789' },
       { code: '09', comment: 'comment' },
-      { selector: 'opaque-address-selector' },
+      { elementReference: '0.opaque-address-fingerprint' },
     ]);
   });
 });

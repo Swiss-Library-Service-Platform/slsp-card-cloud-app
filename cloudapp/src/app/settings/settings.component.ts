@@ -41,7 +41,7 @@ export class SettingsComponent {
     if (
       this.loading ||
       address.preferred ||
-      !address.selector ||
+      !address.elementReference ||
       !mutationContext
     ) {
       return;
@@ -49,7 +49,7 @@ export class SettingsComponent {
 
     this.loading = true;
     this.api
-      .setPreferredAddress(mutationContext.patronId, address.selector)
+      .setPreferredAddress(mutationContext.patronId, address.elementReference)
       .pipe(
         tap((patron) => {
           this.state.replacePatron(patron, mutationContext);
@@ -75,7 +75,7 @@ export class SettingsComponent {
   }
 
   public trackAddress(index: number, address: PostalAddressView): string {
-    return address.selector ?? `${index}:${address.types.join(',')}`;
+    return address.elementReference ?? `${index}:${address.types.join(',')}`;
   }
 
   private presentError(error: unknown): void {

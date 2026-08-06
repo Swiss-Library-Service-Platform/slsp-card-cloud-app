@@ -6,7 +6,7 @@ export interface LibraryCardNumberView {
   readonly value: string | null;
   readonly alias: boolean;
   readonly removable: boolean;
-  readonly selector: string | null;
+  readonly elementReference: string | null;
 }
 
 export interface BlockView {
@@ -14,11 +14,11 @@ export interface BlockView {
   readonly createdDate: string | null;
   readonly expiryDate: string | null;
   readonly note: string | null;
-  readonly selector: string;
+  readonly elementReference: string;
 }
 
 export interface PostalAddressView {
-  readonly selector: string | null;
+  readonly elementReference: string | null;
   readonly types: readonly string[];
   readonly line1: string | null;
   readonly postalCode: string | null;
@@ -47,7 +47,7 @@ export interface AddBlockRequest {
 }
 
 export interface SetPreferredAddressRequest {
-  readonly selector: string;
+  readonly elementReference: string;
 }
 
 export type CardErrorType =
@@ -59,7 +59,7 @@ export type CardErrorType =
   | 'DUPLICATE_LIBRARY_CARD_NUMBER'
   | 'UNSUPPORTED_BLOCK'
   | 'BLOCK_COMMENT_REQUIRED'
-  | 'STALE_SELECTION'
+  | 'STALE_ELEMENT_REFERENCE'
   | 'INVALID_SETTINGS_NOTE'
   | 'UPSTREAM_FAILURE'
   | 'DEPENDENCY_UNAVAILABLE'

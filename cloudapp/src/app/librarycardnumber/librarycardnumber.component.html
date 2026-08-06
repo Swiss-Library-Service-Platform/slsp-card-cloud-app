@@ -56,7 +56,7 @@
                 {{ 'LibraryCardNumber.Alias' | translate }}
               </div>
               <button
-                *ngIf="item.removable && item.selector"
+                *ngIf="item.removable && item.elementReference"
                 mat-flat-button
                 color="secondary"
                 [disabled]="loading"

@@ -44,7 +44,7 @@ describe('UsermenuComponent', () => {
             createdDate: null,
             expiryDate: null,
             note: null,
-            selector: 'block-selector',
+            elementReference: 'block-reference',
           },
         },
         postalAddresses: [],

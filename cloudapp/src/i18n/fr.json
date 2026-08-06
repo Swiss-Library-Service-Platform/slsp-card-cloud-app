@@ -41,7 +41,7 @@
     "DuplicateLibraryCardNumber": "Ce numéro de carte est déjà utilisé.",
     "UnsupportedBlock": "Ce type de blocage n'est pas pris en charge.",
     "BlockCommentRequired": "Un commentaire est requis pour ce blocage.",
-    "StaleSelection": "L'élément sélectionné a changé. Rechargez le compte et réessayez.",
+    "StaleElementReference": "L'élément sélectionné a changé. Rechargez le compte et réessayez.",
     "InvalidSettingsNote": "L'adresse préférée n'a pas pu être modifiée, car les paramètres partagés ne sont pas valides.",
     "UpstreamFailure": "Service temporairement non disponible.",
     "DependencyUnavailable": "Service temporairement non disponible.",

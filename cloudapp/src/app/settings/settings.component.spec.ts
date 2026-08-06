@@ -34,7 +34,7 @@ describe('SettingsComponent', () => {
   };
   const context = { patronId: 'patron-1' } as PatronMutationContext;
   const preferred: PostalAddressView = {
-    selector: 'preferred-selector',
+    elementReference: 'preferred-reference',
     types: ['home', 'billing'],
     line1: 'Main Street 1',
     postalCode: '8000',
@@ -43,7 +43,7 @@ describe('SettingsComponent', () => {
     preferred: true,
   };
   const selectable: PostalAddressView = {
-    selector: 'selectable-selector',
+    elementReference: 'selectable-reference',
     types: ['work'],
     line1: null,
     postalCode: null,
@@ -52,7 +52,7 @@ describe('SettingsComponent', () => {
     preferred: false,
   };
   const presentationOnly: PostalAddressView = {
-    selector: null,
+    elementReference: null,
     types: ['other'],
     line1: 'Unselectable 3',
     postalCode: '1000',
@@ -172,14 +172,14 @@ describe('SettingsComponent', () => {
     expect(presentationButton?.disabled ?? true).toBeTrue();
   });
 
-  it('sends the selected address selector and replaces refreshed state', () => {
+  it('sends the selected address element reference and replaces refreshed state', () => {
     api.setPreferredAddress.and.returnValue(of(updatedPatron));
 
     component.changePreferredAddress(selectable);
 
     expect(api.setPreferredAddress).toHaveBeenCalledOnceWith(
       'patron-1',
-      'selectable-selector',
+      'selectable-reference',
     );
     expect(state.replacePatron).toHaveBeenCalledOnceWith(
       updatedPatron,

@@ -41,7 +41,7 @@
     "DuplicateLibraryCardNumber": "This library card number is already in use.",
     "UnsupportedBlock": "This block type is not supported.",
     "BlockCommentRequired": "A comment is required for this block.",
-    "StaleSelection": "The selected item changed. Reload the patron and try again.",
+    "StaleElementReference": "The selected item changed. Reload the patron and try again.",
     "InvalidSettingsNote": "The preferred address could not be changed because the shared settings are invalid.",
     "UpstreamFailure": "Service temporarily unavailable",
     "DependencyUnavailable": "Service temporarily unavailable",

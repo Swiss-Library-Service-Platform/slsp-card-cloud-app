@@ -110,7 +110,7 @@ export class BlockComponent {
 
     this.loading = true;
     this.api
-      .removeBlock(mutationContext.patronId, block.selector)
+      .removeBlock(mutationContext.patronId, block.elementReference)
       .pipe(
         tap((patron) => {
           this.state.replacePatron(patron, mutationContext);

@@ -41,7 +41,7 @@
     "DuplicateLibraryCardNumber": "Diese Bibliothekskarten-Nummer wird bereits verwendet.",
     "UnsupportedBlock": "Dieser Sperrentyp wird nicht unterstützt.",
     "BlockCommentRequired": "Für diese Sperre ist ein Kommentar erforderlich.",
-    "StaleSelection": "Das ausgewählte Element wurde geändert. Laden Sie den Benutzer neu und versuchen Sie es erneut.",
+    "StaleElementReference": "Das ausgewählte Element wurde geändert. Laden Sie den Benutzer neu und versuchen Sie es erneut.",
     "InvalidSettingsNote": "Die bevorzugte Adresse konnte nicht geändert werden, weil die gemeinsamen Einstellungen ungültig sind.",
     "UpstreamFailure": "Dienst vorübergehend nicht verfügbar.",
     "DependencyUnavailable": "Dienst vorübergehend nicht verfügbar.",
