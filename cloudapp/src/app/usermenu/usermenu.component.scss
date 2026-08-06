@@ -1,31 +1,22 @@
-mat-card {
-  cursor: pointer;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+:host {
+  display: flex;
+  min-width: 0;
+  height: 100%;
+  flex-direction: column;
 }
 
-mat-tab-group {
-  flex-grow: 1;
+.slsp-primary-tabs {
+  min-height: 0;
 }
 
-.please-note {
-  padding-bottom: 1rem;
-  text-align: center;
-
-  span {
-    font-weight: bold;
-  }
-
-  div {
-    margin-top: 1rem;
-  }
-
-  .mat-icon {
-    vertical-align: bottom;
-    margin-right: 4px;
-  }
+.blocks-tab-indicator {
+  width: 0.45rem;
+  height: 0.45rem;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #ffd37a;
 }
 
-.blocks-tab-icon {
-  margin-right: 8px;
+.propagation-guidance {
+  margin: 0.5rem 1px 1rem;
 }

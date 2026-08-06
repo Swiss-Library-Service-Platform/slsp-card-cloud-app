@@ -1,4 +1,3 @@
-import { Location } from '@angular/common';
 import { DestroyRef, Component, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -40,7 +39,6 @@ interface LibraryCardNumberForm {
 @Component({
   selector: 'app-librarycardnumber',
   templateUrl: './librarycardnumber.component.html',
-  styleUrls: ['./librarycardnumber.component.scss'],
 })
 export class LibraryCardNumberComponent {
   public readonly numberForm: FormGroup<LibraryCardNumberForm>;
@@ -53,7 +51,6 @@ export class LibraryCardNumberComponent {
   private readonly destroyRef = inject(DestroyRef);
   private readonly dialog = inject(MatDialog);
   private readonly formBuilder = inject(FormBuilder);
-  private readonly location = inject(Location);
   private readonly state = inject(PatronStateService);
   private readonly translate = inject(TranslateService);
 
@@ -102,10 +99,6 @@ export class LibraryCardNumberComponent {
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe();
-  }
-
-  public navigateBack(): void {
-    this.location.back();
   }
 
   public remove(item: LibraryCardNumberView): void {

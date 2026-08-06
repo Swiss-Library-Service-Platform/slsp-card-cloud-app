@@ -1,0 +1,32 @@
+@mixin slsp-design-tokens {
+  :root {
+    --slsp-purple: #4e4a99;
+    --slsp-purple-dark: #3e3a7c;
+    --slsp-purple-light: #eeeef7;
+    --slsp-purple-transparent: rgba(78, 74, 153, 0.1);
+    --slsp-amber: #f3a000;
+    --slsp-amber-light: #fff7e7;
+    --slsp-success: #2e7d32;
+    --slsp-success-light: #f4faf4;
+    --slsp-danger: #963031;
+    --slsp-danger-light: #fff4f4;
+    --slsp-text: rgba(0, 0, 0, 0.82);
+    --slsp-text-secondary: rgba(0, 0, 0, 0.6);
+    --slsp-font-size-title: 1rem;
+    --slsp-font-size-body: 0.9375rem;
+    --slsp-font-weight-regular: 400;
+    --slsp-font-weight-medium: 500;
+    --slsp-font-weight-semibold: 600;
+    --slsp-font-weight-bold: 700;
+    --slsp-line-height-body: 1.5;
+    --slsp-line-height-compact: 1.35;
+    --slsp-border: rgba(0, 0, 0, 0.14);
+    --slsp-border-light: rgba(0, 0, 0, 0.08);
+    --slsp-surface-subtle: #f8f8fa;
+    --slsp-space-1: 0.25rem;
+    --slsp-space-2: 0.5rem;
+    --slsp-space-3: 0.75rem;
+    --slsp-space-4: 1rem;
+    --slsp-radius: 6px;
+  }
+}

@@ -44,7 +44,8 @@ import { ConfirmationdialogComponent } from './confirmationdialog/confirmationdi
     {
       provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
       useValue: {
-        appearance: 'fill',
+        appearance: 'outline',
+        subscriptSizing: 'dynamic',
       },
     },
   ],

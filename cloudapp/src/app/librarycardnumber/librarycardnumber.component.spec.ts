@@ -1,4 +1,3 @@
-import { Location } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormGroupDirective } from '@angular/forms';
@@ -100,10 +99,6 @@ describe('LibraryCardNumberComponent', () => {
         { provide: PatronStateService, useValue: state },
         { provide: AlertService, useValue: alert },
         { provide: MatDialog, useValue: dialog },
-        {
-          provide: Location,
-          useValue: jasmine.createSpyObj<Location>('Location', ['back']),
-        },
       ],
     }).compileComponents();
 
@@ -113,10 +108,8 @@ describe('LibraryCardNumberComponent', () => {
       LibraryCardNumber: {
         Add: 'Add',
         Alias: 'Alias',
-        AddLibraryCardNumber: 'Add Library Card Number',
         CurrentLibraryCardNumbers: 'Current Library Card Numbers',
         CurrentMatriculationNumber: 'Current matriculation number',
-        CurrentLibraryCardNumbersDescription: 'Current card numbers:',
         NoCurrentLibraryCardNumbers: 'No card numbers',
         Remove: 'Remove',
         Sure: 'Remove this exact number?',
@@ -125,9 +118,9 @@ describe('LibraryCardNumberComponent', () => {
         FomatError: 'Required card number',
         AddError: 'Card addition failed',
         AddSuccess: 'Card added',
+        ManagedIdentifier: 'Managed identifier',
       },
-      Main: { LibraryCardNumber: 'Card Number' },
-      General: { BackToMenu: 'Back' },
+      Main: { Cards: 'Cards', LibraryCardNumber: 'Card Number' },
       Errors: {
         DuplicateLibraryCardNumber: 'This card number is already in use.',
         UnexpectedFailure: 'An unexpected error occurred.',
@@ -145,13 +138,29 @@ describe('LibraryCardNumberComponent', () => {
   it('renders DTO matriculation, alias, and removability flags', () => {
     const text = fixture.nativeElement.textContent as string;
     const removeButtons = fixture.nativeElement.querySelectorAll(
-      '.table-cell-remove button',
+      '[data-action="remove-card"]',
     ) as NodeListOf<HTMLButtonElement>;
 
     expect(text).toContain('12345678');
     expect(text).toContain('12-345-678');
     expect(text).toContain('Alias');
     expect(removeButtons.length).toBe(1);
+  });
+
+  it('uses one flat Cards section with an integrated add form', () => {
+    expect(
+      fixture.nativeElement.querySelectorAll('[data-section="cards"]').length,
+    ).toBe(1);
+    expect(fixture.nativeElement.querySelector('mat-card')).toBeNull();
+    expect(
+      fixture.nativeElement.querySelector('[data-section="cards"] form'),
+    ).not.toBeNull();
+    expect(
+      fixture.nativeElement.querySelector('.slsp-section__description'),
+    ).toBeNull();
+    expect(
+      fixture.nativeElement.querySelector('.add-card-form__heading'),
+    ).toBeNull();
   });
 
   it('confirms and removes the exact displayed card by element reference', () => {

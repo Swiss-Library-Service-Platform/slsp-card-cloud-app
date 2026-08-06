@@ -1,0 +1,93 @@
+@mixin slsp-material-overrides {
+  .slsp-primary-tabs {
+    flex-grow: 1;
+
+    > .mat-mdc-tab-header {
+      margin: 0 1px;
+      border-bottom: 0;
+      border-radius: var(--slsp-radius);
+      background: var(--slsp-purple);
+    }
+
+    .mat-mdc-tab-labels {
+      padding: var(--slsp-space-1) 0;
+    }
+
+    .mat-mdc-tab {
+      min-width: 0;
+      flex: 1 1 0;
+    }
+
+    .mdc-tab__text-label {
+      display: flex;
+      align-items: center;
+      gap: var(--slsp-space-1);
+      color: rgba(255, 255, 255, 0.76) !important;
+    }
+
+    .mdc-tab--active .mdc-tab__text-label {
+      color: white !important;
+    }
+
+    .mdc-tab-indicator__content--underline {
+      margin: 0 var(--slsp-space-2);
+      border-top-width: 3px;
+      border-color: white !important;
+      border-radius: 3px;
+    }
+  }
+
+  .mat-mdc-form-field {
+    --mdc-outlined-text-field-focus-outline-color: var(--slsp-purple);
+    --mdc-outlined-text-field-focus-label-text-color: var(--slsp-purple);
+
+    // Alma's host styles remove Material's horizontal field inset.
+    // Restore it once here for every outlined input in the Cloud App.
+    .mat-mdc-text-field-wrapper {
+      padding-inline: var(--slsp-space-3) !important;
+    }
+  }
+
+  .slsp-patron-menu {
+    min-width: 14rem;
+
+    .slsp-patron-menu-item {
+      min-height: 2.5rem;
+      font-size: var(--slsp-font-size-body);
+      line-height: var(--slsp-line-height-compact);
+    }
+  }
+
+  .mat-mdc-unelevated-button.mat-primary {
+    --mdc-filled-button-container-color: var(--slsp-purple);
+    --mdc-filled-button-label-text-color: white;
+  }
+
+  button.slsp-destructive-action {
+    --mdc-outlined-button-label-text-color: var(--slsp-danger);
+    --mdc-outlined-button-outline-color: rgba(150, 48, 49, 0.55);
+  }
+
+  button.info-button {
+    width: 2rem;
+    min-width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border-radius: 50%;
+    color: var(--slsp-purple);
+
+    mat-icon {
+      margin: 0;
+    }
+  }
+
+  .loading-shade {
+    position: absolute;
+    z-index: 100;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--slsp-purple-transparent);
+  }
+}

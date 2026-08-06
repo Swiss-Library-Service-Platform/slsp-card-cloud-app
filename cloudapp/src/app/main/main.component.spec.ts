@@ -104,6 +104,8 @@ describe('MainComponent', () => {
       Main: {
         UserNotFound: ' was not found in the Network Zone.',
         TemporarilyUnavailable: 'Service temporarily unavailable',
+        Sandbox: 'Sandbox',
+        SandboxDescription: 'Test environment',
       },
       Errors: {
         AuthenticationFailed: 'Authentication failed.',
@@ -147,9 +149,7 @@ describe('MainComponent', () => {
     expect(userAction?.querySelector('.entity-name')?.textContent).toContain(
       'Selected user',
     );
-    expect(userAction?.querySelector('.entity-id')?.textContent).toContain(
-      'primary-id',
-    );
+    expect(userAction?.textContent).not.toContain('primary-id');
     userAction?.click();
 
     expect(state.select).toHaveBeenCalledOnceWith(selected);
@@ -350,8 +350,10 @@ describe('MainComponent', () => {
       'private backend detail',
     );
     expect(
-      fixture.nativeElement.querySelector('.info-test-env'),
+      fixture.nativeElement.querySelector('[data-environment-banner]'),
     ).not.toBeNull();
+    expect(fixture.nativeElement.textContent).toContain('Sandbox');
+    expect(fixture.nativeElement.textContent).toContain('Test environment');
 
     authorization$.next({ status: 'allowed' });
     patronState$.next({ status: 'loading', entity: selected });

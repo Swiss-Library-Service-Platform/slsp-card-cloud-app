@@ -1,4 +1,3 @@
-import { Location } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import {
@@ -105,10 +104,6 @@ describe('SettingsComponent', () => {
         { provide: PatronApiService, useValue: api },
         { provide: PatronStateService, useValue: state },
         { provide: AlertService, useValue: alert },
-        {
-          provide: Location,
-          useValue: jasmine.createSpyObj<Location>('Location', ['back']),
-        },
       ],
     }).compileComponents();
 
@@ -119,14 +114,20 @@ describe('SettingsComponent', () => {
         PreferredAddress: 'Preferred address',
         PreferredAddressDescription: 'Description',
         PreferredAddressDescriptionLink: 'edu-ID',
+        MoreInformation: 'More information',
         AddressType: 'Address Type',
-        Address: 'Address',
         UseAsPreferred: 'Use as preferred address',
         NoAddresses: 'No addresses',
         SetError: 'Address change failed',
         SetSuccess: 'Address changed',
+        Preferred: 'Preferred',
+        InvoiceContacts: 'Invoice contact details',
+        InvoiceContactsDescription:
+          'Invoice portal and email will appear here.',
+        UserGroup: 'User group',
+        UserGroupDescription:
+          'Eligibility is provided by registration-platform.',
       },
-      General: { BackToMenu: 'Back' },
       Errors: {
         InvalidSettingsNote: 'The shared settings are invalid.',
         UnexpectedFailure: 'An unexpected error occurred.',
@@ -170,6 +171,47 @@ describe('SettingsComponent', () => {
     expect(preferredButton?.disabled ?? true).toBeTrue();
     expect(selectableButton?.disabled).toBeFalse();
     expect(presentationButton?.disabled ?? true).toBeTrue();
+  });
+
+  it('renders collapsed information for all Account sections', () => {
+    const informationButtons = fixture.nativeElement.querySelectorAll(
+      '[data-info]',
+    ) as NodeListOf<HTMLButtonElement>;
+
+    expect(informationButtons.length).toBe(3);
+    expect(
+      Array.from(informationButtons).every(
+        (button) => button.getAttribute('aria-expanded') === 'false',
+      ),
+    ).toBeTrue();
+    expect(fixture.nativeElement.textContent).not.toContain('Description');
+    expect(fixture.nativeElement.textContent).not.toContain(
+      'registration-platform',
+    );
+  });
+
+  it('reveals each section information panel on request', () => {
+    const preferredAddress = fixture.nativeElement.querySelector(
+      '[data-section="preferred-address"]',
+    ) as HTMLElement;
+    const invoice = fixture.nativeElement.querySelector(
+      '[data-placeholder="invoice-contacts"]',
+    ) as HTMLElement;
+    const userGroup = fixture.nativeElement.querySelector(
+      '[data-placeholder="user-group"]',
+    ) as HTMLElement;
+
+    preferredAddress.querySelector<HTMLButtonElement>('[data-info]')?.click();
+    invoice.querySelector<HTMLButtonElement>('[data-info]')?.click();
+    userGroup.querySelector<HTMLButtonElement>('[data-info]')?.click();
+    fixture.detectChanges();
+
+    expect(preferredAddress.textContent).toContain('Description');
+    expect(invoice.textContent).toContain('Invoice portal and email');
+    expect(userGroup.textContent).toContain('registration-platform');
+    expect(invoice.querySelector('input, select, textarea')).toBeNull();
+    expect(userGroup.querySelector('input, select, textarea')).toBeNull();
+    expect(fixture.nativeElement.querySelector('mat-card')).toBeNull();
   });
 
   it('sends the selected address element reference and replaces refreshed state', () => {

@@ -4,13 +4,13 @@
 
 .entities-action-list {
   padding: 0;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-top: 1px solid var(--slsp-border-light);
 }
 
 .entity-action {
   --mdc-list-list-item-one-line-container-height: 56px;
 
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid var(--slsp-border-light);
 
   &:hover,
   &:focus-visible {
@@ -21,56 +21,17 @@
 .entity-content {
   display: flex;
   min-width: 0;
-  flex-direction: column;
   align-items: flex-start;
-  line-height: 1.25;
+  line-height: var(--slsp-line-height-compact);
 }
 
-.entity-name,
-.entity-id {
+.entity-name {
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.entity-name {
-  color: rgba(0, 0, 0, 0.8);
-  font-weight: 500;
-}
-
-.entity-id {
-  margin-top: 2px;
-  color: rgba(0, 0, 0, 0.5);
-  font-size: 0.78rem;
-  font-weight: 400;
-}
-
-textarea {
-  padding: 2px;
-  border-width: 1px;
-  $width: calc(100% - 6px);
-  width: $width;
-  max-width: $width;
-  height: 150px;
-  font-family: monospace;
-  display: block;
-}
-
-pre {
-  overflow: auto;
-  max-height: 200px;
-  white-space: pre-wrap;
-  word-break: break-all;
-}
-
-pre,
-textarea {
-  font-size: 0.9em;
-}
-
-.mainmenu-link {
-  color: var(--slsp-purple);
+  color: var(--slsp-text);
+  font-weight: var(--slsp-font-weight-medium);
 }
 
 .select-entities {

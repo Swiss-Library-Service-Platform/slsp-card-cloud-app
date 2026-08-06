@@ -1,6 +1,6 @@
 {
   "General": {
-    "BackToMenu": "Zurück",
+    "ChangePatron": "Benutzer wechseln",
     "Yes": "Ja",
     "No": "Nein",
     "Cancel": "Abbrechen",
@@ -23,14 +23,19 @@
     "SelectUser": "Wählen Sie einen Nutzer aus:"
   },
   "Main": {
-    "Block": "Sperren",
-    "Settings": "Mehr",
+    "Cards": "Karten",
+    "Account": "Konto",
+    "Blocks": "Sperren",
     "LibraryCardNumber": "Nummer",
     "PleaseNote": "Bitte beachten:",
     "TakesAFewMinutes": "Es wird einige Minuten dauern bis Änderungen im Bibliothekssystem aktiv werden.",
     "UserNotFound": " wurde nicht in der Network Zone gefunden.",
     "TemporarilyUnavailable": "Dienst vorübergehend nicht verfügbar.",
-    "Help": "Hilfe"
+    "Help": "Hilfe",
+    "Sandbox": "Sandbox",
+    "SandboxDescription": "Testumgebung",
+    "PatronActions": "Benutzeraktionen",
+    "EduIdSync": "Mit edu-ID synchronisieren"
   },
   "Errors": {
     "AuthenticationFailed": "Ihre Sitzung konnte nicht authentifiziert werden. Bitte öffnen Sie die App erneut.",
@@ -52,10 +57,8 @@
   "LibraryCardNumber": {
     "Add": "Hinzufügen",
     "Alias": "Alias",
-    "AddLibraryCardNumber": "Bibliothekskarten-Nummer hinzufügen",
     "CurrentLibraryCardNumbers": "Aktuelle Bibliothekskarten-Nummern",
     "CurrentMatriculationNumber": "Aktuelle Matrikulations-Nummer",
-    "CurrentLibraryCardNumbersDescription": "Aktuelle Bibliothekskarten-Nummern:",
     "NoCurrentLibraryCardNumbers": "Dieser Benutzer besitzt derzeit keine Bibliothekskarten-Nummern.",
     "Remove": "Entfernen",
     "Sure": "Sind Sie sicher, dass Sie die Nummer entfernen möchten?",
@@ -63,17 +66,19 @@
     "RemoveError": "Bibliothekskarten-Nummer konnte nicht entfernt werden.",
     "FomatError": "Format der Nummer ist nicht zugelassen.",
     "AddError": "Bibliothekskarten-Nummer ist nicht valide oder bereits in Verwendung.",
-    "AddSuccess": "Bibliothekskarten-Nummer erfolgreich hinzugefügt."
+    "AddSuccess": "Bibliothekskarten-Nummer erfolgreich hinzugefügt.",
+    "ManagedIdentifier": "Verwaltete Kennung"
   },
   "Settings": {
     "PreferredAddress": "Bevorzugte Adresse",
     "PreferredAddressDescription": "Die bevorzugte Adresse definiert die Adresse, an die standardmässig Rechnungen und Bücher gesendet werden. Benutzerdaten wie Adressen können hier geändert werden: ",
     "PreferredAddressDescriptionLink": "SWITCH edu-ID Account-Management-Seite.",
+    "MoreInformation": "Weitere Informationen",
     "UserGroup": "User Gruppe",
-    "UserGroupDescription": "Die verfügbaren Benutzergruppen hängen von den Organisationszugehörigkeiten und Ihrer Rolle (z. B. Student, Mitarbeiter, Fakultät) in den Organisationen ab.",
-    "SaveUserGroup": "User Gruppe speichern",
+    "InvoiceContacts": "Rechnungskontaktdaten",
+    "InvoiceContactsDescription": "Eine separate Rechnungs-Postadresse und Rechnungs-E-Mail-Adresse werden künftig hier verwaltet.",
+    "UserGroupDescription": "Die verfügbaren Benutzergruppen werden künftig von der Registrierungsplattform als führender Quelle geliefert.",
     "AddressType": "Adress-Typ",
-    "Address": "Adresse",
     "Preferred": "Bevorzugt",
     "UseAsPreferred": "Als Bevorzugt markieren",
     "NoAddresses": "Dieser Nutzer hat keine Adress-Einträge in der Network-Zone.",
@@ -81,11 +86,11 @@
     "SetSuccess": "Bevorzugte Adresse erfolgreich geändert."
   },
   "Blocks": {
-    "CurrentBlockTitle": "Derzeitige Sperren",
+    "Active": "Aktiv",
+    "MoreInformation": "Weitere Informationen",
     "Status": "Status: ",
     "NoBlocks": "Der Nutzer besitzt keine Sperre.",
     "ExistingBlocks": "Nutzer gesperrt.",
-    "AddBlockTitle": "Nutzer-Sperren hinzufügen",
     "DoubleRegistrations": "Doppelte Einschreibung",
     "WrongAddress": "Falsche Postadresse",
     "NewAccount": "Neues Konto",

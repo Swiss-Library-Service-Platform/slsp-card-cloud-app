@@ -1,100 +1,143 @@
 <ng-container *ngIf="patron$ | async as patron">
-  <div style="display: none" class="user-header" fxLayout="row">
-    <button mat-flat-button color="secondary" (click)="navigateBack()">
-      <mat-icon inline="true">arrow_back_ios</mat-icon>
-      {{ 'General.BackToMenu' | translate }}
-    </button>
-    <span>
-      <mat-icon size="20">account_circle</mat-icon>
-      <div class="user-header-text">{{ patron.fullName }}</div>
-    </span>
-  </div>
-  <br />
-  <mat-card class="outer-card">
-    <mat-card-header>
-      <mat-card-title>
-        {{ 'Settings.PreferredAddress' | translate }}
-      </mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <mat-divider></mat-divider>
-      <br />
-      {{ 'Settings.PreferredAddressDescription' | translate }}
-      <a href="https://eduid.ch/" target="_blank">{{
-        'Settings.PreferredAddressDescriptionLink' | translate
-      }}</a>
-      <br /><br />
-      <div *ngIf="patron.postalAddresses.length === 0" class="warning">
-        {{ 'Settings.NoAddresses' | translate }}
-      </div>
-      <mat-card
-        data-address
-        [class.mat-card-purple]="item.preferred"
-        *ngFor="let item of patron.postalAddresses; trackBy: trackAddress"
-      >
-        <mat-card-content>
-          <table>
-            <tr>
-              <td class="address-table-desc" style="white-space: nowrap">
-                {{ 'Settings.AddressType' | translate }}
-              </td>
-              <td>{{ item.types.join(', ') }}</td>
-            </tr>
-            <tr>
-              <td class="address-table-desc">
-                {{ 'Settings.Address' | translate }}
-              </td>
-              <td>
-                <ng-container *ngIf="item.line1">{{ item.line1 }}</ng-container
-                ><ng-container *ngIf="item.postalCode"
-                  ><ng-container *ngIf="item.line1">, </ng-container
-                  >{{ item.postalCode }}</ng-container
-                ><ng-container *ngIf="item.city"
-                  ><ng-container *ngIf="item.line1 || item.postalCode"
-                    >, </ng-container
-                  >{{ item.city }}</ng-container
-                ><ng-container *ngIf="item.country"
-                  ><ng-container
-                    *ngIf="item.line1 || item.postalCode || item.city"
-                    >, </ng-container
-                  >{{ item.country }}</ng-container
-                >
-              </td>
-            </tr>
-          </table>
-          <br />
-          <mat-action-row>
-            <button
-              mat-flat-button
-              data-action="prefer"
-              [disabled]="item.preferred || !item.elementReference || loading"
-              (click)="changePreferredAddress(item)"
-              class="slsp-purple-button"
-            >
-              {{ 'Settings.UseAsPreferred' | translate }}
-            </button>
-            <span *ngIf="item.preferred" class="label-preferred-address">
-              <mat-icon size="20">check</mat-icon>
-              {{ 'Settings.PreferredAddress' | translate }}
-            </span>
-          </mat-action-row>
-        </mat-card-content>
-      </mat-card>
-    </mat-card-content>
-  </mat-card>
+  <div class="slsp-screen">
+    <section class="slsp-section" data-section="preferred-address">
+      <header class="slsp-section__header">
+        <div class="slsp-section__heading">
+          <h2 class="slsp-section__title">
+            {{ 'Settings.PreferredAddress' | translate }}
+          </h2>
+        </div>
+        <button
+          mat-icon-button
+          type="button"
+          class="info-button"
+          data-info="preferred-address"
+          [attr.aria-label]="'Settings.MoreInformation' | translate"
+          [attr.aria-expanded]="preferredAddressInfoExpanded"
+          (click)="preferredAddressInfoExpanded = !preferredAddressInfoExpanded"
+        >
+          <mat-icon>info</mat-icon>
+        </button>
+      </header>
 
-  <mat-card *ngIf="false">
-    <mat-card-header>
-      <mat-card-title>
-        {{ 'Settings.UserGroup' | translate }}
-      </mat-card-title>
-    </mat-card-header>
-    <mat-action-row>
-      <button mat-flat-button color="secondary">
-        {{ 'Settings.SaveUserGroup' | translate }}
-      </button>
-    </mat-action-row>
-  </mat-card>
+      <p *ngIf="preferredAddressInfoExpanded" class="slsp-section__information">
+        {{ 'Settings.PreferredAddressDescription' | translate }}
+        <a href="https://eduid.ch/" target="_blank" rel="noopener">
+          {{ 'Settings.PreferredAddressDescriptionLink' | translate }}
+        </a>
+      </p>
+
+      <div *ngIf="patron.postalAddresses.length === 0" class="slsp-empty-state">
+        <mat-icon>location_off</mat-icon>
+        <span>{{ 'Settings.NoAddresses' | translate }}</span>
+      </div>
+
+      <ul class="slsp-data-list">
+        <li
+          *ngFor="let item of patron.postalAddresses; trackBy: trackAddress"
+          class="slsp-data-row address-row"
+          data-address
+          [class.address-row--preferred]="item.preferred"
+        >
+          <div class="slsp-data-row__content">
+            <div class="address-row__heading">
+              <span class="slsp-data-row__label">
+                {{ 'Settings.AddressType' | translate }}
+              </span>
+              <span *ngIf="item.preferred" class="slsp-status">
+                <mat-icon>check</mat-icon>
+                {{ 'Settings.Preferred' | translate }}
+              </span>
+            </div>
+            <span class="slsp-data-row__value">
+              <strong>{{ item.types.join(', ') }}</strong>
+            </span>
+            <span class="address-row__address">
+              <ng-container *ngIf="item.line1">{{ item.line1 }}</ng-container
+              ><ng-container *ngIf="item.postalCode"
+                ><ng-container *ngIf="item.line1">, </ng-container
+                >{{ item.postalCode }}</ng-container
+              ><ng-container *ngIf="item.city"
+                ><ng-container *ngIf="item.line1 || item.postalCode"
+                  >, </ng-container
+                >{{ item.city }}</ng-container
+              ><ng-container *ngIf="item.country"
+                ><ng-container
+                  *ngIf="item.line1 || item.postalCode || item.city"
+                  >, </ng-container
+                >{{ item.country }}</ng-container
+              >
+            </span>
+          </div>
+
+          <button
+            *ngIf="!item.preferred"
+            mat-stroked-button
+            type="button"
+            data-action="prefer"
+            [disabled]="!item.elementReference || loading"
+            (click)="changePreferredAddress(item)"
+          >
+            {{ 'Settings.UseAsPreferred' | translate }}
+          </button>
+        </li>
+      </ul>
+    </section>
+
+    <section
+      class="slsp-section slsp-placeholder"
+      data-placeholder="invoice-contacts"
+    >
+      <header class="slsp-section__header">
+        <div class="slsp-section__heading">
+          <h2 class="slsp-section__title">
+            {{ 'Settings.InvoiceContacts' | translate }}
+          </h2>
+        </div>
+        <button
+          mat-icon-button
+          type="button"
+          class="info-button"
+          data-info="invoice-contacts"
+          [attr.aria-label]="'Settings.MoreInformation' | translate"
+          [attr.aria-expanded]="invoiceContactsInfoExpanded"
+          (click)="invoiceContactsInfoExpanded = !invoiceContactsInfoExpanded"
+        >
+          <mat-icon>info</mat-icon>
+        </button>
+      </header>
+      <p *ngIf="invoiceContactsInfoExpanded" class="slsp-section__information">
+        {{ 'Settings.InvoiceContactsDescription' | translate }}
+      </p>
+    </section>
+
+    <section
+      class="slsp-section slsp-placeholder"
+      data-placeholder="user-group"
+    >
+      <header class="slsp-section__header">
+        <div class="slsp-section__heading">
+          <h2 class="slsp-section__title">
+            {{ 'Settings.UserGroup' | translate }}
+          </h2>
+        </div>
+        <button
+          mat-icon-button
+          type="button"
+          class="info-button"
+          data-info="user-group"
+          [attr.aria-label]="'Settings.MoreInformation' | translate"
+          [attr.aria-expanded]="userGroupInfoExpanded"
+          (click)="userGroupInfoExpanded = !userGroupInfoExpanded"
+        >
+          <mat-icon>info</mat-icon>
+        </button>
+      </header>
+      <p *ngIf="userGroupInfoExpanded" class="slsp-section__information">
+        {{ 'Settings.UserGroupDescription' | translate }}
+      </p>
+    </section>
+  </div>
 </ng-container>
 
 <div class="loading-shade" *ngIf="loading">

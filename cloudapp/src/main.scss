@@ -1,225 +1,63 @@
-@import './app/main/main.component.theme';
+@import './styles/tokens';
+@import './styles/material-overrides';
+@import './styles/primitives';
 
 @mixin themed-styles($theme, $typography) {
-  /* Include themed component mixins or theme dependent styles here */
-  @include main-component-theme($theme, $typography);
 }
 
 @mixin global-styles {
-  /* Add global styles here */
-  .app-loading .spinner .path {
-    stroke: var(--slsp-purple);
-  }
+  @include slsp-design-tokens;
+  @include slsp-ui-primitives;
+  @include slsp-material-overrides;
 
-  :root {
+  :root,
+  body[class*='cloudapp-theme'] {
     height: 100%;
-    --slsp-purple: rgba(
-      78,
-      74,
-      153,
-      1
-    ); // or any global you wish to share with components
-    --slsp-purple-light: #eeeef7;
-    --slsp-purple-transparent: rgba(78, 74, 153, 0.1);
   }
 
   body[class*='cloudapp-theme'] {
-    height: 100%;
     margin: 0;
     padding: 0;
+    font-size: var(--slsp-font-size-body);
+    font-weight: var(--slsp-font-weight-regular);
+    line-height: var(--slsp-line-height-body);
   }
 
   app-usermenu {
     display: flex;
-    flex-direction: column;
     height: 100%;
+    flex-direction: column;
   }
-
-  .loading-shade {
-    //background: var(--slsp-purple-transparent) !important;
-  }
-
-  /*
-
-    BOTTOM
-
-    cloudapp-alert {
-        position: absolute;
-        bottom: 4rem;
-        height: 3rem;
-        width: 100%;
-        z-index: 99;
-        font-weight: bold;
-    }
-*/
 
   cloudapp-alert {
-    font-weight: bold;
     position: absolute;
-    top: 1rem;
+    z-index: 110;
+    top: var(--slsp-space-4);
     bottom: auto !important;
     width: 100%;
-    z-index: 99;
+    font-weight: var(--slsp-font-weight-bold);
+  }
+
+  a {
+    color: var(--slsp-purple);
   }
 
   .warning {
-    color: #963031;
-    font-weight: bold;
+    color: var(--slsp-danger);
+    font-weight: var(--slsp-font-weight-semibold);
   }
 
-  mat-card {
-    margin: 1px;
-    margin-bottom: 20px;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
-    background-color: white;
-    box-shadow: none !important;
-  }
-
-  mat-form-field {
-    --mdc-filled-text-field-focus-active-indicator-color: var(--slsp-purple);
-    --mdc-filled-text-field-focus-label-text-color: var(--slsp-purple);
-  }
-
-  .user-header {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    .user-header-text {
-      vertical-align: middle;
-      font-weight: bold;
-    }
-
-    .mat-icon {
-      vertical-align: middle;
-      margin-right: 8px;
-      color: var(--slsp-purple);
-    }
-
-    span {
-      display: flex;
-      align-items: center;
-      margin-right: 5px;
-    }
-  }
-
-  mat-action-row {
-    display: flex;
-    justify-content: end;
-  }
-
-  .green-icon {
-    color: green;
-  }
-
-  td {
-    padding: 8px;
-  }
-
-  button.slsp-purple-button {
-    background-color: var(--slsp-purple) !important;
+  .confirm-button {
+    background: var(--slsp-purple) !important;
     color: white !important;
-
-    &:hover {
-      background-color: var(--slsp-purple) !important;
-    }
-
-    &:disabled {
-      background-color: #ada9bb !important;
-    }
   }
 
   button[mat-button] .mat-icon,
   button[mat-flat-button] .mat-icon,
+  button[mat-stroked-button] .mat-icon,
   a[mat-button] .mat-icon,
   a[mat-raised-button] .mat-icon,
   a[mat-stroked-button] .mat-icon {
     vertical-align: middle;
-    font-size: 1.25em;
-    padding-right: 4px;
-  }
-
-  button.info-button {
-    width: 32px;
-    min-width: 32px;
-    height: 32px;
-    padding: 0 !important;
-    border-radius: 50%;
-    background-color: transparent !important;
-    color: var(--slsp-purple) !important;
-
-    &:hover,
-    &:focus-visible {
-      background-color: var(--slsp-purple-transparent) !important;
-    }
-
-    .mat-icon {
-      margin: 0;
-      padding: 0;
-      vertical-align: middle;
-    }
-  }
-
-  .mat-mdc-tab-labels {
-    background-color: var(--slsp-purple);
-    border-radius: 5px;
-
-    .mat-mdc-tab {
-      opacity: 0.8;
-    }
-
-    .mdc-tab__text-label {
-      color: white !important;
-    }
-
-    .mdc-tab--active {
-      opacity: 1;
-    }
-
-    .mdc-tab-indicator__content--underline {
-      border-top-width: 4px;
-      border-color: white !important;
-    }
-  }
-
-  .confirm-button {
-    color: white !important;
-    background-color: var(--slsp-purple) !important;
-  }
-
-  .mat-card-with-info {
-    .mat-mdc-card-header-text {
-      width: 100%;
-      margin-right: 0;
-    }
-
-    mat-card-title {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.5rem;
-
-      button {
-        flex: 0 0 auto;
-      }
-
-      .mat-icon {
-        color: inherit;
-      }
-    }
-  }
-
-  .info-test-env {
-    color: #963031;
-    border: 2px solid #963031;
-    text-align: center;
-    margin-top: 0.5rem;
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
-    padding: 0.5rem;
-    font-weight: bold;
   }
 }

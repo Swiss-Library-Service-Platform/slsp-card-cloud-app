@@ -19,7 +19,6 @@ import { CardErrorService } from '../services/card-error.service';
 import {
   PatronState,
   PatronStateService,
-  extractPatronId,
 } from '../services/patron-state.service';
 
 interface MainViewModel {
@@ -107,10 +106,6 @@ export class MainComponent implements OnInit {
 
   public entitySelected(entity: Entity): void {
     this.state.select(entity);
-  }
-
-  public entityPatronId(entity: Entity): string {
-    return extractPatronId(entity) ?? '';
   }
 
   public trackEntity(_index: number, entity: Entity): string {

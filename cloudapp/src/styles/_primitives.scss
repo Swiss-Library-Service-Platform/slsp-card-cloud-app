@@ -1,0 +1,268 @@
+@mixin slsp-ui-primitives {
+  .slsp-environment-banner {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: var(--slsp-space-2);
+    min-height: 2.25rem;
+    padding: 0.5rem var(--slsp-space-3);
+    border-left: 3px solid var(--slsp-amber);
+    border-radius: 3px;
+    background: var(--slsp-amber-light);
+    color: var(--slsp-text-secondary);
+    font-size: var(--slsp-font-size-body);
+    line-height: var(--slsp-line-height-body);
+
+    mat-icon {
+      width: 1rem;
+      height: 1rem;
+      flex: 0 0 auto;
+      color: var(--slsp-amber);
+      font-size: 1rem;
+    }
+  }
+
+  .slsp-environment-banner__label {
+    font-weight: var(--slsp-font-weight-bold);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .slsp-patron-bar {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--slsp-space-3);
+    padding: var(--slsp-space-3) var(--slsp-space-1);
+  }
+
+  .slsp-patron-bar__back {
+    width: 2.5rem;
+    height: 2.5rem;
+    color: var(--slsp-purple-dark);
+
+    mat-icon {
+      margin: 0;
+    }
+  }
+
+  .slsp-patron-bar__identity {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--slsp-space-2);
+
+    > mat-icon {
+      flex: 0 0 auto;
+      color: var(--slsp-purple);
+    }
+  }
+
+  .slsp-patron-bar__name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--slsp-text);
+    font-weight: var(--slsp-font-weight-semibold);
+    text-align: right;
+  }
+
+  .slsp-screen {
+    padding: var(--slsp-space-4) 1px var(--slsp-space-1);
+  }
+
+  .slsp-section {
+    overflow: hidden;
+    margin-bottom: var(--slsp-space-4);
+    border: 1px solid var(--slsp-border);
+    border-radius: var(--slsp-radius);
+    background: white;
+  }
+
+  .slsp-section__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--slsp-space-3);
+    padding: var(--slsp-space-4);
+    border-bottom: 1px solid var(--slsp-border-light);
+  }
+
+  .slsp-section__heading {
+    min-width: 0;
+  }
+
+  .slsp-section__title {
+    margin: 0;
+    color: var(--slsp-text);
+    font-size: var(--slsp-font-size-title);
+    font-weight: var(--slsp-font-weight-semibold);
+    line-height: var(--slsp-line-height-compact);
+  }
+
+  .slsp-data-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .slsp-data-row {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--slsp-space-3);
+    padding: var(--slsp-space-3) var(--slsp-space-4);
+    border-bottom: 1px solid var(--slsp-border-light);
+
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+
+  .slsp-data-row__content {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: var(--slsp-space-1);
+  }
+
+  .slsp-data-row__label {
+    color: var(--slsp-text-secondary);
+    font-size: var(--slsp-font-size-body);
+    font-weight: var(--slsp-font-weight-semibold);
+    letter-spacing: 0.02em;
+  }
+
+  .slsp-data-row__value {
+    overflow-wrap: anywhere;
+    color: var(--slsp-text);
+    font-size: var(--slsp-font-size-title);
+    font-weight: var(--slsp-font-weight-medium);
+  }
+
+  .slsp-data-row__meta {
+    color: var(--slsp-text-secondary);
+    font-size: var(--slsp-font-size-body);
+    font-style: italic;
+  }
+
+  .slsp-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--slsp-space-2);
+    padding: var(--slsp-space-3) var(--slsp-space-4);
+    border-top: 1px solid var(--slsp-border-light);
+    background: var(--slsp-surface-subtle);
+  }
+
+  .slsp-status {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: var(--slsp-space-1);
+    padding: 0.15rem 0.45rem;
+    border-radius: 999px;
+    background: var(--slsp-purple-light);
+    color: var(--slsp-purple-dark);
+    font-size: var(--slsp-font-size-body);
+    font-weight: var(--slsp-font-weight-semibold);
+
+    mat-icon {
+      width: 0.8rem;
+      height: 0.8rem;
+      font-size: 0.8rem;
+    }
+  }
+
+  .slsp-status--danger {
+    background: var(--slsp-danger-light);
+    color: var(--slsp-danger);
+  }
+
+  .slsp-placeholder {
+    border-style: dashed;
+    background: var(--slsp-surface-subtle);
+  }
+
+  .slsp-section__information {
+    margin: 0;
+    padding: var(--slsp-space-3) var(--slsp-space-4);
+    background: var(--slsp-surface-subtle);
+    color: var(--slsp-text-secondary);
+    font-size: var(--slsp-font-size-body);
+    line-height: var(--slsp-line-height-body);
+  }
+
+  .slsp-empty-state {
+    display: flex;
+    align-items: center;
+    gap: var(--slsp-space-2);
+    padding: var(--slsp-space-4);
+    color: var(--slsp-text-secondary);
+  }
+
+  .slsp-inline-form {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--slsp-space-3);
+    padding: var(--slsp-space-4);
+    background: var(--slsp-surface-subtle);
+
+    mat-form-field {
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+
+    button {
+      flex: 0 0 auto;
+    }
+  }
+
+  .slsp-inline-form--separated {
+    border-top: 1px solid var(--slsp-border-light);
+  }
+
+  .slsp-guidance {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--slsp-space-2);
+    padding: var(--slsp-space-3) var(--slsp-space-4);
+    border-left: 3px solid var(--slsp-purple);
+    background: var(--slsp-purple-light);
+    color: var(--slsp-text-secondary);
+    font-size: var(--slsp-font-size-body);
+    line-height: var(--slsp-line-height-body);
+
+    mat-icon {
+      width: 1.1rem;
+      height: 1.1rem;
+      flex: 0 0 auto;
+      color: var(--slsp-purple);
+      font-size: 1.1rem;
+    }
+  }
+
+  @media (max-width: 380px) {
+    .slsp-data-row {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .slsp-data-row > button {
+      align-self: flex-end;
+    }
+
+    .slsp-inline-form {
+      flex-direction: column;
+
+      mat-form-field,
+      button {
+        width: 100%;
+      }
+    }
+  }
+}

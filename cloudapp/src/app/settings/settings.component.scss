@@ -1,24 +1,31 @@
-mat-card.mat-card-purple {
-  background-color: var(--slsp-purple-light);
+.address-row {
+  align-items: flex-end;
 }
-.address-table-desc {
-  font-weight: bold;
-  vertical-align: top;
+
+.address-row--preferred {
+  background: var(--slsp-purple-light);
 }
-.label-preferred-address {
-  color: var(--slsp-purple);
-  font-weight: bold;
-  vertical-align: middle;
-  .mat-icon {
-    vertical-align: middle;
-    margin-right: 4px;
-  }
+
+.address-row__heading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
-.outer-card {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-  mat-card {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
+
+.address-row__address {
+  overflow-wrap: anywhere;
+  color: var(--slsp-text-secondary);
+  font-size: var(--slsp-font-size-body);
+  line-height: var(--slsp-line-height-body);
+}
+
+@media (max-width: 420px) {
+  .address-row {
+    align-items: flex-start;
+    flex-direction: column;
+
+    button {
+      align-self: flex-end;
+    }
   }
 }

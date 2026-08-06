@@ -1,4 +1,3 @@
-import { Location } from '@angular/common';
 import { DestroyRef, Component, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AlertService } from '@exlibris/exl-cloudapp-angular-lib';
@@ -17,13 +16,15 @@ import { PatronStateService } from '../services/patron-state.service';
 })
 export class SettingsComponent {
   public readonly patron$: Observable<CardPatron | null>;
+  public preferredAddressInfoExpanded = false;
+  public invoiceContactsInfoExpanded = false;
+  public userGroupInfoExpanded = false;
   public loading = false;
 
   private readonly alert = inject(AlertService);
   private readonly api = inject(PatronApiService);
   private readonly cardErrors = inject(CardErrorService);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly location = inject(Location);
   private readonly state = inject(PatronStateService);
   private readonly translate = inject(TranslateService);
 
@@ -68,10 +69,6 @@ export class SettingsComponent {
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe();
-  }
-
-  public navigateBack(): void {
-    this.location.back();
   }
 
   public trackAddress(index: number, address: PostalAddressView): string {

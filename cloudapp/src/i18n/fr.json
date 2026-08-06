@@ -1,6 +1,6 @@
 {
   "General": {
-    "BackToMenu": "Retour",
+    "ChangePatron": "Changer de compte",
     "Yes": "Oui",
     "No": "Non",
     "Cancel": "Annuler",
@@ -23,14 +23,19 @@
     "SelectUser": "Sélectionner un utilisateur:"
   },
   "Main": {
-    "Block": "Blocages",
-    "Settings": "Autres",
+    "Cards": "Cartes",
+    "Account": "Compte",
+    "Blocks": "Blocages",
     "LibraryCardNumber": "Numéro de carte",
     "PleaseNote": "Note:",
     "TakesAFewMinutes": "Cela prend quelques minutes avant que les modifications ne soient actives dans Alma.",
     "UserNotFound": " n'a pas été trouvé dans la zone réseau.",
     "TemporarilyUnavailable": "Service temporairement non disponible.",
-    "Help": "Aide"
+    "Help": "Aide",
+    "Sandbox": "Sandbox",
+    "SandboxDescription": "Environnement de test",
+    "PatronActions": "Actions sur le compte",
+    "EduIdSync": "Synchroniser avec edu-ID"
   },
   "Errors": {
     "AuthenticationFailed": "Votre session n'a pas pu être authentifiée. Veuillez rouvrir l'application.",
@@ -52,10 +57,8 @@
   "LibraryCardNumber": {
     "Add": "Ajouter",
     "Alias": "Alias",
-    "AddLibraryCardNumber": "Ajouter un numéro de carte",
     "CurrentLibraryCardNumbers": "Numéros de cartes actuels",
     "CurrentMatriculationNumber": "Numéros d'immatriculation actuels",
-    "CurrentLibraryCardNumbersDescription": "Numéros de cartes actuels:",
     "NoCurrentLibraryCardNumbers": "Il n'y a pas de numéro de carte enregistré dans ce compte actuellement.",
     "Remove": "Supprimer",
     "Sure": "Confirmez-vous la suppression du numéro?",
@@ -63,17 +66,19 @@
     "RemoveError": "Le numéro de carte n'a pas pu être supprimé.",
     "FomatError": "Le format du numéro de carte n'est pas valide.",
     "AddError": "Le numéro de carte n'est pas valide ou déjà utilisé.",
-    "AddSuccess": "Numéro de carte ajouté avec succès."
+    "AddSuccess": "Numéro de carte ajouté avec succès.",
+    "ManagedIdentifier": "Identifiant géré"
   },
   "Settings": {
     "PreferredAddress": "Adresse préférée",
     "PreferredAddressDescription": "L'adresse préférée est l'adresse à laquelle les factures et les livres sont envoyés. Les données personnelles comme l'adresse peuvent être changées ici: ",
     "PreferredAddressDescriptionLink": "Gestion du compte SWITCH edu-ID.",
+    "MoreInformation": "Plus d’informations",
     "UserGroup": "Groupe d'utilisateurs",
-    "UserGroupDescription": "Les groupes d'utilisateurs disponibles dépendent des affiliations organisationnelles et de votre statut dans ces organisations (étudiant-e, employé-e, personnel académique, etc.).",
-    "SaveUserGroup": "Sauvegarder le groupe d'utilisateurs",
+    "InvoiceContacts": "Coordonnées de facturation",
+    "InvoiceContactsDescription": "Une adresse postale et une adresse e-mail de facturation distinctes seront gérées ici.",
+    "UserGroupDescription": "Les groupes disponibles seront fournis par la plateforme d’enregistrement, qui restera la source de référence.",
     "AddressType": "Type d'adresse",
-    "Address": "Adresse",
     "Preferred": "Préférée",
     "UseAsPreferred": "Utiliser comme adresse préférée",
     "NoAddresses": "Cet utilisateur n'a pas d'adresse renseignée dans la zone réseau.",
@@ -81,11 +86,11 @@
     "SetSuccess": "L'adresse préférée a pu être modifiée avec succès."
   },
   "Blocks": {
-    "CurrentBlockTitle": "Blocages actuels",
+    "Active": "Actif",
+    "MoreInformation": "Plus d'informations",
     "Status": "Statut: ",
     "NoBlocks": "Le compte n'a pas de blocage.",
     "ExistingBlocks": "Le compte est bloqué!",
-    "AddBlockTitle": "Ajouter un blocage",
     "DoubleRegistrations": "Double enregistrement",
     "WrongAddress": "Mauvaise adresse postale",
     "NewAccount": "Nouveau compte",

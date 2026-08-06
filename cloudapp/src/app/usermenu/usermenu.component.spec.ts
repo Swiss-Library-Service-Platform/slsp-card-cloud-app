@@ -78,11 +78,15 @@ describe('UsermenuComponent', () => {
     const translate = TestBed.inject(TranslateService);
 
     translate.setTranslation('en', {
-      General: { BackToMenu: 'Back' },
+      General: { ChangePatron: 'Change patron' },
       Main: {
-        LibraryCardNumber: 'Card Number',
-        Block: 'Blocks',
-        Settings: 'Others',
+        Cards: 'Cards',
+        Account: 'Account',
+        Blocks: 'Blocks',
+        Sandbox: 'Sandbox',
+        SandboxDescription: 'Test environment',
+        PatronActions: 'Patron actions',
+        EduIdSync: 'Synchronize with edu-ID',
         PleaseNote: 'Please note:',
         TakesAFewMinutes: 'Changes take a few minutes.',
       },
@@ -123,26 +127,55 @@ describe('UsermenuComponent', () => {
     expect(fixture.nativeElement.textContent).not.toContain('Test Patron');
   });
 
-  it('renders the sandbox banner, ready header, warning tab, stretched tabs, and translated labels', () => {
+  it('renders the redesigned shell and the Cards, Account, Blocks tab order', () => {
     const fixture = TestBed.createComponent(UsermenuComponent);
 
     fixture.detectChanges();
 
     expect(
-      fixture.nativeElement.querySelector('.info-test-env'),
+      fixture.nativeElement.querySelector('[data-environment-banner]'),
     ).not.toBeNull();
     expect(
-      fixture.nativeElement.querySelector('.user-header-text').textContent,
+      fixture.nativeElement.querySelector('.slsp-patron-bar__name').textContent,
     ).toContain('Test Patron');
+    expect(fixture.nativeElement.textContent).not.toContain('one');
     expect(
-      fixture.nativeElement.querySelector('.blocks-tab-icon'),
+      fixture.nativeElement.querySelector('.blocks-tab-indicator'),
     ).not.toBeNull();
     expect(
       fixture.nativeElement.querySelector('.mat-mdc-tab-group-stretch-tabs'),
     ).not.toBeNull();
-    expect(fixture.nativeElement.textContent).toContain('Back');
-    expect(fixture.nativeElement.textContent).toContain('Card Number');
-    expect(fixture.nativeElement.textContent).toContain('Blocks');
-    expect(fixture.nativeElement.textContent).toContain('Others');
+
+    const tabLabels = Array.from(
+      fixture.nativeElement.querySelectorAll('[data-tab-label]'),
+      (label: Element) => label.textContent?.trim(),
+    );
+    const backButton = fixture.nativeElement.querySelector(
+      '.slsp-patron-bar__back',
+    );
+
+    expect(backButton.getAttribute('aria-label')).toBe('Change patron');
+    expect(backButton.textContent.trim()).toBe('arrow_back');
+    expect(tabLabels).toEqual(['Cards', 'Account', 'Blocks']);
+    expect(
+      fixture.nativeElement.querySelector('.mdc-tab__text-label mat-icon'),
+    ).toBeNull();
+  });
+
+  it('offers edu-ID synchronization as a disabled patron action', async () => {
+    const fixture = TestBed.createComponent(UsermenuComponent);
+
+    fixture.detectChanges();
+    fixture.nativeElement.querySelector('[data-patron-actions]').click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const action = document.querySelector(
+      '[data-action="edu-id-sync"]',
+    ) as HTMLButtonElement | null;
+
+    expect(action).not.toBeNull();
+    expect(action?.disabled).toBeTrue();
+    expect(action?.textContent).toContain('Synchronize with edu-ID');
   });
 });

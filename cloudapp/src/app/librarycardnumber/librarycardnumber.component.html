@@ -1,113 +1,105 @@
 <ng-container *ngIf="patron$ | async as patron">
-  <div style="display: none" class="user-header" fxLayout="row">
-    <button mat-flat-button color="secondary" (click)="navigateBack()">
-      <mat-icon inline="true">arrow_back_ios</mat-icon>
-      {{ 'General.BackToMenu' | translate }}
-    </button>
-    <span>
-      <mat-icon size="20">account_circle</mat-icon>
-      <div class="user-header-text">{{ patron.fullName }}</div>
-    </span>
-  </div>
-  <br />
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>
-        {{ 'LibraryCardNumber.CurrentLibraryCardNumbers' | translate }}
-      </mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <div *ngIf="patron.matriculationNumber">
-        <mat-divider></mat-divider>
-        <br />
-        {{ 'LibraryCardNumber.CurrentMatriculationNumber' | translate }}
-        <br />
-        <table>
-          <tr>
-            <td>
+  <div class="slsp-screen">
+    <section class="slsp-section" data-section="cards">
+      <header class="slsp-section__header">
+        <div class="slsp-section__heading">
+          <h2 class="slsp-section__title">
+            {{ 'LibraryCardNumber.CurrentLibraryCardNumbers' | translate }}
+          </h2>
+        </div>
+      </header>
+
+      <ul class="slsp-data-list">
+        <li
+          *ngIf="patron.matriculationNumber"
+          class="slsp-data-row"
+          data-matriculation-number
+        >
+          <div class="slsp-data-row__content">
+            <span class="slsp-data-row__label">
+              {{ 'LibraryCardNumber.CurrentMatriculationNumber' | translate }}
+            </span>
+            <span class="slsp-data-row__value">
               {{ patron.matriculationNumber }}
               <ng-container *ngIf="patron.dashedMatriculationNumber">
                 / {{ patron.dashedMatriculationNumber }}
               </ng-container>
-            </td>
-          </tr>
-        </table>
-      </div>
-      <mat-divider></mat-divider>
-      <br />
-      <div *ngIf="patron.libraryCardNumbers.length === 0">
-        {{ 'LibraryCardNumber.NoCurrentLibraryCardNumbers' | translate }}
-      </div>
-      <div *ngIf="patron.libraryCardNumbers.length !== 0">
-        {{
-          'LibraryCardNumber.CurrentLibraryCardNumbersDescription' | translate
-        }}
-        <br /><br />
-        <table>
-          <tr
-            *ngFor="
-              let item of patron.libraryCardNumbers;
-              trackBy: trackLibraryCardNumber
-            "
-          >
-            <td>{{ item.value?.toUpperCase() }}</td>
-            <td class="table-cell-remove">
-              <div *ngIf="item.alias" style="font-style: italic">
-                {{ 'LibraryCardNumber.Alias' | translate }}
-              </div>
-              <button
-                *ngIf="item.removable && item.elementReference"
-                mat-flat-button
-                color="secondary"
-                [disabled]="loading"
-                (click)="remove(item)"
-              >
-                <mat-icon inline="true">delete</mat-icon>
-                {{ 'LibraryCardNumber.Remove' | translate }}
-              </button>
-            </td>
-          </tr>
-        </table>
-      </div>
-    </mat-card-content>
-  </mat-card>
+            </span>
+          </div>
+          <span class="slsp-status">
+            <mat-icon>lock</mat-icon>
+            {{ 'LibraryCardNumber.ManagedIdentifier' | translate }}
+          </span>
+        </li>
 
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>
-        {{ 'LibraryCardNumber.AddLibraryCardNumber' | translate }}
-      </mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <mat-divider></mat-divider>
-
-      <mat-action-row>
-        <form
-          [formGroup]="numberForm"
-          #formDirective="ngForm"
-          (submit)="add(formDirective)"
+        <li
+          *ngFor="
+            let item of patron.libraryCardNumbers;
+            trackBy: trackLibraryCardNumber
+          "
+          class="slsp-data-row"
+          data-library-card-number
         >
-          <mat-form-field appearance="fill">
-            <mat-label>{{ 'Main.LibraryCardNumber' | translate }}</mat-label>
-            <input matInput formControlName="newLibraryCardNumber" />
-            <mat-error *ngIf="numberForm.invalid">
-              {{ 'LibraryCardNumber.FomatError' | translate }}
-            </mat-error>
-          </mat-form-field>
+          <div class="slsp-data-row__content">
+            <span class="slsp-data-row__label">
+              {{ 'Main.LibraryCardNumber' | translate }}
+            </span>
+            <span class="slsp-data-row__value">
+              {{ item.value?.toUpperCase() }}
+            </span>
+            <span *ngIf="item.alias" class="slsp-data-row__meta">
+              {{ 'LibraryCardNumber.Alias' | translate }}
+            </span>
+          </div>
           <button
-            type="submit"
-            mat-flat-button
-            [disabled]="numberForm.invalid || loading"
-            class="slsp-purple-button"
-            color="secondary"
+            *ngIf="item.removable && item.elementReference"
+            mat-stroked-button
+            type="button"
+            class="slsp-destructive-action"
+            data-action="remove-card"
+            [disabled]="loading"
+            (click)="remove(item)"
           >
-            <mat-icon inline="true">add</mat-icon>
-            {{ 'LibraryCardNumber.Add' | translate }}
+            <mat-icon>delete</mat-icon>
+            {{ 'LibraryCardNumber.Remove' | translate }}
           </button>
-        </form>
-      </mat-action-row>
-    </mat-card-content>
-  </mat-card>
+        </li>
+      </ul>
+
+      <div
+        *ngIf="patron.libraryCardNumbers.length === 0"
+        class="slsp-empty-state"
+      >
+        <span>
+          {{ 'LibraryCardNumber.NoCurrentLibraryCardNumbers' | translate }}
+        </span>
+      </div>
+
+      <form
+        class="slsp-inline-form slsp-inline-form--separated"
+        [formGroup]="numberForm"
+        #formDirective="ngForm"
+        (submit)="add(formDirective)"
+      >
+        <mat-form-field>
+          <mat-label>{{ 'Main.LibraryCardNumber' | translate }}</mat-label>
+          <input matInput formControlName="newLibraryCardNumber" />
+          <mat-error *ngIf="numberForm.invalid">
+            {{ 'LibraryCardNumber.FomatError' | translate }}
+          </mat-error>
+        </mat-form-field>
+        <button
+          type="submit"
+          mat-flat-button
+          color="primary"
+          [disabled]="numberForm.invalid || loading"
+        >
+          <mat-icon>add</mat-icon>
+          {{ 'LibraryCardNumber.Add' | translate }}
+        </button>
+      </form>
+    </section>
+  </div>
 </ng-container>
 
 <div class="loading-shade" *ngIf="loading">

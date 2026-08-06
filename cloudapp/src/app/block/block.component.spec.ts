@@ -1,4 +1,3 @@
-import { Location } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import {
@@ -93,10 +92,6 @@ describe('BlockComponent', () => {
         { provide: PatronApiService, useValue: api },
         { provide: PatronStateService, useValue: state },
         { provide: AlertService, useValue: alert },
-        {
-          provide: Location,
-          useValue: jasmine.createSpyObj<Location>('Location', ['back']),
-        },
       ],
     }).compileComponents();
 
@@ -105,6 +100,8 @@ describe('BlockComponent', () => {
     translate.setTranslation('en', {
       Blocks: {
         Status: 'Status:',
+        Active: 'Active',
+        MoreInformation: 'More information',
         ExistingBlocks: 'Account is blocked!',
         NoBlocks: 'User has no blocks.',
         DoubleRegistrations: 'Double Registration',
@@ -134,7 +131,6 @@ describe('BlockComponent', () => {
         RemoveError: 'Block removal failed',
         RemoveSuccess: 'Block removed',
       },
-      General: { BackToMenu: 'Back' },
       Errors: {
         DependencyUnavailable: 'Service temporarily unavailable.',
         UnexpectedFailure: 'An unexpected error occurred.',
@@ -160,8 +156,13 @@ describe('BlockComponent', () => {
     expect(text).toContain('Wrong E-mail');
     expect(text).toContain('Global block');
     expect(text).toContain('New Account');
+    expect(
+      fixture.nativeElement.querySelectorAll('.block-list > [data-block-code]')
+        .length,
+    ).toBe(5);
     expect(code08.querySelector('[data-action="add"]')).toBeNull();
     expect(code08.querySelector('[data-action="remove"]')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('mat-card')).toBeNull();
   });
 
   it('renders external and internal DTO guidance without a browser User model', () => {

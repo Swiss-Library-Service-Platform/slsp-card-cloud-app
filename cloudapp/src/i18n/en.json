@@ -1,6 +1,6 @@
 {
   "General": {
-    "BackToMenu": "Back",
+    "ChangePatron": "Change patron",
     "Yes": "Yes",
     "No": "No",
     "Cancel": "Cancel",
@@ -23,14 +23,19 @@
     "SelectUser": "Select a user:"
   },
   "Main": {
-    "Block": "Blocks",
-    "Settings": "Others",
+    "Cards": "Cards",
+    "Account": "Account",
+    "Blocks": "Blocks",
     "LibraryCardNumber": "Card Number",
     "PleaseNote": "Please note:",
     "TakesAFewMinutes": "It will take a few minutes until changes become active in the library system.",
     "UserNotFound": " was not found in the Network Zone.",
     "TemporarilyUnavailable": "Service temporarily unavailable",
-    "Help": "Help"
+    "Help": "Help",
+    "Sandbox": "Sandbox",
+    "SandboxDescription": "Test environment",
+    "PatronActions": "Patron actions",
+    "EduIdSync": "Synchronize with edu-ID"
   },
   "Errors": {
     "AuthenticationFailed": "Your session could not be authenticated. Please reopen the app.",
@@ -52,10 +57,8 @@
   "LibraryCardNumber": {
     "Add": "Add",
     "Alias": "Alias",
-    "AddLibraryCardNumber": "Add Library Card Number",
     "CurrentLibraryCardNumbers": "Current Library Card Numbers",
     "CurrentMatriculationNumber": "Current matriculation number",
-    "CurrentLibraryCardNumbersDescription": "Current library card numbers:",
     "NoCurrentLibraryCardNumbers": "There are no library card numbers for this user currently.",
     "Remove": "Remove",
     "Sure": "Are you sure you want to remove this number?",
@@ -63,17 +66,19 @@
     "RemoveError": "Library card number could not be removed.",
     "FomatError": "Format of library card number is not valid.",
     "AddError": "Library card number is not valid or already in use.",
-    "AddSuccess": "Library card successfully added."
+    "AddSuccess": "Library card successfully added.",
+    "ManagedIdentifier": "Managed identifier"
   },
   "Settings": {
     "PreferredAddress": "Preferred address",
     "PreferredAddressDescription": "The preferred address defines the address to which by default invoices and books are sent. User data like addresses can be changed on the ",
     "PreferredAddressDescriptionLink": "SWITCH edu-ID account management page.",
+    "MoreInformation": "More information",
     "UserGroup": "User Group",
-    "UserGroupDescription": "The available user groups depend on the organisation affiliations and your role (e.g. student, staff, faculty) in the organisations.",
-    "SaveUserGroup": "Save User Group",
+    "InvoiceContacts": "Invoice contact details",
+    "InvoiceContactsDescription": "A separate invoice postal address and invoice e-mail address will be managed here.",
+    "UserGroupDescription": "Available user groups will be supplied by the registration platform as the authoritative source.",
     "AddressType": "Address Type",
-    "Address": "Address",
     "Preferred": "Preferred",
     "UseAsPreferred": "Use as preferred address",
     "NoAddresses": "This user does not have any address entries in the NZ.",
@@ -81,11 +86,11 @@
     "SetSuccess": "Preferred address changed successfully."
   },
   "Blocks": {
-    "CurrentBlockTitle": "Current Block Status",
+    "Active": "Active",
+    "MoreInformation": "More information",
     "Status": "Status: ",
     "NoBlocks": "User has no blocks.",
     "ExistingBlocks": "Account is blocked!",
-    "AddBlockTitle": "Add a User Block",
     "DoubleRegistrations": "Double Registration",
     "WrongAddress": "Wrong Postal Address",
     "WrongEmail": "Wrong E-mail",

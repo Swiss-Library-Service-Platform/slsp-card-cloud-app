@@ -1,4 +1,3 @@
-import { Location } from '@angular/common';
 import { DestroyRef, Component, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AlertService } from '@exlibris/exl-cloudapp-angular-lib';
@@ -36,7 +35,6 @@ export class BlockComponent {
   private readonly api = inject(PatronApiService);
   private readonly cardErrors = inject(CardErrorService);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly location = inject(Location);
   private readonly state = inject(PatronStateService);
   private readonly translate = inject(TranslateService);
 
@@ -95,10 +93,6 @@ export class BlockComponent {
       blocks['09'] ||
       blocks['08']
     );
-  }
-
-  public navigateBack(): void {
-    this.location.back();
   }
 
   public remove(block: BlockView): void {
