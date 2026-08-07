@@ -29,13 +29,87 @@
     flex-direction: column;
   }
 
+  .slsp-environment-banner,
+  .slsp-patron-bar {
+    overflow-y: hidden;
+    scrollbar-gutter: stable;
+  }
+
   cloudapp-alert {
-    position: absolute;
+    display: block;
+    position: static !important;
     z-index: 110;
-    top: var(--slsp-space-4);
-    bottom: auto !important;
     width: 100%;
-    font-weight: var(--slsp-font-weight-bold);
+    font-weight: var(--slsp-font-weight-regular);
+
+    .alert {
+      --slsp-alert-accent: var(--slsp-purple);
+      --slsp-alert-icon: 'info';
+
+      box-sizing: border-box;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: center;
+      gap: var(--slsp-space-2);
+      width: 100%;
+      margin: 0 !important;
+      padding: var(--slsp-space-3) var(--slsp-space-4) !important;
+      border: 0 !important;
+      border-radius: 0 !important;
+      box-shadow: inset 3px 0 var(--slsp-alert-accent);
+      color: var(--slsp-text) !important;
+      font-size: var(--slsp-font-size-title);
+
+      &::before {
+        content: var(--slsp-alert-icon);
+        color: var(--slsp-alert-accent);
+        font-family: 'Material Icons';
+        font-size: 1.1rem;
+        line-height: 1;
+        transform: translateY(-1px);
+      }
+
+      > span {
+        min-width: 0;
+        grid-column: 2;
+        grid-row: 1;
+      }
+
+      .close {
+        float: none;
+        grid-column: 3;
+        grid-row: 1;
+        margin: 0;
+        color: var(--slsp-alert-accent);
+        line-height: 1;
+        text-shadow: none;
+      }
+    }
+
+    .alert-success {
+      --slsp-alert-accent: var(--slsp-success);
+      --slsp-alert-icon: 'check_circle';
+
+      background: var(--slsp-success-light) !important;
+    }
+
+    .alert-danger {
+      --slsp-alert-accent: var(--slsp-danger);
+      --slsp-alert-icon: 'error';
+
+      background: var(--slsp-danger-light) !important;
+    }
+
+    .alert-warning {
+      --slsp-alert-accent: var(--slsp-amber);
+      --slsp-alert-icon: 'warning';
+
+      background: var(--slsp-amber-light) !important;
+    }
+
+    .alert-info {
+      background: var(--slsp-purple-light) !important;
+    }
   }
 
   a {

@@ -160,6 +160,10 @@ describe('BlockComponent', () => {
       fixture.nativeElement.querySelectorAll('.block-list > [data-block-code]')
         .length,
     ).toBe(5);
+    expect(
+      fixture.nativeElement.querySelectorAll('app-expandable-section-header')
+        .length,
+    ).toBe(5);
     expect(code08.querySelector('[data-action="add"]')).toBeNull();
     expect(code08.querySelector('[data-action="remove"]')).not.toBeNull();
     expect(fixture.nativeElement.querySelector('mat-card')).toBeNull();
@@ -204,6 +208,14 @@ describe('BlockComponent', () => {
     expect(api.addBlock).not.toHaveBeenCalled();
   });
 
+  it('formats block timestamps compactly in UTC', () => {
+    expect(component.getDateString('2026-08-01T12:00:00Z')).toBe(
+      'Aug 01, 2026, 12:00 PM UTC',
+    );
+    expect(component.getDateString(null)).toBe('');
+    expect(component.getDateString('invalid')).toBe('');
+  });
+
   it('adds an allowed block, trims its comment, and replaces refreshed state', () => {
     api.addBlock.and.returnValue(of(updatedPatron));
 
@@ -219,7 +231,8 @@ describe('BlockComponent', () => {
       context,
     );
     expect(alert.success).toHaveBeenCalledOnceWith('Block added', {
-      autoClose: false,
+      autoClose: true,
+      delay: 5000,
     });
   });
 
@@ -238,6 +251,10 @@ describe('BlockComponent', () => {
       updatedPatron,
       context,
     );
+    expect(alert.success).toHaveBeenCalledOnceWith('Block removed', {
+      autoClose: true,
+      delay: 5000,
+    });
   });
 
   it('does not mutate without a context or issue duplicate requests while loading', () => {

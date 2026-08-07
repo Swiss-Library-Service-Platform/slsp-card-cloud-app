@@ -145,6 +145,14 @@ describe('LibraryCardNumberComponent', () => {
     expect(text).toContain('12-345-678');
     expect(text).toContain('Alias');
     expect(removeButtons.length).toBe(1);
+    expect(
+      fixture.nativeElement.querySelectorAll(
+        '[data-library-card-number] .slsp-data-row__label',
+      ).length,
+    ).toBe(0);
+    expect(
+      fixture.nativeElement.querySelector('.library-card-number-row__value'),
+    ).not.toBeNull();
   });
 
   it('uses one flat Cards section with an integrated add form', () => {
@@ -183,7 +191,8 @@ describe('LibraryCardNumberComponent', () => {
       context,
     );
     expect(alert.success).toHaveBeenCalledOnceWith('Card removed', {
-      autoClose: false,
+      autoClose: true,
+      delay: 5000,
     });
   });
 
@@ -236,7 +245,8 @@ describe('LibraryCardNumberComponent', () => {
     expect(formDirective.resetForm).toHaveBeenCalledTimes(1);
     expect(component.numberForm.value.newLibraryCardNumber).toBeNull();
     expect(alert.success).toHaveBeenCalledOnceWith('Card added', {
-      autoClose: false,
+      autoClose: true,
+      delay: 5000,
     });
   });
 

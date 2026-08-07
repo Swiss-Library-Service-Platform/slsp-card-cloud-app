@@ -1,3 +1,4 @@
+import { Component } from '@angular/core';
 import { ComponentFixture } from '@angular/core/testing';
 import { TestBed } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -18,6 +19,9 @@ import {
   PatronStateService,
 } from '../services/patron-state.service';
 import { MainComponent } from './main.component';
+
+@Component({ selector: 'cloudapp-alert', template: '' })
+class AlertStubComponent {}
 
 describe('MainComponent', () => {
   let state: jasmine.SpyObj<PatronStateService>;
@@ -61,7 +65,7 @@ describe('MainComponent', () => {
     ]);
 
     TestBed.configureTestingModule({
-      declarations: [MainComponent],
+      declarations: [AlertStubComponent, MainComponent],
       imports: [
         BrowserAnimationsModule,
         MaterialModule,
@@ -141,6 +145,10 @@ describe('MainComponent', () => {
     const fixture = TestBed.createComponent(MainComponent);
 
     fixture.detectChanges();
+
+    expect(
+      fixture.nativeElement.querySelector('cloudapp-alert'),
+    ).not.toBeNull();
 
     const userAction: HTMLButtonElement | null =
       fixture.nativeElement.querySelector('button.entity-action');

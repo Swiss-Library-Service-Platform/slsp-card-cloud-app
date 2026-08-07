@@ -30,7 +30,7 @@
 
   .slsp-patron-bar {
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-columns: auto minmax(0, 1fr);
     align-items: center;
     gap: var(--slsp-space-3);
     padding: var(--slsp-space-3) var(--slsp-space-1);
@@ -197,6 +197,10 @@
     line-height: var(--slsp-line-height-body);
   }
 
+  .block-section app-expandable-section-header .slsp-section__header {
+    padding-block: var(--slsp-space-3);
+  }
+
   .slsp-empty-state {
     display: flex;
     align-items: center;
@@ -244,6 +248,18 @@
       color: var(--slsp-purple);
       font-size: 1.1rem;
     }
+  }
+
+  .slsp-visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    border: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
   }
 
   @media (max-width: 380px) {

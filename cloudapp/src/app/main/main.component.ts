@@ -13,6 +13,7 @@ import {
   shareReplay,
 } from 'rxjs';
 
+import { PERSISTENT_ALERT_OPTIONS } from '../alert-options';
 import { AuthorizationResult } from '../services/authorization.service';
 import { BackendHttpService } from '../services/backend-http.service';
 import { CardErrorService } from '../services/card-error.service';
@@ -125,7 +126,7 @@ export class MainComponent implements OnInit {
         patronState.entity.description,
       );
 
-      this.alert.warn(notFoundPresentation.message, { autoClose: false });
+      this.alert.warn(notFoundPresentation.message, PERSISTENT_ALERT_OPTIONS);
       this.state.clear();
 
       return;
@@ -141,13 +142,13 @@ export class MainComponent implements OnInit {
     );
 
     if (presentation.kind === 'warning') {
-      this.alert.warn(presentation.message, { autoClose: false });
+      this.alert.warn(presentation.message, PERSISTENT_ALERT_OPTIONS);
       this.state.clear();
 
       return;
     }
 
-    this.alert.error(presentation.message, { autoClose: false });
+    this.alert.error(presentation.message, PERSISTENT_ALERT_OPTIONS);
 
     if (presentation.kind !== 'access') {
       this.state.clear();

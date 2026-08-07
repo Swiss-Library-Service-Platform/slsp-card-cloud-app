@@ -37,14 +37,11 @@
             let item of patron.libraryCardNumbers;
             trackBy: trackLibraryCardNumber
           "
-          class="slsp-data-row"
+          class="slsp-data-row library-card-number-row"
           data-library-card-number
         >
           <div class="slsp-data-row__content">
-            <span class="slsp-data-row__label">
-              {{ 'Main.LibraryCardNumber' | translate }}
-            </span>
-            <span class="slsp-data-row__value">
+            <span class="slsp-data-row__value library-card-number-row__value">
               {{ item.value?.toUpperCase() }}
             </span>
             <span *ngIf="item.alias" class="slsp-data-row__meta">
@@ -70,6 +67,7 @@
         *ngIf="patron.libraryCardNumbers.length === 0"
         class="slsp-empty-state"
       >
+        <mat-icon>credit_card_off</mat-icon>
         <span>
           {{ 'LibraryCardNumber.NoCurrentLibraryCardNumbers' | translate }}
         </span>

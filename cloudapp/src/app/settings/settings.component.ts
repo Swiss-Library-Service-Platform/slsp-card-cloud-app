@@ -4,6 +4,10 @@ import { AlertService } from '@exlibris/exl-cloudapp-angular-lib';
 import { TranslateService } from '@ngx-translate/core';
 import { EMPTY, Observable, catchError, finalize, map, tap } from 'rxjs';
 
+import {
+  PERSISTENT_ALERT_OPTIONS,
+  SUCCESS_ALERT_OPTIONS,
+} from '../alert-options';
 import { CardPatron, PostalAddressView } from '../models/card-api.model';
 import { CardErrorService } from '../services/card-error.service';
 import { PatronApiService } from '../services/patron-api.service';
@@ -16,9 +20,6 @@ import { PatronStateService } from '../services/patron-state.service';
 })
 export class SettingsComponent {
   public readonly patron$: Observable<CardPatron | null>;
-  public preferredAddressInfoExpanded = false;
-  public invoiceContactsInfoExpanded = false;
-  public userGroupInfoExpanded = false;
   public loading = false;
 
   private readonly alert = inject(AlertService);
@@ -54,9 +55,10 @@ export class SettingsComponent {
       .pipe(
         tap((patron) => {
           this.state.replacePatron(patron, mutationContext);
-          this.alert.success(this.translate.instant('Settings.SetSuccess'), {
-            autoClose: false,
-          });
+          this.alert.success(
+            this.translate.instant('Settings.SetSuccess'),
+            SUCCESS_ALERT_OPTIONS,
+          );
         }),
         catchError((error: unknown) => {
           this.presentError(error);
@@ -79,11 +81,11 @@ export class SettingsComponent {
     const presentation = this.cardErrors.presentation(error);
 
     if (presentation.kind === 'warning') {
-      this.alert.warn(presentation.message, { autoClose: false });
+      this.alert.warn(presentation.message, PERSISTENT_ALERT_OPTIONS);
 
       return;
     }
 
-    this.alert.error(presentation.message, { autoClose: false });
+    this.alert.error(presentation.message, PERSISTENT_ALERT_OPTIONS);
   }
 }

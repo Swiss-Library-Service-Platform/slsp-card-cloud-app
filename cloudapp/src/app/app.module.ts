@@ -18,6 +18,7 @@ import { SettingsComponent } from './settings/settings.component';
 import { LibraryCardNumberComponent } from './librarycardnumber/librarycardnumber.component';
 import { UsermenuComponent } from './usermenu/usermenu.component';
 import { ConfirmationdialogComponent } from './confirmationdialog/confirmationdialog.component';
+import { ExpandableSectionHeaderComponent } from './expandable-section-header/expandable-section-header.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { ConfirmationdialogComponent } from './confirmationdialog/confirmationdi
     LibraryCardNumberComponent,
     UsermenuComponent,
     ConfirmationdialogComponent,
+    ExpandableSectionHeaderComponent,
   ],
   imports: [
     MaterialModule,

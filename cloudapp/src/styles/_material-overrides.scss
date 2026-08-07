@@ -2,9 +2,19 @@
   .slsp-primary-tabs {
     flex-grow: 1;
 
+    .mat-mdc-tab-body-content {
+      scrollbar-gutter: stable;
+    }
+
     > .mat-mdc-tab-header {
+      overflow-y: hidden;
       margin: 0 1px;
       border-bottom: 0;
+      border-radius: var(--slsp-radius);
+      scrollbar-gutter: stable;
+    }
+
+    .mat-mdc-tab-label-container {
       border-radius: var(--slsp-radius);
       background: var(--slsp-purple);
     }
@@ -48,16 +58,6 @@
     }
   }
 
-  .slsp-patron-menu {
-    min-width: 14rem;
-
-    .slsp-patron-menu-item {
-      min-height: 2.5rem;
-      font-size: var(--slsp-font-size-body);
-      line-height: var(--slsp-line-height-compact);
-    }
-  }
-
   .mat-mdc-unelevated-button.mat-primary {
     --mdc-filled-button-container-color: var(--slsp-purple);
     --mdc-filled-button-label-text-color: white;
@@ -66,6 +66,17 @@
   button.slsp-destructive-action {
     --mdc-outlined-button-label-text-color: var(--slsp-danger);
     --mdc-outlined-button-outline-color: rgba(150, 48, 49, 0.55);
+    --mat-outlined-button-state-layer-color: var(--slsp-danger);
+    --mat-outlined-button-ripple-color: rgba(150, 48, 49, 0.16);
+
+    mat-icon {
+      transform: translateY(-1px);
+    }
+
+    &:hover,
+    &:focus-visible {
+      background: var(--slsp-danger-light);
+    }
   }
 
   button.info-button {
@@ -78,6 +89,12 @@
 
     mat-icon {
       margin: 0;
+    }
+
+    &:hover,
+    &:focus-visible,
+    &.info-button--expanded {
+      background: var(--slsp-purple-light);
     }
   }
 

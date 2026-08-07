@@ -1,31 +1,17 @@
 <ng-container *ngIf="patron$ | async as patron">
   <div class="slsp-screen">
     <section class="slsp-section" data-section="preferred-address">
-      <header class="slsp-section__header">
-        <div class="slsp-section__heading">
-          <h2 class="slsp-section__title">
-            {{ 'Settings.PreferredAddress' | translate }}
-          </h2>
-        </div>
-        <button
-          mat-icon-button
-          type="button"
-          class="info-button"
-          data-info="preferred-address"
-          [attr.aria-label]="'Settings.MoreInformation' | translate"
-          [attr.aria-expanded]="preferredAddressInfoExpanded"
-          (click)="preferredAddressInfoExpanded = !preferredAddressInfoExpanded"
-        >
-          <mat-icon>info</mat-icon>
-        </button>
-      </header>
-
-      <p *ngIf="preferredAddressInfoExpanded" class="slsp-section__information">
-        {{ 'Settings.PreferredAddressDescription' | translate }}
-        <a href="https://eduid.ch/" target="_blank" rel="noopener">
-          {{ 'Settings.PreferredAddressDescriptionLink' | translate }}
-        </a>
-      </p>
+      <app-expandable-section-header
+        [title]="'Settings.PreferredAddress' | translate"
+        [infoLabel]="'Settings.MoreInformation' | translate"
+      >
+        <p class="slsp-section__information">
+          {{ 'Settings.PreferredAddressDescription' | translate }}
+          <a href="https://eduid.ch/" target="_blank" rel="noopener">
+            {{ 'Settings.PreferredAddressDescriptionLink' | translate }}
+          </a>
+        </p>
+      </app-expandable-section-header>
 
       <div *ngIf="patron.postalAddresses.length === 0" class="slsp-empty-state">
         <mat-icon>location_off</mat-icon>
@@ -88,54 +74,30 @@
       class="slsp-section slsp-placeholder"
       data-placeholder="invoice-contacts"
     >
-      <header class="slsp-section__header">
-        <div class="slsp-section__heading">
-          <h2 class="slsp-section__title">
-            {{ 'Settings.InvoiceContacts' | translate }}
-          </h2>
-        </div>
-        <button
-          mat-icon-button
-          type="button"
-          class="info-button"
-          data-info="invoice-contacts"
-          [attr.aria-label]="'Settings.MoreInformation' | translate"
-          [attr.aria-expanded]="invoiceContactsInfoExpanded"
-          (click)="invoiceContactsInfoExpanded = !invoiceContactsInfoExpanded"
-        >
-          <mat-icon>info</mat-icon>
-        </button>
-      </header>
-      <p *ngIf="invoiceContactsInfoExpanded" class="slsp-section__information">
-        {{ 'Settings.InvoiceContactsDescription' | translate }}
-      </p>
+      <app-expandable-section-header
+        [title]="'Settings.InvoiceContacts' | translate"
+        [infoLabel]="'Settings.MoreInformation' | translate"
+        [status]="'Settings.NotAvailableYet' | translate"
+      >
+        <p class="slsp-section__information">
+          {{ 'Settings.InvoiceContactsDescription' | translate }}
+        </p>
+      </app-expandable-section-header>
     </section>
 
     <section
       class="slsp-section slsp-placeholder"
       data-placeholder="user-group"
     >
-      <header class="slsp-section__header">
-        <div class="slsp-section__heading">
-          <h2 class="slsp-section__title">
-            {{ 'Settings.UserGroup' | translate }}
-          </h2>
-        </div>
-        <button
-          mat-icon-button
-          type="button"
-          class="info-button"
-          data-info="user-group"
-          [attr.aria-label]="'Settings.MoreInformation' | translate"
-          [attr.aria-expanded]="userGroupInfoExpanded"
-          (click)="userGroupInfoExpanded = !userGroupInfoExpanded"
-        >
-          <mat-icon>info</mat-icon>
-        </button>
-      </header>
-      <p *ngIf="userGroupInfoExpanded" class="slsp-section__information">
-        {{ 'Settings.UserGroupDescription' | translate }}
-      </p>
+      <app-expandable-section-header
+        [title]="'Settings.UserGroup' | translate"
+        [infoLabel]="'Settings.MoreInformation' | translate"
+        [status]="'Settings.NotAvailableYet' | translate"
+      >
+        <p class="slsp-section__information">
+          {{ 'Settings.UserGroupDescription' | translate }}
+        </p>
+      </app-expandable-section-header>
     </section>
   </div>
 </ng-container>

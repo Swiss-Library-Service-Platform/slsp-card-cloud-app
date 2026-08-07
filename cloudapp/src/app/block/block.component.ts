@@ -5,6 +5,10 @@ import { TranslateService } from '@ngx-translate/core';
 import { EMPTY, Observable, catchError, finalize, map, tap } from 'rxjs';
 
 import {
+  PERSISTENT_ALERT_OPTIONS,
+  SUCCESS_ALERT_OPTIONS,
+} from '../alert-options';
+import {
   AddableBlockCode,
   BlockView,
   CardPatron,
@@ -20,11 +24,6 @@ import { PatronStateService } from '../services/patron-state.service';
 })
 export class BlockComponent {
   public readonly patron$: Observable<CardPatron | null>;
-  public collapseGlobal = true;
-  public collapsedDouble = true;
-  public collapsedNew = true;
-  public collapsedWrongEmail = true;
-  public collapsedWrongPostal = true;
   public commentDouble = '';
   public commentGlobal = '';
   public commentWrongEmail = '';
@@ -64,9 +63,10 @@ export class BlockComponent {
       .pipe(
         tap((patron) => {
           this.state.replacePatron(patron, mutationContext);
-          this.alert.success(this.translate.instant('Blocks.AddSuccess'), {
-            autoClose: false,
-          });
+          this.alert.success(
+            this.translate.instant('Blocks.AddSuccess'),
+            SUCCESS_ALERT_OPTIONS,
+          );
         }),
         catchError((error: unknown) => {
           this.presentError(error);
@@ -82,7 +82,25 @@ export class BlockComponent {
   }
 
   public getDateString(date: string | null): string {
-    return date ? new Date(date).toUTCString() : '';
+    if (!date) {
+      return '';
+    }
+
+    const parsedDate = new Date(date);
+
+    if (Number.isNaN(parsedDate.getTime())) {
+      return '';
+    }
+
+    return new Intl.DateTimeFormat(this.translate.currentLang || 'en', {
+      year: 'numeric',
+      month: 'short',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'UTC',
+      timeZoneName: 'short',
+    }).format(parsedDate);
   }
 
   public hasBlocks(blocks: CardPatron['blocks']): boolean {
@@ -108,9 +126,10 @@ export class BlockComponent {
       .pipe(
         tap((patron) => {
           this.state.replacePatron(patron, mutationContext);
-          this.alert.success(this.translate.instant('Blocks.RemoveSuccess'), {
-            autoClose: false,
-          });
+          this.alert.success(
+            this.translate.instant('Blocks.RemoveSuccess'),
+            SUCCESS_ALERT_OPTIONS,
+          );
         }),
         catchError((error: unknown) => {
           this.presentError(error);
@@ -129,11 +148,11 @@ export class BlockComponent {
     const presentation = this.cardErrors.presentation(error);
 
     if (presentation.kind === 'warning') {
-      this.alert.warn(presentation.message, { autoClose: false });
+      this.alert.warn(presentation.message, PERSISTENT_ALERT_OPTIONS);
 
       return;
     }
 
-    this.alert.error(presentation.message, { autoClose: false });
+    this.alert.error(presentation.message, PERSISTENT_ALERT_OPTIONS);
   }
 }

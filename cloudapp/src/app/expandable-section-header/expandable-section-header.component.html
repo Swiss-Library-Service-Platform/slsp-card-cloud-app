@@ -1,0 +1,39 @@
+<header class="slsp-section__header">
+  <div class="slsp-section__heading">
+    <h2 class="slsp-section__title">{{ title }}</h2>
+  </div>
+  <div class="expandable-section-header__actions">
+    <span
+      *ngIf="status"
+      class="slsp-status"
+      [class.slsp-status--danger]="statusVariant === 'danger'"
+    >
+      {{ status }}
+    </span>
+    <button
+      mat-icon-button
+      type="button"
+      class="info-button"
+      [class.info-button--expanded]="expanded"
+      data-info
+      [attr.aria-label]="infoLabel"
+      [attr.aria-controls]="panelId"
+      [attr.aria-expanded]="expanded"
+      (click)="toggle()"
+    >
+      <mat-icon>info</mat-icon>
+    </button>
+  </div>
+</header>
+
+<div
+  class="expandable-information"
+  [class.expandable-information--expanded]="expanded"
+  [id]="panelId"
+  [attr.aria-hidden]="!expanded"
+  [attr.inert]="expanded ? null : ''"
+>
+  <div class="expandable-information__content">
+    <ng-content></ng-content>
+  </div>
+</div>

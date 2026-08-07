@@ -10,13 +10,28 @@
 }
 
 .blocks-tab-indicator {
-  width: 0.45rem;
-  height: 0.45rem;
+  width: 0.5rem;
+  height: 0.5rem;
   flex: 0 0 auto;
+  margin-left: 2px;
   border-radius: 50%;
-  background: #ffd37a;
+  background: var(--slsp-danger-on-dark);
+  box-shadow: 0 0 0 2px white;
+}
+
+.patron-message-area {
+  position: relative;
+  flex: 0 0 auto;
+  margin: 0.5rem 1px 1rem;
+
+  cloudapp-alert {
+    position: absolute !important;
+    inset-inline: 0;
+    bottom: calc(100% + 0.5rem) !important;
+    width: auto;
+  }
 }
 
 .propagation-guidance {
-  margin: 0.5rem 1px 1rem;
+  margin: 0;
 }

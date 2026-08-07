@@ -83,10 +83,9 @@ describe('UsermenuComponent', () => {
         Cards: 'Cards',
         Account: 'Account',
         Blocks: 'Blocks',
+        ActiveBlocksIndicator: 'Active blocks',
         Sandbox: 'Sandbox',
         SandboxDescription: 'Test environment',
-        PatronActions: 'Patron actions',
-        EduIdSync: 'Synchronize with edu-ID',
         PleaseNote: 'Please note:',
         TakesAFewMinutes: 'Changes take a few minutes.',
       },
@@ -143,6 +142,22 @@ describe('UsermenuComponent', () => {
       fixture.nativeElement.querySelector('.blocks-tab-indicator'),
     ).not.toBeNull();
     expect(
+      fixture.nativeElement.querySelector('.slsp-visually-hidden').textContent,
+    ).toContain('Active blocks');
+    expect(
+      fixture.nativeElement.querySelector('cloudapp-alert'),
+    ).not.toBeNull();
+    expect(
+      fixture.nativeElement.querySelector(
+        '.patron-message-area > cloudapp-alert',
+      ),
+    ).not.toBeNull();
+    expect(
+      fixture.nativeElement.querySelector(
+        '.patron-message-area > .propagation-guidance',
+      ),
+    ).not.toBeNull();
+    expect(
       fixture.nativeElement.querySelector('.mat-mdc-tab-group-stretch-tabs'),
     ).not.toBeNull();
 
@@ -162,20 +177,14 @@ describe('UsermenuComponent', () => {
     ).toBeNull();
   });
 
-  it('offers edu-ID synchronization as a disabled patron action', async () => {
+  it('hides patron actions until an action is available', () => {
     const fixture = TestBed.createComponent(UsermenuComponent);
 
     fixture.detectChanges();
-    fixture.nativeElement.querySelector('[data-patron-actions]').click();
-    fixture.detectChanges();
-    await fixture.whenStable();
 
-    const action = document.querySelector(
-      '[data-action="edu-id-sync"]',
-    ) as HTMLButtonElement | null;
-
-    expect(action).not.toBeNull();
-    expect(action?.disabled).toBeTrue();
-    expect(action?.textContent).toContain('Synchronize with edu-ID');
+    expect(
+      fixture.nativeElement.querySelector('[data-patron-actions]'),
+    ).toBeNull();
+    expect(document.querySelector('[data-action="edu-id-sync"]')).toBeNull();
   });
 });

@@ -1,0 +1,35 @@
+:host {
+  display: block;
+}
+
+.expandable-section-header__actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: var(--slsp-space-2);
+}
+
+.expandable-information {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 200ms ease,
+    opacity 200ms ease;
+}
+
+.expandable-information--expanded {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.expandable-information__content {
+  min-height: 0;
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .expandable-information {
+    transition: none;
+  }
+}

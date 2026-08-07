@@ -27,6 +27,10 @@ import {
   ConfirmationDialogData,
   ConfirmationdialogComponent,
 } from '../confirmationdialog/confirmationdialog.component';
+import {
+  PERSISTENT_ALERT_OPTIONS,
+  SUCCESS_ALERT_OPTIONS,
+} from '../alert-options';
 import { CardPatron, LibraryCardNumberView } from '../models/card-api.model';
 import { CardErrorService } from '../services/card-error.service';
 import { PatronApiService } from '../services/patron-api.service';
@@ -39,6 +43,7 @@ interface LibraryCardNumberForm {
 @Component({
   selector: 'app-librarycardnumber',
   templateUrl: './librarycardnumber.component.html',
+  styleUrls: ['./librarycardnumber.component.scss'],
 })
 export class LibraryCardNumberComponent {
   public readonly numberForm: FormGroup<LibraryCardNumberForm>;
@@ -85,7 +90,7 @@ export class LibraryCardNumberComponent {
           this.numberForm.reset();
           this.alert.success(
             this.translate.instant('LibraryCardNumber.AddSuccess'),
-            { autoClose: false },
+            SUCCESS_ALERT_OPTIONS,
           );
         }),
         catchError((error: unknown) => {
@@ -138,7 +143,7 @@ export class LibraryCardNumberComponent {
                 this.state.replacePatron(patron, mutationContext);
                 this.alert.success(
                   this.translate.instant('LibraryCardNumber.RemoveSuccess'),
-                  { autoClose: false },
+                  SUCCESS_ALERT_OPTIONS,
                 );
               }),
               catchError((error: unknown) => {
@@ -167,12 +172,12 @@ export class LibraryCardNumberComponent {
     const presentation = this.cardErrors.presentation(error);
 
     if (presentation.kind === 'warning') {
-      this.alert.warn(presentation.message, { autoClose: false });
+      this.alert.warn(presentation.message, PERSISTENT_ALERT_OPTIONS);
 
       return;
     }
 
-    this.alert.error(presentation.message, { autoClose: false });
+    this.alert.error(presentation.message, PERSISTENT_ALERT_OPTIONS);
   }
 }
 

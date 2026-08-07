@@ -28,28 +28,7 @@
       <mat-icon>account_circle</mat-icon>
       <span class="slsp-patron-bar__name">{{ vm.patron.fullName }}</span>
     </div>
-
-    <button
-      mat-icon-button
-      type="button"
-      data-patron-actions
-      [matMenuTriggerFor]="patronActions"
-      [attr.aria-label]="'Main.PatronActions' | translate"
-    >
-      <mat-icon>more_vert</mat-icon>
-    </button>
   </header>
-
-  <mat-menu #patronActions="matMenu" class="slsp-patron-menu">
-    <button
-      mat-menu-item
-      disabled
-      class="slsp-patron-menu-item"
-      data-action="edu-id-sync"
-    >
-      <span>{{ 'Main.EduIdSync' | translate }}</span>
-    </button>
-  </mat-menu>
 
   <mat-tab-group mat-stretch-tabs class="slsp-primary-tabs">
     <mat-tab>
@@ -74,17 +53,24 @@
           class="blocks-tab-indicator"
           aria-hidden="true"
         ></span>
+        <span *ngIf="vm.hasBlocks" class="slsp-visually-hidden">
+          {{ 'Main.ActiveBlocksIndicator' | translate }}
+        </span>
       </ng-template>
       <app-block></app-block>
     </mat-tab>
   </mat-tab-group>
 
-  <div class="slsp-guidance propagation-guidance">
-    <mat-icon>info_outline</mat-icon>
-    <span>
-      <strong>{{ 'Main.PleaseNote' | translate }}</strong>
-      {{ 'Main.TakesAFewMinutes' | translate }}
-    </span>
+  <div class="patron-message-area">
+    <cloudapp-alert></cloudapp-alert>
+
+    <div class="slsp-guidance propagation-guidance">
+      <mat-icon>info_outline</mat-icon>
+      <span>
+        <strong>{{ 'Main.PleaseNote' | translate }}</strong>
+        {{ 'Main.TakesAFewMinutes' | translate }}
+      </span>
+    </div>
   </div>
 </ng-container>
 

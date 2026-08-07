@@ -17,5 +17,6 @@ describe('AppComponent', () => {
     const fixture = TestBed.createComponent(AppComponent);
 
     expect(fixture.componentInstance).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('cloudapp-alert')).toBeNull();
   });
 });

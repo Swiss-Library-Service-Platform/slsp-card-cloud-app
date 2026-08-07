@@ -115,6 +115,7 @@ describe('SettingsComponent', () => {
         PreferredAddressDescription: 'Description',
         PreferredAddressDescriptionLink: 'edu-ID',
         MoreInformation: 'More information',
+        NotAvailableYet: 'Not available yet',
         AddressType: 'Address Type',
         UseAsPreferred: 'Use as preferred address',
         NoAddresses: 'No addresses',
@@ -180,14 +181,29 @@ describe('SettingsComponent', () => {
 
     expect(informationButtons.length).toBe(3);
     expect(
+      fixture.nativeElement.querySelectorAll('app-expandable-section-header')
+        .length,
+    ).toBe(3);
+    expect(
       Array.from(informationButtons).every(
         (button) => button.getAttribute('aria-expanded') === 'false',
       ),
     ).toBeTrue();
-    expect(fixture.nativeElement.textContent).not.toContain('Description');
-    expect(fixture.nativeElement.textContent).not.toContain(
-      'registration-platform',
-    );
+    expect(
+      Array.from(
+        fixture.nativeElement.querySelectorAll(
+          '.expandable-information',
+        ) as NodeListOf<Element>,
+      ).every(
+        (panel) =>
+          panel.getAttribute('aria-hidden') === 'true' &&
+          panel.hasAttribute('inert'),
+      ),
+    ).toBeTrue();
+    expect(
+      fixture.nativeElement.querySelectorAll('.slsp-placeholder .slsp-status')
+        .length,
+    ).toBe(2);
   });
 
   it('reveals each section information panel on request', () => {
@@ -228,7 +244,8 @@ describe('SettingsComponent', () => {
       context,
     );
     expect(alert.success).toHaveBeenCalledOnceWith('Address changed', {
-      autoClose: false,
+      autoClose: true,
+      delay: 5000,
     });
   });
 
