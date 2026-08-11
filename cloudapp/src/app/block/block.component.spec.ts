@@ -61,6 +61,9 @@ describe('BlockComponent', () => {
     dashedMatriculationNumber: null,
     blocks,
     postalAddresses: [],
+    preferredEmailAddress: null,
+    invoicePostalAddress: null,
+    invoiceEmailAddress: null,
   });
   const updatedPatron = patron(false, { '03': block('03', 'fresh') });
 
@@ -132,7 +135,8 @@ describe('BlockComponent', () => {
         RemoveSuccess: 'Block removed',
       },
       Errors: {
-        DependencyUnavailable: 'Service temporarily unavailable.',
+        DependencyUnavailable:
+          'Alma is temporarily unavailable. Reload the patron before trying again. If the problem persists, contact support.',
         UnexpectedFailure: 'An unexpected error occurred.',
         SelectedPatron: 'The selected patron',
         SupportId: 'Support ID: {{errorId}}',
@@ -159,6 +163,11 @@ describe('BlockComponent', () => {
     expect(
       fixture.nativeElement.querySelectorAll('.block-list > [data-block-code]')
         .length,
+    ).toBe(5);
+    expect(
+      fixture.nativeElement.querySelectorAll(
+        '.block-list > .slsp-section.block-section',
+      ).length,
     ).toBe(5);
     expect(
       fixture.nativeElement.querySelectorAll('app-expandable-section-header')
@@ -293,7 +302,7 @@ describe('BlockComponent', () => {
     expect(component.loading).toBeFalse();
   });
 
-  it('presents a typed dependency failure as temporary-unavailable with its support id', () => {
+  it('presents a typed dependency failure with reload guidance and its support id', () => {
     api.removeBlock.and.returnValue(
       throwError(
         () =>
@@ -311,7 +320,7 @@ describe('BlockComponent', () => {
     component.remove(block('02'));
 
     expect(alert.error).toHaveBeenCalledOnceWith(
-      'Service temporarily unavailable. Support ID: support-block-503',
+      'Alma is temporarily unavailable. Reload the patron before trying again. If the problem persists, contact support. Support ID: support-block-503',
       { autoClose: false },
     );
     expect(state.replacePatron).not.toHaveBeenCalled();

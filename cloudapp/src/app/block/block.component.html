@@ -19,8 +19,8 @@
       </div>
     </div>
 
-    <div class="slsp-section block-list">
-      <section class="block-section" data-block-code="02">
+    <div class="block-list">
+      <section class="slsp-section block-section" data-block-code="02">
         <app-expandable-section-header
           [title]="'Blocks.DoubleRegistrations' | translate"
           [infoLabel]="'Blocks.MoreInformation' | translate"
@@ -86,7 +86,7 @@
         </ng-template>
       </section>
 
-      <section class="block-section" data-block-code="03">
+      <section class="slsp-section block-section" data-block-code="03">
         <app-expandable-section-header
           [title]="'Blocks.WrongAddress' | translate"
           [infoLabel]="'Blocks.MoreInformation' | translate"
@@ -159,7 +159,7 @@
         </ng-template>
       </section>
 
-      <section class="block-section" data-block-code="03.1">
+      <section class="slsp-section block-section" data-block-code="03.1">
         <app-expandable-section-header
           [title]="'Blocks.WrongEmail' | translate"
           [infoLabel]="'Blocks.MoreInformation' | translate"
@@ -234,7 +234,7 @@
         </ng-template>
       </section>
 
-      <section class="block-section" data-block-code="09">
+      <section class="slsp-section block-section" data-block-code="09">
         <app-expandable-section-header
           [title]="'Blocks.GlobalBlock' | translate"
           [infoLabel]="'Blocks.MoreInformation' | translate"
@@ -301,7 +301,7 @@
 
       <section
         *ngIf="patron.blocks['08'] as currentBlock"
-        class="block-section"
+        class="slsp-section block-section"
         data-block-code="08"
       >
         <app-expandable-section-header

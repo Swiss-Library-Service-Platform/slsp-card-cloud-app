@@ -6,7 +6,13 @@
 }
 
 .slsp-primary-tabs {
+  flex: 1 1 0;
   min-height: 0;
+}
+
+.slsp-environment-banner,
+.slsp-patron-bar {
+  flex: 0 0 auto;
 }
 
 .blocks-tab-indicator {

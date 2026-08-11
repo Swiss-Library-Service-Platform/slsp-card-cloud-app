@@ -11,7 +11,7 @@ let nextPanelId = 0;
 })
 export class ExpandableSectionHeaderComponent {
   @Input({ required: true }) public title = '';
-  @Input({ required: true }) public infoLabel = '';
+  @Input() public infoLabel: string | null = null;
   @Input() public status: string | null = null;
   @Input() public statusVariant: SectionStatusVariant = 'neutral';
 

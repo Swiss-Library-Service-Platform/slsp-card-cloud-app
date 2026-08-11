@@ -1,7 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { Observable, of, throwError } from 'rxjs';
 
-import { CardPatron } from '../models/card-api.model';
+import {
+  CardPatron,
+  SetInvoiceEmailAddressRequest,
+  SetInvoicePostalAddressRequest,
+} from '../models/card-api.model';
 import { BackendHttpService } from './backend-http.service';
 import { PatronApiService } from './patron-api.service';
 
@@ -16,6 +20,9 @@ describe('PatronApiService', () => {
     dashedMatriculationNumber: null,
     blocks: {},
     postalAddresses: [],
+    preferredEmailAddress: null,
+    invoicePostalAddress: null,
+    invoiceEmailAddress: null,
   };
 
   beforeEach(() => {
@@ -112,6 +119,68 @@ describe('PatronApiService', () => {
     });
   });
 
+  it('sets an invoice postal address with its typed request body', (done) => {
+    const request: SetInvoicePostalAddressRequest = {
+      elementReference: null,
+      line1: 'Example AG',
+      line2: null,
+      line3: null,
+      line4: null,
+      postalCode: '8000',
+      city: 'Zürich',
+      countryCode: 'CHE',
+    };
+
+    service.setInvoicePostalAddress('p/q', request).subscribe((result) => {
+      expect(result).toBe(patron);
+      expect(backend.put).toHaveBeenCalledOnceWith(
+        '/api/v1/patrons/p%2Fq/invoice-postal-address',
+        request,
+      );
+      done();
+    });
+  });
+
+  it('removes an invoice postal address with encoded path segments', (done) => {
+    service
+      .removeInvoicePostalAddress('p/q', 'reference/value')
+      .subscribe((result) => {
+        expect(result).toBe(patron);
+        expect(backend.delete).toHaveBeenCalledOnceWith(
+          '/api/v1/patrons/p%2Fq/invoice-postal-address/reference%2Fvalue',
+        );
+        done();
+      });
+  });
+
+  it('sets an invoice email address with its typed request body', (done) => {
+    const request: SetInvoiceEmailAddressRequest = {
+      elementReference: 'email-reference',
+      emailAddress: 'invoice@example.org',
+    };
+
+    service.setInvoiceEmailAddress('p/q', request).subscribe((result) => {
+      expect(result).toBe(patron);
+      expect(backend.put).toHaveBeenCalledOnceWith(
+        '/api/v1/patrons/p%2Fq/invoice-email-address',
+        request,
+      );
+      done();
+    });
+  });
+
+  it('removes an invoice email address with encoded path segments', (done) => {
+    service
+      .removeInvoiceEmailAddress('p/q', 'reference/value')
+      .subscribe((result) => {
+        expect(result).toBe(patron);
+        expect(backend.delete).toHaveBeenCalledOnceWith(
+          '/api/v1/patrons/p%2Fq/invoice-email-address/reference%2Fvalue',
+        );
+        done();
+      });
+  });
+
   const operations = [
     ['getPatron', (): Observable<CardPatron> => service.getPatron('p')],
     [
@@ -135,6 +204,38 @@ describe('PatronApiService', () => {
       'setPreferredAddress',
       (): Observable<CardPatron> =>
         service.setPreferredAddress('p', 'reference'),
+    ],
+    [
+      'setInvoicePostalAddress',
+      (): Observable<CardPatron> =>
+        service.setInvoicePostalAddress('p', {
+          elementReference: null,
+          line1: 'Example AG',
+          line2: null,
+          line3: null,
+          line4: null,
+          postalCode: '8000',
+          city: 'Zürich',
+          countryCode: 'CHE',
+        }),
+    ],
+    [
+      'removeInvoicePostalAddress',
+      (): Observable<CardPatron> =>
+        service.removeInvoicePostalAddress('p', 'reference'),
+    ],
+    [
+      'setInvoiceEmailAddress',
+      (): Observable<CardPatron> =>
+        service.setInvoiceEmailAddress('p', {
+          elementReference: null,
+          emailAddress: 'invoice@example.org',
+        }),
+    ],
+    [
+      'removeInvoiceEmailAddress',
+      (): Observable<CardPatron> =>
+        service.removeInvoiceEmailAddress('p', 'reference'),
     ],
   ] as const;
 

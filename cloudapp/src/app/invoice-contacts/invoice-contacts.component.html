@@ -1,0 +1,21 @@
+<section class="slsp-section invoice-contacts" data-section="invoice-contacts">
+  <app-expandable-section-header
+    [title]="'Settings.InvoiceContacts' | translate"
+    [infoLabel]="'Settings.MoreInformation' | translate"
+  >
+    <p class="slsp-section__information">
+      {{ 'Settings.InvoiceContactsDescription' | translate }}
+    </p>
+  </app-expandable-section-header>
+
+  <app-invoice-postal-address
+    [patron]="patron"
+    [disabled]="disabled"
+    (busyChange)="busyChange.emit($event)"
+  ></app-invoice-postal-address>
+  <app-invoice-email-address
+    [patron]="patron"
+    [disabled]="disabled"
+    (busyChange)="busyChange.emit($event)"
+  ></app-invoice-email-address>
+</section>

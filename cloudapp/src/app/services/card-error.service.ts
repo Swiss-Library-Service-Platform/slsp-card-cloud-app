@@ -24,6 +24,9 @@ const ERROR_KEYS: Record<CardErrorType, string> = {
   BLOCK_COMMENT_REQUIRED: 'Errors.BlockCommentRequired',
   STALE_ELEMENT_REFERENCE: 'Errors.StaleElementReference',
   INVALID_SETTINGS_NOTE: 'Errors.InvalidSettingsNote',
+  INVALID_INVOICE_POSTAL_ADDRESS: 'Errors.InvalidInvoicePostalAddress',
+  INVALID_INVOICE_EMAIL_ADDRESS: 'Errors.InvalidInvoiceEmailAddress',
+  UPSTREAM_REQUEST_REJECTED: 'Errors.UpstreamRequestRejected',
   UPSTREAM_FAILURE: 'Errors.UpstreamFailure',
   DEPENDENCY_UNAVAILABLE: 'Errors.DependencyUnavailable',
   UNEXPECTED_FAILURE: 'Errors.UnexpectedFailure',
@@ -39,10 +42,22 @@ const ERROR_KINDS: Record<CardErrorType, 'access' | 'warning' | 'error'> = {
   BLOCK_COMMENT_REQUIRED: 'warning',
   STALE_ELEMENT_REFERENCE: 'warning',
   INVALID_SETTINGS_NOTE: 'warning',
+  INVALID_INVOICE_POSTAL_ADDRESS: 'warning',
+  INVALID_INVOICE_EMAIL_ADDRESS: 'warning',
+  UPSTREAM_REQUEST_REJECTED: 'error',
   UPSTREAM_FAILURE: 'error',
   DEPENDENCY_UNAVAILABLE: 'error',
   UNEXPECTED_FAILURE: 'error',
 };
+const SUPPORT_ID_TYPES: ReadonlySet<CardErrorType> = new Set([
+  'AUTHENTICATION_FAILED',
+  'ACCESS_DENIED',
+  'PATRON_NOT_FOUND',
+  'UPSTREAM_REQUEST_REJECTED',
+  'UPSTREAM_FAILURE',
+  'DEPENDENCY_UNAVAILABLE',
+  'UNEXPECTED_FAILURE',
+]);
 const SAFE_SUPPORT_ID = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/u;
 
 @Injectable({ providedIn: 'root' })
@@ -84,7 +99,9 @@ export class CardErrorService {
       entityDescription:
         description || this.translate.instant('Errors.SelectedPatron'),
     });
-    const errorId = safeSupportId(error.errorId);
+    const errorId = SUPPORT_ID_TYPES.has(error.type)
+      ? safeSupportId(error.errorId)
+      : null;
 
     if (!errorId) {
       return message;
@@ -179,6 +196,8 @@ function errorStatus(type: CardErrorType): number {
     case 'INVALID_LIBRARY_CARD_FORMAT':
     case 'UNSUPPORTED_BLOCK':
     case 'BLOCK_COMMENT_REQUIRED':
+    case 'INVALID_INVOICE_POSTAL_ADDRESS':
+    case 'INVALID_INVOICE_EMAIL_ADDRESS':
       return 400;
     case 'PATRON_NOT_FOUND':
       return 404;
@@ -187,6 +206,7 @@ function errorStatus(type: CardErrorType): number {
     case 'INVALID_SETTINGS_NOTE':
       return 409;
     case 'UPSTREAM_FAILURE':
+    case 'UPSTREAM_REQUEST_REJECTED':
       return 502;
     case 'DEPENDENCY_UNAVAILABLE':
       return 503;

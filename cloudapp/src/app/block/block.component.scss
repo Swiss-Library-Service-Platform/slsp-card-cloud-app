@@ -36,12 +36,8 @@
   }
 }
 
-.block-list {
+.block-section:last-child {
   margin-bottom: 0;
-}
-
-.block-section + .block-section {
-  border-top: 1px solid var(--slsp-border);
 }
 
 .block-description,

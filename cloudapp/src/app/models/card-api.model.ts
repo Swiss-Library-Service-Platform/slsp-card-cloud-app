@@ -27,6 +27,22 @@ export interface PostalAddressView {
   readonly preferred: boolean;
 }
 
+export interface InvoicePostalAddressView {
+  readonly elementReference: string;
+  readonly line1: string | null;
+  readonly line2: string | null;
+  readonly line3: string | null;
+  readonly line4: string | null;
+  readonly postalCode: string | null;
+  readonly city: string | null;
+  readonly countryCode: string | null;
+}
+
+export interface InvoiceEmailAddressView {
+  readonly elementReference: string;
+  readonly emailAddress: string | null;
+}
+
 export interface CardPatron {
   readonly fullName: string | null;
   readonly external: boolean;
@@ -35,6 +51,9 @@ export interface CardPatron {
   readonly dashedMatriculationNumber: string | null;
   readonly blocks: Readonly<Partial<Record<BlockCode, BlockView>>>;
   readonly postalAddresses: readonly PostalAddressView[];
+  readonly preferredEmailAddress: string | null;
+  readonly invoicePostalAddress: InvoicePostalAddressView | null;
+  readonly invoiceEmailAddress: InvoiceEmailAddressView | null;
 }
 
 export interface AddLibraryCardNumberRequest {
@@ -50,6 +69,22 @@ export interface SetPreferredAddressRequest {
   readonly elementReference: string;
 }
 
+export interface SetInvoicePostalAddressRequest {
+  readonly elementReference: string | null;
+  readonly line1: string;
+  readonly line2: string | null;
+  readonly line3: string | null;
+  readonly line4: string | null;
+  readonly postalCode: string;
+  readonly city: string;
+  readonly countryCode: string;
+}
+
+export interface SetInvoiceEmailAddressRequest {
+  readonly elementReference: string | null;
+  readonly emailAddress: string;
+}
+
 export type CardErrorType =
   | 'AUTHENTICATION_FAILED'
   | 'ACCESS_DENIED'
@@ -61,6 +96,9 @@ export type CardErrorType =
   | 'BLOCK_COMMENT_REQUIRED'
   | 'STALE_ELEMENT_REFERENCE'
   | 'INVALID_SETTINGS_NOTE'
+  | 'INVALID_INVOICE_POSTAL_ADDRESS'
+  | 'INVALID_INVOICE_EMAIL_ADDRESS'
+  | 'UPSTREAM_REQUEST_REJECTED'
   | 'UPSTREAM_FAILURE'
   | 'DEPENDENCY_UNAVAILABLE'
   | 'UNEXPECTED_FAILURE';

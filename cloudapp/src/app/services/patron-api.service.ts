@@ -6,6 +6,8 @@ import {
   AddLibraryCardNumberRequest,
   AddableBlockCode,
   CardPatron,
+  SetInvoiceEmailAddressRequest,
+  SetInvoicePostalAddressRequest,
   SetPreferredAddressRequest,
 } from '../models/card-api.model';
 import { BackendHttpService } from './backend-http.service';
@@ -72,6 +74,44 @@ export class PatronApiService {
     return this.backend.put<CardPatron, SetPreferredAddressRequest>(
       `/api/v1/patrons/${encodePatronId(patronId)}/preferred-address`,
       request,
+    );
+  }
+
+  public setInvoicePostalAddress(
+    patronId: string,
+    request: SetInvoicePostalAddressRequest,
+  ): Observable<CardPatron> {
+    return this.backend.put<CardPatron, SetInvoicePostalAddressRequest>(
+      `/api/v1/patrons/${encodePatronId(patronId)}/invoice-postal-address`,
+      request,
+    );
+  }
+
+  public removeInvoicePostalAddress(
+    patronId: string,
+    elementReference: string,
+  ): Observable<CardPatron> {
+    return this.backend.delete<CardPatron>(
+      `/api/v1/patrons/${encodePatronId(patronId)}/invoice-postal-address/${encodeURIComponent(elementReference)}`,
+    );
+  }
+
+  public setInvoiceEmailAddress(
+    patronId: string,
+    request: SetInvoiceEmailAddressRequest,
+  ): Observable<CardPatron> {
+    return this.backend.put<CardPatron, SetInvoiceEmailAddressRequest>(
+      `/api/v1/patrons/${encodePatronId(patronId)}/invoice-email-address`,
+      request,
+    );
+  }
+
+  public removeInvoiceEmailAddress(
+    patronId: string,
+    elementReference: string,
+  ): Observable<CardPatron> {
+    return this.backend.delete<CardPatron>(
+      `/api/v1/patrons/${encodePatronId(patronId)}/invoice-email-address/${encodeURIComponent(elementReference)}`,
     );
   }
 }

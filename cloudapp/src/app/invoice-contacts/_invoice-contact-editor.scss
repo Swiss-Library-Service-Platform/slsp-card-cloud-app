@@ -1,0 +1,92 @@
+@mixin styles {
+  :host {
+    display: block;
+  }
+
+  .invoice-editor {
+    padding: var(--slsp-space-4);
+    border-bottom: 1px solid var(--slsp-border-light);
+  }
+
+  .invoice-editor__heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--slsp-space-3);
+    margin-bottom: var(--slsp-space-3);
+
+    h3 {
+      margin: 0;
+      color: var(--slsp-text);
+      font-size: var(--slsp-font-size-title);
+      font-weight: var(--slsp-font-weight-semibold);
+    }
+  }
+
+  .invoice-editor__sources {
+    display: flex;
+    flex-direction: column;
+    gap: var(--slsp-space-3);
+
+    mat-radio-button {
+      --mat-radio-label-text-color: var(--slsp-text);
+      --mat-radio-label-text-weight: var(--slsp-font-weight-regular);
+    }
+  }
+
+  .invoice-editor__source-option {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: var(--slsp-space-1);
+  }
+
+  .invoice-editor__preferred-value,
+  .invoice-editor__missing {
+    display: block;
+    margin: 0;
+    padding-inline-start: 2.25rem;
+    overflow-wrap: anywhere;
+    color: var(--slsp-text-secondary);
+    font-size: var(--slsp-font-size-body);
+    font-weight: var(--slsp-font-weight-regular);
+    line-height: var(--slsp-line-height-body);
+  }
+
+  .invoice-editor__custom-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--slsp-space-3);
+    margin-top: var(--slsp-space-3);
+
+    mat-form-field {
+      min-width: 0;
+    }
+  }
+
+  .invoice-editor__field--wide {
+    grid-column: 1 / -1;
+  }
+
+  .invoice-editor__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--slsp-space-2);
+    margin: var(--slsp-space-4) calc(-1 * var(--slsp-space-4))
+      calc(-1 * var(--slsp-space-4));
+    padding: var(--slsp-space-3) var(--slsp-space-4);
+    border-top: 1px solid var(--slsp-border-light);
+    background: var(--slsp-surface-subtle);
+  }
+
+  @media (max-width: 420px) {
+    .invoice-editor__custom-fields {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .invoice-editor__field--wide {
+      grid-column: auto;
+    }
+  }
+}

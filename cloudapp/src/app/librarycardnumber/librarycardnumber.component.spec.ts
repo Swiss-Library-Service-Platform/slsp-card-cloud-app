@@ -57,6 +57,9 @@ describe('LibraryCardNumberComponent', () => {
     dashedMatriculationNumber: '12-345-678',
     blocks: {},
     postalAddresses: [],
+    preferredEmailAddress: null,
+    invoicePostalAddress: null,
+    invoiceEmailAddress: null,
   };
   const updatedPatron: CardPatron = {
     ...patron,
@@ -108,7 +111,7 @@ describe('LibraryCardNumberComponent', () => {
       LibraryCardNumber: {
         Add: 'Add',
         Alias: 'Alias',
-        CurrentLibraryCardNumbers: 'Current Library Card Numbers',
+        LibraryCardNumbers: 'Library Card Numbers',
         CurrentMatriculationNumber: 'Current matriculation number',
         NoCurrentLibraryCardNumbers: 'No card numbers',
         Remove: 'Remove',
@@ -169,6 +172,35 @@ describe('LibraryCardNumberComponent', () => {
     expect(
       fixture.nativeElement.querySelector('.add-card-form__heading'),
     ).toBeNull();
+    expect(
+      fixture.nativeElement.querySelector(
+        '[data-section="cards"] app-expandable-section-header',
+      ),
+    ).not.toBeNull();
+    expect(
+      fixture.nativeElement.querySelector(
+        '[data-section="cards"] .slsp-section__title',
+      ).textContent,
+    ).toContain('Library Card Numbers');
+    expect(
+      fixture.nativeElement.querySelector('[data-section="cards"] [data-info]'),
+    ).toBeNull();
+  });
+
+  it('presents an empty card-number list as muted text without an icon', () => {
+    patronState$.next({
+      status: 'ready',
+      entity: selected,
+      patron: { ...patron, libraryCardNumbers: [] },
+    });
+    fixture.detectChanges();
+
+    const emptyState = fixture.nativeElement.querySelector(
+      '.slsp-empty-state',
+    ) as HTMLElement;
+
+    expect(emptyState.textContent).toContain('No card numbers');
+    expect(emptyState.querySelector('mat-icon')).toBeNull();
   });
 
   it('confirms and removes the exact displayed card by element reference', () => {
@@ -298,7 +330,7 @@ describe('LibraryCardNumberComponent', () => {
     expect(component.loading).toBeFalse();
   });
 
-  it('presents a duplicate-card backend conflict as a warning with its support id', () => {
+  it('presents a duplicate-card backend conflict without a support id', () => {
     api.addLibraryCardNumber.and.returnValue(
       throwError(
         () =>
@@ -321,7 +353,7 @@ describe('LibraryCardNumberComponent', () => {
     );
 
     expect(alert.warn).toHaveBeenCalledOnceWith(
-      'This card number is already in use. Support ID: support-card-409',
+      'This card number is already in use.',
       { autoClose: false },
     );
     expect(alert.error).not.toHaveBeenCalled();

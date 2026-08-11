@@ -48,6 +48,9 @@ describe('UsermenuComponent', () => {
           },
         },
         postalAddresses: [],
+        preferredEmailAddress: null,
+        invoicePostalAddress: null,
+        invoiceEmailAddress: null,
       },
     });
     state = jasmine.createSpyObj<PatronStateService>(
@@ -175,6 +178,23 @@ describe('UsermenuComponent', () => {
     expect(
       fixture.nativeElement.querySelector('.mdc-tab__text-label mat-icon'),
     ).toBeNull();
+  });
+
+  it('keeps the shell rows fixed while tab content owns the remaining height', () => {
+    const fixture = TestBed.createComponent(UsermenuComponent);
+
+    fixture.detectChanges();
+
+    const patronBar = fixture.nativeElement.querySelector('.slsp-patron-bar');
+    const environmentBanner = fixture.nativeElement.querySelector(
+      '.slsp-environment-banner',
+    );
+    const tabGroup = fixture.nativeElement.querySelector('.slsp-primary-tabs');
+
+    expect(getComputedStyle(patronBar).flexShrink).toBe('0');
+    expect(getComputedStyle(environmentBanner).flexShrink).toBe('0');
+    expect(getComputedStyle(tabGroup).flexBasis).toBe('0px');
+    expect(getComputedStyle(tabGroup).minHeight).toBe('0px');
   });
 
   it('hides patron actions until an action is available', () => {

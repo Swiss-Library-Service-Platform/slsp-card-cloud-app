@@ -1,0 +1,166 @@
+<div class="invoice-editor" [formGroup]="form" data-editor="invoice-postal">
+  <div class="invoice-editor__heading">
+    <h3 id="invoice-postal-heading">
+      {{ 'Settings.PostalAddress' | translate }}
+    </h3>
+  </div>
+
+  <mat-radio-group
+    class="invoice-editor__sources"
+    formControlName="source"
+    aria-labelledby="invoice-postal-heading"
+  >
+    <div class="invoice-editor__source-option" data-source-option="preferred">
+      <mat-radio-button
+        value="preferred"
+        data-source="preferred"
+        [disabled]="preferredMissing || disabled || loading"
+      >
+        {{ 'Settings.UsePreferredPostalAddress' | translate }}
+      </mat-radio-button>
+      <span
+        *ngIf="preferredPostalAddress"
+        class="invoice-editor__preferred-value"
+      >
+        <ng-container *ngIf="preferredPostalAddress.line1">{{
+          preferredPostalAddress.line1
+        }}</ng-container
+        ><ng-container *ngIf="preferredPostalAddress.postalCode"
+          ><ng-container *ngIf="preferredPostalAddress.line1">, </ng-container
+          >{{ preferredPostalAddress.postalCode }}</ng-container
+        ><ng-container *ngIf="preferredPostalAddress.city"
+          ><ng-container
+            *ngIf="
+              preferredPostalAddress.line1 || preferredPostalAddress.postalCode
+            "
+            >, </ng-container
+          >{{ preferredPostalAddress.city }}</ng-container
+        ><ng-container *ngIf="preferredPostalAddress.country"
+          ><ng-container
+            *ngIf="
+              preferredPostalAddress.line1 ||
+              preferredPostalAddress.postalCode ||
+              preferredPostalAddress.city
+            "
+            >, </ng-container
+          >{{ preferredPostalAddress.country }}</ng-container
+        >
+      </span>
+      <span *ngIf="preferredMissing" class="invoice-editor__missing">
+        {{ 'Settings.PreferredPostalAddressMissing' | translate }}
+      </span>
+    </div>
+
+    <div class="invoice-editor__source-option" data-source-option="custom">
+      <mat-radio-button
+        value="custom"
+        data-source="custom"
+        [disabled]="disabled || loading"
+      >
+        {{ 'Settings.UseCustomPostalAddress' | translate }}
+      </mat-radio-button>
+    </div>
+  </mat-radio-group>
+
+  <div
+    *ngIf="form.controls.source.value === 'custom'"
+    class="invoice-editor__custom-fields"
+    data-custom-fields
+  >
+    <mat-form-field class="invoice-editor__field--wide">
+      <mat-label>{{ 'Settings.Line1' | translate }}</mat-label>
+      <input matInput formControlName="line1" maxlength="40" />
+      <mat-error *ngIf="form.controls.line1.hasError('required')">{{
+        'Settings.Required' | translate
+      }}</mat-error>
+      <mat-error *ngIf="form.controls.line1.hasError('maxlength')">{{
+        'Settings.TooLong' | translate
+      }}</mat-error>
+    </mat-form-field>
+    <mat-form-field class="invoice-editor__field--wide">
+      <mat-label>{{ 'Settings.Line2' | translate }}</mat-label>
+      <input matInput formControlName="line2" maxlength="40" />
+      <mat-error
+        data-error="too-long"
+        *ngIf="form.controls.line2.hasError('maxlength')"
+        >{{ 'Settings.TooLong' | translate }}</mat-error
+      >
+    </mat-form-field>
+    <mat-form-field class="invoice-editor__field--wide">
+      <mat-label>{{ 'Settings.Line3' | translate }}</mat-label>
+      <input matInput formControlName="line3" maxlength="40" />
+      <mat-error
+        data-error="too-long"
+        *ngIf="form.controls.line3.hasError('maxlength')"
+        >{{ 'Settings.TooLong' | translate }}</mat-error
+      >
+    </mat-form-field>
+    <mat-form-field class="invoice-editor__field--wide">
+      <mat-label>{{ 'Settings.Line4' | translate }}</mat-label>
+      <input matInput formControlName="line4" maxlength="40" />
+      <mat-error
+        data-error="too-long"
+        *ngIf="form.controls.line4.hasError('maxlength')"
+        >{{ 'Settings.TooLong' | translate }}</mat-error
+      >
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>{{ 'Settings.PostalCode' | translate }}</mat-label>
+      <input matInput formControlName="postalCode" maxlength="7" />
+      <mat-error *ngIf="form.controls.postalCode.hasError('required')">{{
+        'Settings.Required' | translate
+      }}</mat-error>
+      <mat-error
+        data-error="too-long"
+        *ngIf="form.controls.postalCode.hasError('maxlength')"
+        >{{ 'Settings.TooLong' | translate }}</mat-error
+      >
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>{{ 'Settings.City' | translate }}</mat-label>
+      <input matInput formControlName="city" maxlength="32" />
+      <mat-error *ngIf="form.controls.city.hasError('required')">{{
+        'Settings.Required' | translate
+      }}</mat-error>
+      <mat-error
+        data-error="too-long"
+        *ngIf="form.controls.city.hasError('maxlength')"
+        >{{ 'Settings.TooLong' | translate }}</mat-error
+      >
+    </mat-form-field>
+    <mat-form-field class="invoice-editor__field--wide">
+      <mat-label>{{ 'Settings.Country' | translate }}</mat-label>
+      <mat-select formControlName="countryCode">
+        <mat-option
+          *ngFor="let country of countryOptions; trackBy: trackCountry"
+          [value]="country.code"
+        >
+          {{ country.label }}
+        </mat-option>
+      </mat-select>
+      <mat-error>{{ 'Settings.InvalidCountry' | translate }}</mat-error>
+    </mat-form-field>
+  </div>
+
+  <div class="invoice-editor__actions">
+    <button
+      mat-stroked-button
+      type="button"
+      data-action="cancel"
+      [disabled]="disabled || loading || form.pristine"
+      (click)="cancel()"
+    >
+      {{ 'General.Cancel' | translate }}
+    </button>
+    <button
+      mat-flat-button
+      color="primary"
+      type="button"
+      data-action="save"
+      [disabled]="disabled || loading || !form.dirty"
+      (click)="save()"
+    >
+      {{ 'Settings.SavePostalAddress' | translate }}
+    </button>
+  </div>
+</div>

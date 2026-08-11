@@ -33,10 +33,13 @@ const patron = (fullName: string): CardPatron => ({
   dashedMatriculationNumber: null,
   blocks: {},
   postalAddresses: [],
+  preferredEmailAddress: null,
+  invoicePostalAddress: null,
+  invoiceEmailAddress: null,
 });
 const entity = (
   id: string,
-  link = `/users/${encodeURIComponent(id)}`,
+  link = `/users/${encodeURIComponent(id.includes('@') ? id : `SLIB_${id}`)}`,
   type = EntityType.USER,
 ): Entity => ({ id, link, type, description: `User ${id}` });
 const mutationContext = (
@@ -185,7 +188,7 @@ describe('PatronStateService', () => {
 
     service.select(selected);
 
-    expect(api.getPatron).toHaveBeenCalledOnceWith('one');
+    expect(api.getPatron).toHaveBeenCalledOnceWith('SLIB_one');
     response$.next(patron('One'));
     expect(api.getPatron).toHaveBeenCalledTimes(1);
     first.unsubscribe();
@@ -209,7 +212,7 @@ describe('PatronStateService', () => {
     main.unsubscribe();
     service.patronState$.subscribe((state) => secondStates.push(state));
 
-    expect(api.getPatron).toHaveBeenCalledOnceWith('one');
+    expect(api.getPatron).toHaveBeenCalledOnceWith('SLIB_one');
     expect(firstStates.at(-1)).toEqual({
       status: 'ready',
       entity: selected,
@@ -233,6 +236,22 @@ describe('PatronStateService', () => {
     expect(api.getPatron).not.toHaveBeenCalled();
   });
 
+  it('clears an ineligible selection without calling the backend', () => {
+    const service = configure();
+    let observed: PatronState = {
+      status: 'loading',
+      entity: entity('old'),
+    };
+
+    service.patronState$.subscribe((state) => {
+      observed = state;
+    });
+    service.select(entity('staff-user', '/users/staff-user'));
+
+    expect(observed as PatronState).toEqual({ status: 'empty' });
+    expect(api.getPatron).not.toHaveBeenCalled();
+  });
+
   it('auto-selects only an authorized exact single USER when route says true', () => {
     const service = configure('true');
     const selected = entity('one');
@@ -242,7 +261,19 @@ describe('PatronStateService', () => {
     service.autoSelect$('true').subscribe();
     entities$.next([selected]);
 
-    expect(api.getPatron).toHaveBeenCalledOnceWith('one');
+    expect(api.getPatron).toHaveBeenCalledOnceWith('SLIB_one');
+  });
+
+  it('does not auto-select a sole ineligible USER', () => {
+    const service = configure('true');
+
+    api.getPatron.and.returnValue(of(patron('Staff')));
+    service.patronState$.subscribe();
+    service.autoSelect$('true').subscribe();
+    entities$.next([entity('staff-user', '/users/staff-user')]);
+
+    expect(api.getPatron).not.toHaveBeenCalled();
+    expect(service.currentPatronId()).toBeNull();
   });
 
   [
@@ -293,7 +324,7 @@ describe('PatronStateService', () => {
     entities$.next([]);
     entities$.next([entity('one')]);
 
-    expect(api.getPatron).toHaveBeenCalledOnceWith('one');
+    expect(api.getPatron).toHaveBeenCalledOnceWith('SLIB_one');
   });
 
   it('finishes after the first multiple-entity decision and never selects a later singleton', () => {
@@ -325,7 +356,7 @@ describe('PatronStateService', () => {
     entities$.next([entity('automatic')]);
 
     expect(service.currentPatronId()).toBeNull();
-    expect(api.getPatron).toHaveBeenCalledOnceWith('manual');
+    expect(api.getPatron).toHaveBeenCalledOnceWith('SLIB_manual');
   });
 
   it('completes denied and route-disabled auto-select attempts without retaining entity listeners', () => {
@@ -546,6 +577,7 @@ describe('PatronStateService', () => {
     ['BLOCK_COMMENT_REQUIRED', 400],
     ['STALE_ELEMENT_REFERENCE', 409],
     ['INVALID_SETTINGS_NOTE', 409],
+    ['UPSTREAM_REQUEST_REJECTED', 502],
     ['UPSTREAM_FAILURE', 502],
     ['DEPENDENCY_UNAVAILABLE', 503],
     ['UNEXPECTED_FAILURE', 500],

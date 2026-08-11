@@ -1,89 +1,16 @@
 <ng-container *ngIf="patron$ | async as patron">
   <div class="slsp-screen">
-    <section class="slsp-section" data-section="preferred-address">
-      <app-expandable-section-header
-        [title]="'Settings.PreferredAddress' | translate"
-        [infoLabel]="'Settings.MoreInformation' | translate"
-      >
-        <p class="slsp-section__information">
-          {{ 'Settings.PreferredAddressDescription' | translate }}
-          <a href="https://eduid.ch/" target="_blank" rel="noopener">
-            {{ 'Settings.PreferredAddressDescriptionLink' | translate }}
-          </a>
-        </p>
-      </app-expandable-section-header>
+    <app-preferred-address
+      [patron]="patron"
+      [disabled]="mutationBusy"
+      (busyChange)="setMutationBusy($event)"
+    ></app-preferred-address>
 
-      <div *ngIf="patron.postalAddresses.length === 0" class="slsp-empty-state">
-        <mat-icon>location_off</mat-icon>
-        <span>{{ 'Settings.NoAddresses' | translate }}</span>
-      </div>
-
-      <ul class="slsp-data-list">
-        <li
-          *ngFor="let item of patron.postalAddresses; trackBy: trackAddress"
-          class="slsp-data-row address-row"
-          data-address
-          [class.address-row--preferred]="item.preferred"
-        >
-          <div class="slsp-data-row__content">
-            <div class="address-row__heading">
-              <span class="slsp-data-row__label">
-                {{ 'Settings.AddressType' | translate }}
-              </span>
-              <span *ngIf="item.preferred" class="slsp-status">
-                <mat-icon>check</mat-icon>
-                {{ 'Settings.Preferred' | translate }}
-              </span>
-            </div>
-            <span class="slsp-data-row__value">
-              <strong>{{ item.types.join(', ') }}</strong>
-            </span>
-            <span class="address-row__address">
-              <ng-container *ngIf="item.line1">{{ item.line1 }}</ng-container
-              ><ng-container *ngIf="item.postalCode"
-                ><ng-container *ngIf="item.line1">, </ng-container
-                >{{ item.postalCode }}</ng-container
-              ><ng-container *ngIf="item.city"
-                ><ng-container *ngIf="item.line1 || item.postalCode"
-                  >, </ng-container
-                >{{ item.city }}</ng-container
-              ><ng-container *ngIf="item.country"
-                ><ng-container
-                  *ngIf="item.line1 || item.postalCode || item.city"
-                  >, </ng-container
-                >{{ item.country }}</ng-container
-              >
-            </span>
-          </div>
-
-          <button
-            *ngIf="!item.preferred"
-            mat-stroked-button
-            type="button"
-            data-action="prefer"
-            [disabled]="!item.elementReference || loading"
-            (click)="changePreferredAddress(item)"
-          >
-            {{ 'Settings.UseAsPreferred' | translate }}
-          </button>
-        </li>
-      </ul>
-    </section>
-
-    <section
-      class="slsp-section slsp-placeholder"
-      data-placeholder="invoice-contacts"
-    >
-      <app-expandable-section-header
-        [title]="'Settings.InvoiceContacts' | translate"
-        [infoLabel]="'Settings.MoreInformation' | translate"
-        [status]="'Settings.NotAvailableYet' | translate"
-      >
-        <p class="slsp-section__information">
-          {{ 'Settings.InvoiceContactsDescription' | translate }}
-        </p>
-      </app-expandable-section-header>
-    </section>
+    <app-invoice-contacts
+      [patron]="patron"
+      [disabled]="mutationBusy"
+      (busyChange)="setMutationBusy($event)"
+    ></app-invoice-contacts>
 
     <section
       class="slsp-section slsp-placeholder"
@@ -102,6 +29,6 @@
   </div>
 </ng-container>
 
-<div class="loading-shade" *ngIf="loading">
+<div class="loading-shade" *ngIf="mutationBusy">
   <mat-spinner diameter="50"></mat-spinner>
 </div>

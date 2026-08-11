@@ -7,17 +7,23 @@ import { ExpandableSectionHeaderComponent } from './expandable-section-header.co
 
 @Component({
   template: `
-    <app-expandable-section-header
-      title="Example section"
-      infoLabel="More information"
-      status="Active"
-      statusVariant="danger"
-    >
-      <p><a href="https://example.com">Projected information</a></p>
-    </app-expandable-section-header>
+    <div class="mat-typography">
+      <app-expandable-section-header
+        [title]="title"
+        [infoLabel]="infoLabel"
+        [status]="status"
+        statusVariant="danger"
+      >
+        <p><a href="https://example.com">Projected information</a></p>
+      </app-expandable-section-header>
+    </div>
   `,
 })
-class TestHostComponent {}
+class TestHostComponent {
+  public title = 'Example section';
+  public infoLabel: string | null = 'More information';
+  public status: string | null = 'Active';
+}
 
 describe('ExpandableSectionHeaderComponent', () => {
   let fixture: ComponentFixture<TestHostComponent>;
@@ -48,15 +54,24 @@ describe('ExpandableSectionHeaderComponent', () => {
     expect(
       fixture.nativeElement.querySelector('.slsp-status--danger').textContent,
     ).toContain('Active');
+    expect(button.textContent).toContain('info_outline');
   });
 
-  it('expands projected information from the shared info button', () => {
+  it('expands projected information only from the shared info button', () => {
     const component = fixture.debugElement.query(
       By.directive(ExpandableSectionHeaderComponent),
     ).componentInstance as ExpandableSectionHeaderComponent;
     const button = fixture.nativeElement.querySelector(
       '[data-info]',
     ) as HTMLButtonElement;
+    const header = fixture.nativeElement.querySelector(
+      '.slsp-section__header',
+    ) as HTMLElement;
+
+    header.click();
+    fixture.detectChanges();
+
+    expect(component.expanded).toBeFalse();
 
     button.click();
     fixture.detectChanges();
@@ -72,5 +87,49 @@ describe('ExpandableSectionHeaderComponent', () => {
     expect(panel.hasAttribute('inert')).toBeFalse();
     expect(panel.classList).toContain('expandable-information--expanded');
     expect(panel.textContent).toContain('Projected information');
+  });
+
+  it('renders a title-only header without help controls or a hidden panel', () => {
+    fixture.componentInstance.infoLabel = null;
+    fixture.componentInstance.status = null;
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('[data-info]')).toBeNull();
+    expect(
+      fixture.nativeElement.querySelector('.expandable-information'),
+    ).toBeNull();
+    expect(
+      fixture.nativeElement.querySelector('.slsp-section__title').textContent,
+    ).toContain('Example section');
+  });
+
+  it('renders an optional status independently of help', () => {
+    fixture.componentInstance.infoLabel = null;
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('[data-info]')).toBeNull();
+    expect(
+      fixture.nativeElement.querySelector('.slsp-status--danger').textContent,
+    ).toContain('Active');
+  });
+
+  it('protects centered section-title geometry from Material typography', () => {
+    const header = fixture.nativeElement.querySelector(
+      '.slsp-section__header',
+    ) as HTMLElement;
+    const title = fixture.nativeElement.querySelector(
+      '.slsp-section__title',
+    ) as HTMLElement;
+    const headerStyle = getComputedStyle(header);
+    const titleStyle = getComputedStyle(title);
+
+    expect(headerStyle.alignItems).toBe('center');
+    expect(headerStyle.minHeight).toBe('56px');
+    expect(headerStyle.paddingTop).toBe('12px');
+    expect(headerStyle.paddingRight).toBe('16px');
+    expect(headerStyle.paddingBottom).toBe('12px');
+    expect(headerStyle.paddingLeft).toBe('16px');
+    expect(titleStyle.marginBottom).toBe('0px');
+    expect(titleStyle.fontWeight).toBe('400');
   });
 });

@@ -27,6 +27,7 @@ import {
 } from 'rxjs';
 
 import { CardApiError, CardPatron } from '../models/card-api.model';
+import { isEditablePatronId } from '../patron-eligibility';
 import {
   AuthorizationResult,
   AuthorizationService,
@@ -155,7 +156,7 @@ export class PatronStateService {
   public select(entity: Entity): void {
     const patronId = extractPatronId(entity);
 
-    if (!patronId) {
+    if (!isEditablePatronId(patronId)) {
       this.clear();
 
       return;
@@ -183,6 +184,7 @@ export class PatronStateService {
         if (
           authorization.status === 'allowed' &&
           entities.length === 1 &&
+          isEditablePatronId(extractPatronId(entities[0])) &&
           this.currentPatronId() === null
         ) {
           this.select(entities[0]);

@@ -35,8 +35,14 @@ describe('MainComponent', () => {
   const selected: Entity = {
     id: 'entity-metadata',
     type: EntityType.USER,
-    link: '/users/primary-id',
+    link: '/users/patron%40eduid.ch',
     description: 'Selected user',
+  };
+  const ineligible: Entity = {
+    id: 'staff-metadata',
+    type: EntityType.USER,
+    link: '/users/staff-user',
+    description: 'Staff user',
   };
 
   beforeEach(() => {
@@ -123,8 +129,12 @@ describe('MainComponent', () => {
         BlockCommentRequired: 'A block comment is required.',
         StaleElementReference: 'The element reference is stale.',
         InvalidSettingsNote: 'The shared settings are invalid.',
-        UpstreamFailure: 'Service temporarily unavailable',
-        DependencyUnavailable: 'Service temporarily unavailable',
+        UpstreamRequestRejected:
+          'Alma could not process the request. Reload the patron and try again. If the problem persists, contact support.',
+        UpstreamFailure:
+          'Alma returned an unexpected response. Reload the patron and try again. If the problem persists, contact support.',
+        DependencyUnavailable:
+          'Alma is temporarily unavailable. Reload the patron before trying again. If the problem persists, contact support.',
         UnexpectedFailure: 'An unexpected error occurred.',
         SelectedPatron: 'The selected patron',
         SupportId: 'Support ID: {{errorId}}',
@@ -157,10 +167,68 @@ describe('MainComponent', () => {
     expect(userAction?.querySelector('.entity-name')?.textContent).toContain(
       'Selected user',
     );
-    expect(userAction?.textContent).not.toContain('primary-id');
+    expect(
+      userAction?.querySelector('.entity-primary-identifier')?.textContent,
+    ).toContain('patron@eduid.ch');
+
+    const navigationIcon = userAction?.querySelector('.entity-navigation-icon');
+
+    expect(navigationIcon?.textContent).toContain('chevron_right');
+    expect(navigationIcon?.getAttribute('aria-hidden')).toBe('true');
     userAction?.click();
 
     expect(state.select).toHaveBeenCalledOnceWith(selected);
+  });
+
+  it('keeps ineligible accounts visible but disables their action row', () => {
+    entities$.next([selected, ineligible]);
+
+    const fixture = TestBed.createComponent(MainComponent);
+
+    fixture.detectChanges();
+
+    const actions = Array.from<HTMLButtonElement>(
+      fixture.nativeElement.querySelectorAll('button.entity-action'),
+    );
+    const eligibleAction = actions[0];
+    const ineligibleAction = actions[1];
+
+    expect(eligibleAction.disabled).toBeFalse();
+    expect(
+      eligibleAction.querySelector('.entity-navigation-icon'),
+    ).not.toBeNull();
+    expect(ineligibleAction.textContent).toContain('Staff user');
+    expect(ineligibleAction.disabled).toBeTrue();
+    expect(
+      ineligibleAction.querySelector('.entity-navigation-icon'),
+    ).toBeNull();
+    expect(getComputedStyle(ineligibleAction).backgroundColor).toBe(
+      'rgb(255, 255, 255)',
+    );
+    expect(
+      getComputedStyle(
+        ineligibleAction.querySelector('.entity-name') as HTMLElement,
+      ).color,
+    ).toBe('rgba(0, 0, 0, 0.6)');
+
+    ineligibleAction.click();
+
+    expect(state.select).not.toHaveBeenCalled();
+  });
+
+  it('uses a non-visible accessible label for the user list', () => {
+    const fixture = TestBed.createComponent(MainComponent);
+
+    fixture.detectChanges();
+
+    const actionList: HTMLElement =
+      fixture.nativeElement.querySelector('mat-action-list');
+
+    expect(actionList.getAttribute('aria-label')).toBe('Select a user:');
+    expect(
+      fixture.nativeElement.querySelector('.entities-list-label'),
+    ).toBeNull();
+    expect(actionList.textContent).not.toContain('Select a user:');
   });
 
   it('navigates after the selected Card patron becomes ready', async () => {
@@ -179,6 +247,9 @@ describe('MainComponent', () => {
         dashedMatriculationNumber: null,
         blocks: {},
         postalAddresses: [],
+        preferredEmailAddress: null,
+        invoicePostalAddress: null,
+        invoiceEmailAddress: null,
       },
     });
     await fixture.whenStable();
@@ -224,7 +295,11 @@ describe('MainComponent', () => {
         fixture.nativeElement.querySelector('mat-action-list'),
       ).not.toBeNull();
       expect(fixture.nativeElement.querySelector('mat-radio-group')).toBeNull();
-      expect(fixture.nativeElement.textContent).toContain('Select a user:');
+      expect(
+        fixture.nativeElement
+          .querySelector('mat-action-list')
+          .getAttribute('aria-label'),
+      ).toBe('Select a user:');
     });
   });
 
@@ -252,7 +327,7 @@ describe('MainComponent', () => {
     );
   });
 
-  it('presents business conflicts as localized warnings with a support id', async () => {
+  it('presents business conflicts as localized warnings without a support id', async () => {
     const fixture = TestBed.createComponent(MainComponent);
 
     fixture.detectChanges();
@@ -268,13 +343,13 @@ describe('MainComponent', () => {
     await fixture.whenStable();
 
     expect(alert.warn).toHaveBeenCalledOnceWith(
-      'The element reference is stale. Support ID: support-409',
+      'The element reference is stale.',
       { autoClose: false },
     );
     expect(alert.error).not.toHaveBeenCalled();
   });
 
-  it('uses temporary-unavailable copy and support id for transport failures', async () => {
+  it('uses Alma unavailable copy and support id for transport failures', async () => {
     const fixture = TestBed.createComponent(MainComponent);
 
     fixture.detectChanges();
@@ -290,7 +365,7 @@ describe('MainComponent', () => {
     await fixture.whenStable();
 
     expect(alert.error).toHaveBeenCalledOnceWith(
-      'Service temporarily unavailable Support ID: support-503',
+      'Alma is temporarily unavailable. Reload the patron before trying again. If the problem persists, contact support. Support ID: support-503',
       { autoClose: false },
     );
   });
@@ -375,6 +450,10 @@ describe('MainComponent', () => {
     ).not.toBeNull();
     expect(fixture.nativeElement.querySelector('mat-radio-group')).toBeNull();
     expect(fixture.nativeElement.textContent).toContain('Selected user');
-    expect(fixture.nativeElement.textContent).toContain('Select a user:');
+    expect(
+      fixture.nativeElement
+        .querySelector('mat-action-list')
+        .getAttribute('aria-label'),
+    ).toBe('Select a user:');
   });
 });

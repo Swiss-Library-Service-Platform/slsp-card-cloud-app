@@ -1,0 +1,86 @@
+<div class="invoice-editor" [formGroup]="form" data-editor="invoice-email">
+  <div class="invoice-editor__heading">
+    <h3 id="invoice-email-heading">
+      {{ 'Settings.EmailAddress' | translate }}
+    </h3>
+  </div>
+
+  <mat-radio-group
+    class="invoice-editor__sources"
+    formControlName="source"
+    aria-labelledby="invoice-email-heading"
+  >
+    <div class="invoice-editor__source-option" data-source-option="preferred">
+      <mat-radio-button
+        value="preferred"
+        data-source="preferred"
+        [disabled]="preferredMissing || disabled || loading"
+      >
+        {{ 'Settings.UsePreferredEmailAddress' | translate }}
+      </mat-radio-button>
+      <span
+        *ngIf="preferredEmailAddress"
+        class="invoice-editor__preferred-value"
+      >
+        {{ preferredEmailAddress }}
+      </span>
+      <span *ngIf="preferredMissing" class="invoice-editor__missing">
+        {{ 'Settings.PreferredEmailAddressMissing' | translate }}
+      </span>
+    </div>
+
+    <div class="invoice-editor__source-option" data-source-option="custom">
+      <mat-radio-button
+        value="custom"
+        data-source="custom"
+        [disabled]="disabled || loading"
+      >
+        {{ 'Settings.UseCustomEmailAddress' | translate }}
+      </mat-radio-button>
+    </div>
+  </mat-radio-group>
+
+  <div
+    *ngIf="form.controls.source.value === 'custom'"
+    class="invoice-editor__custom-fields"
+    data-custom-fields
+  >
+    <mat-form-field class="invoice-editor__field--wide">
+      <mat-label>{{ 'Settings.EmailAddress' | translate }}</mat-label>
+      <input
+        matInput
+        type="email"
+        inputmode="email"
+        autocomplete="off"
+        formControlName="emailAddress"
+        maxlength="64"
+        aria-describedby="invoice-email-error"
+      />
+      <mat-error id="invoice-email-error">{{
+        'Settings.InvalidEmail' | translate
+      }}</mat-error>
+    </mat-form-field>
+  </div>
+
+  <div class="invoice-editor__actions">
+    <button
+      mat-stroked-button
+      type="button"
+      data-action="cancel"
+      [disabled]="disabled || loading || form.pristine"
+      (click)="cancel()"
+    >
+      {{ 'General.Cancel' | translate }}
+    </button>
+    <button
+      mat-flat-button
+      color="primary"
+      type="button"
+      data-action="save"
+      [disabled]="disabled || loading || !form.dirty"
+      (click)="save()"
+    >
+      {{ 'Settings.SaveEmailAddress' | translate }}
+    </button>
+  </div>
+</div>

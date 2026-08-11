@@ -14,10 +14,12 @@ import {
 } from 'rxjs';
 
 import { PERSISTENT_ALERT_OPTIONS } from '../alert-options';
+import { isEditablePatronId } from '../patron-eligibility';
 import { AuthorizationResult } from '../services/authorization.service';
 import { BackendHttpService } from '../services/backend-http.service';
 import { CardErrorService } from '../services/card-error.service';
 import {
+  extractPatronId,
   PatronState,
   PatronStateService,
 } from '../services/patron-state.service';
@@ -107,6 +109,14 @@ export class MainComponent implements OnInit {
 
   public entitySelected(entity: Entity): void {
     this.state.select(entity);
+  }
+
+  public entityPrimaryIdentifier(entity: Entity): string | null {
+    return extractPatronId(entity);
+  }
+
+  public entityEditable(entity: Entity): boolean {
+    return isEditablePatronId(this.entityPrimaryIdentifier(entity));
   }
 
   public trackEntity(_index: number, entity: Entity): string {

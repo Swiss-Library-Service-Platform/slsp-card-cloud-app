@@ -1,19 +1,14 @@
 import { DestroyRef, Component, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AlertService } from '@exlibris/exl-cloudapp-angular-lib';
 import { TranslateService } from '@ngx-translate/core';
-import { EMPTY, Observable, catchError, finalize, map, tap } from 'rxjs';
+import { Observable, finalize, map, tap } from 'rxjs';
 
-import {
-  PERSISTENT_ALERT_OPTIONS,
-  SUCCESS_ALERT_OPTIONS,
-} from '../alert-options';
 import {
   AddableBlockCode,
   BlockView,
   CardPatron,
 } from '../models/card-api.model';
-import { CardErrorService } from '../services/card-error.service';
+import { MutationFeedbackService } from '../services/mutation-feedback.service';
 import { PatronApiService } from '../services/patron-api.service';
 import { PatronStateService } from '../services/patron-state.service';
 
@@ -30,10 +25,9 @@ export class BlockComponent {
   public commentWrongPostal = '';
   public loading = false;
 
-  private readonly alert = inject(AlertService);
   private readonly api = inject(PatronApiService);
-  private readonly cardErrors = inject(CardErrorService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly feedback = inject(MutationFeedbackService);
   private readonly state = inject(PatronStateService);
   private readonly translate = inject(TranslateService);
 
@@ -63,16 +57,8 @@ export class BlockComponent {
       .pipe(
         tap((patron) => {
           this.state.replacePatron(patron, mutationContext);
-          this.alert.success(
-            this.translate.instant('Blocks.AddSuccess'),
-            SUCCESS_ALERT_OPTIONS,
-          );
         }),
-        catchError((error: unknown) => {
-          this.presentError(error);
-
-          return EMPTY;
-        }),
+        this.feedback.handle('Blocks.AddSuccess'),
         finalize(() => {
           this.loading = false;
         }),
@@ -126,33 +112,13 @@ export class BlockComponent {
       .pipe(
         tap((patron) => {
           this.state.replacePatron(patron, mutationContext);
-          this.alert.success(
-            this.translate.instant('Blocks.RemoveSuccess'),
-            SUCCESS_ALERT_OPTIONS,
-          );
         }),
-        catchError((error: unknown) => {
-          this.presentError(error);
-
-          return EMPTY;
-        }),
+        this.feedback.handle('Blocks.RemoveSuccess'),
         finalize(() => {
           this.loading = false;
         }),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe();
-  }
-
-  private presentError(error: unknown): void {
-    const presentation = this.cardErrors.presentation(error);
-
-    if (presentation.kind === 'warning') {
-      this.alert.warn(presentation.message, PERSISTENT_ALERT_OPTIONS);
-
-      return;
-    }
-
-    this.alert.error(presentation.message, PERSISTENT_ALERT_OPTIONS);
   }
 }

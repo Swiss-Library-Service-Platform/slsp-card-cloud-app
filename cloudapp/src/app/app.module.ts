@@ -19,6 +19,10 @@ import { LibraryCardNumberComponent } from './librarycardnumber/librarycardnumbe
 import { UsermenuComponent } from './usermenu/usermenu.component';
 import { ConfirmationdialogComponent } from './confirmationdialog/confirmationdialog.component';
 import { ExpandableSectionHeaderComponent } from './expandable-section-header/expandable-section-header.component';
+import { PreferredAddressComponent } from './preferred-address/preferred-address.component';
+import { InvoiceContactsComponent } from './invoice-contacts/invoice-contacts.component';
+import { InvoicePostalAddressComponent } from './invoice-contacts/invoice-postal-address.component';
+import { InvoiceEmailAddressComponent } from './invoice-contacts/invoice-email-address.component';
 
 @NgModule({
   declarations: [
@@ -30,6 +34,10 @@ import { ExpandableSectionHeaderComponent } from './expandable-section-header/ex
     UsermenuComponent,
     ConfirmationdialogComponent,
     ExpandableSectionHeaderComponent,
+    PreferredAddressComponent,
+    InvoiceContactsComponent,
+    InvoicePostalAddressComponent,
+    InvoiceEmailAddressComponent,
   ],
   imports: [
     MaterialModule,

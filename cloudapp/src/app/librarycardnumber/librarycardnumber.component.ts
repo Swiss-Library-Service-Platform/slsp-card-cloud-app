@@ -10,29 +10,15 @@ import {
   ValidatorFn,
 } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-import { AlertService } from '@exlibris/exl-cloudapp-angular-lib';
 import { TranslateService } from '@ngx-translate/core';
-import {
-  EMPTY,
-  Observable,
-  catchError,
-  filter,
-  finalize,
-  map,
-  switchMap,
-  tap,
-} from 'rxjs';
+import { EMPTY, Observable, filter, finalize, map, switchMap, tap } from 'rxjs';
 
 import {
   ConfirmationDialogData,
   ConfirmationdialogComponent,
 } from '../confirmationdialog/confirmationdialog.component';
-import {
-  PERSISTENT_ALERT_OPTIONS,
-  SUCCESS_ALERT_OPTIONS,
-} from '../alert-options';
 import { CardPatron, LibraryCardNumberView } from '../models/card-api.model';
-import { CardErrorService } from '../services/card-error.service';
+import { MutationFeedbackService } from '../services/mutation-feedback.service';
 import { PatronApiService } from '../services/patron-api.service';
 import { PatronStateService } from '../services/patron-state.service';
 
@@ -50,11 +36,10 @@ export class LibraryCardNumberComponent {
   public readonly patron$: Observable<CardPatron | null>;
   public loading = false;
 
-  private readonly alert = inject(AlertService);
   private readonly api = inject(PatronApiService);
-  private readonly cardErrors = inject(CardErrorService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly dialog = inject(MatDialog);
+  private readonly feedback = inject(MutationFeedbackService);
   private readonly formBuilder = inject(FormBuilder);
   private readonly state = inject(PatronStateService);
   private readonly translate = inject(TranslateService);
@@ -88,16 +73,8 @@ export class LibraryCardNumberComponent {
           this.state.replacePatron(patron, mutationContext);
           formDirective.resetForm();
           this.numberForm.reset();
-          this.alert.success(
-            this.translate.instant('LibraryCardNumber.AddSuccess'),
-            SUCCESS_ALERT_OPTIONS,
-          );
         }),
-        catchError((error: unknown) => {
-          this.presentError(error);
-
-          return EMPTY;
-        }),
+        this.feedback.handle('LibraryCardNumber.AddSuccess'),
         finalize(() => {
           this.loading = false;
         }),
@@ -141,16 +118,8 @@ export class LibraryCardNumberComponent {
             .pipe(
               tap((patron) => {
                 this.state.replacePatron(patron, mutationContext);
-                this.alert.success(
-                  this.translate.instant('LibraryCardNumber.RemoveSuccess'),
-                  SUCCESS_ALERT_OPTIONS,
-                );
               }),
-              catchError((error: unknown) => {
-                this.presentError(error);
-
-                return EMPTY;
-              }),
+              this.feedback.handle('LibraryCardNumber.RemoveSuccess'),
               finalize(() => {
                 this.loading = false;
               }),
@@ -166,18 +135,6 @@ export class LibraryCardNumberComponent {
     item: LibraryCardNumberView,
   ): string {
     return item.elementReference ?? `${index}:${item.value ?? ''}`;
-  }
-
-  private presentError(error: unknown): void {
-    const presentation = this.cardErrors.presentation(error);
-
-    if (presentation.kind === 'warning') {
-      this.alert.warn(presentation.message, PERSISTENT_ALERT_OPTIONS);
-
-      return;
-    }
-
-    this.alert.error(presentation.message, PERSISTENT_ALERT_OPTIONS);
   }
 }
 

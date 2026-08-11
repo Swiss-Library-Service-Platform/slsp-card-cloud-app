@@ -16,6 +16,9 @@ const ALL_CARD_ERROR_TYPES = [
   'BLOCK_COMMENT_REQUIRED',
   'STALE_ELEMENT_REFERENCE',
   'INVALID_SETTINGS_NOTE',
+  'INVALID_INVOICE_POSTAL_ADDRESS',
+  'INVALID_INVOICE_EMAIL_ADDRESS',
+  'UPSTREAM_REQUEST_REJECTED',
   'UPSTREAM_FAILURE',
   'DEPENDENCY_UNAVAILABLE',
   'UNEXPECTED_FAILURE',
@@ -42,8 +45,14 @@ describe('CardErrorService', () => {
         BlockCommentRequired: 'A block comment is required.',
         StaleElementReference: 'The element reference is stale.',
         InvalidSettingsNote: 'The shared settings are invalid.',
-        UpstreamFailure: 'Service temporarily unavailable.',
-        DependencyUnavailable: 'Service temporarily unavailable.',
+        InvalidInvoicePostalAddress: 'The invoice postal address is invalid.',
+        InvalidInvoiceEmailAddress: 'The invoice e-mail address is invalid.',
+        UpstreamRequestRejected:
+          'Alma could not process the request. Reload the patron and try again. If the problem persists, contact support.',
+        UpstreamFailure:
+          'Alma returned an unexpected response. Reload the patron and try again. If the problem persists, contact support.',
+        DependencyUnavailable:
+          'Alma is temporarily unavailable. Reload the patron before trying again. If the problem persists, contact support.',
         UnexpectedFailure: 'An unexpected error occurred.',
         SelectedPatron: 'The selected patron',
         SupportId: 'Support ID: {{errorId}}',
@@ -53,7 +62,7 @@ describe('CardErrorService', () => {
     service = TestBed.inject(CardErrorService);
   });
 
-  it('maps every backend error type, appends the support id, and ignores backend context', () => {
+  it('maps every backend error type and ignores backend context', () => {
     for (const type of ALL_CARD_ERROR_TYPES) {
       const message = service.message({
         type,
@@ -64,12 +73,38 @@ describe('CardErrorService', () => {
         },
       });
 
-      expect(message).withContext(type).toContain('support-123');
       expect(message).withContext(type).not.toContain(type);
       expect(message).withContext(type).not.toContain('private backend detail');
       expect(message)
         .withContext(type)
         .not.toContain('backend-selected patron');
+    }
+  });
+
+  it('shows support ids only for access, not-found, and system failures', () => {
+    const withSupportId: readonly CardErrorType[] = [
+      'AUTHENTICATION_FAILED',
+      'ACCESS_DENIED',
+      'PATRON_NOT_FOUND',
+      'UPSTREAM_REQUEST_REJECTED',
+      'UPSTREAM_FAILURE',
+      'DEPENDENCY_UNAVAILABLE',
+      'UNEXPECTED_FAILURE',
+    ];
+    const withoutSupportId = ALL_CARD_ERROR_TYPES.filter(
+      (type) => !withSupportId.includes(type),
+    );
+
+    for (const type of withSupportId) {
+      expect(service.message(cardError(type)))
+        .withContext(type)
+        .toContain('Support ID: support-123');
+    }
+
+    for (const type of withoutSupportId) {
+      expect(service.message(cardError(type)))
+        .withContext(type)
+        .not.toContain('support-123');
     }
   });
 
@@ -96,6 +131,8 @@ describe('CardErrorService', () => {
       'BLOCK_COMMENT_REQUIRED',
       'STALE_ELEMENT_REFERENCE',
       'INVALID_SETTINGS_NOTE',
+      'INVALID_INVOICE_POSTAL_ADDRESS',
+      'INVALID_INVOICE_EMAIL_ADDRESS',
     ];
 
     for (const type of warningTypes) {
@@ -130,16 +167,24 @@ describe('CardErrorService', () => {
     );
   });
 
-  it('uses temporary-unavailable error copy for transport failures', () => {
-    for (const type of [
-      'UPSTREAM_FAILURE',
-      'DEPENDENCY_UNAVAILABLE',
-    ] as const) {
-      expect(service.presentation(cardError(type))).toEqual({
-        kind: 'error',
-        message: 'Service temporarily unavailable. Support ID: support-123',
-      });
-    }
+  it('distinguishes rejected, invalid, and unavailable Alma responses', () => {
+    expect(
+      service.presentation(cardError('UPSTREAM_REQUEST_REJECTED')),
+    ).toEqual({
+      kind: 'error',
+      message:
+        'Alma could not process the request. Reload the patron and try again. If the problem persists, contact support. Support ID: support-123',
+    });
+    expect(service.presentation(cardError('UPSTREAM_FAILURE'))).toEqual({
+      kind: 'error',
+      message:
+        'Alma returned an unexpected response. Reload the patron and try again. If the problem persists, contact support. Support ID: support-123',
+    });
+    expect(service.presentation(cardError('DEPENDENCY_UNAVAILABLE'))).toEqual({
+      kind: 'error',
+      message:
+        'Alma is temporarily unavailable. Reload the patron before trying again. If the problem persists, contact support. Support ID: support-123',
+    });
   });
 
   it('uses a generic error without unsafe fields for unknown or malformed responses', () => {
@@ -171,9 +216,42 @@ describe('CardErrorService', () => {
 
     expect(service.presentation(valid)).toEqual({
       kind: 'warning',
-      message: 'The element reference is stale. Support ID: support-123',
+      message: 'The element reference is stale.',
     });
     expect(service.presentation(mismatched)).toEqual({
+      kind: 'error',
+      message: 'An unexpected error occurred.',
+    });
+  });
+
+  it('accepts invoice validation errors only with HTTP 400', () => {
+    for (const type of [
+      'INVALID_INVOICE_POSTAL_ADDRESS',
+      'INVALID_INVOICE_EMAIL_ADDRESS',
+    ] as const) {
+      expect(
+        service.presentation(
+          new HttpErrorResponse({ status: 400, error: cardError(type) }),
+        ).kind,
+      )
+        .withContext(type)
+        .toBe('warning');
+    }
+  });
+
+  it('accepts an upstream rejection only with HTTP 502', () => {
+    const error = cardError('UPSTREAM_REQUEST_REJECTED');
+
+    expect(
+      service.presentation(new HttpErrorResponse({ status: 502, error })),
+    ).toEqual({
+      kind: 'error',
+      message:
+        'Alma could not process the request. Reload the patron and try again. If the problem persists, contact support. Support ID: support-123',
+    });
+    expect(
+      service.presentation(new HttpErrorResponse({ status: 400, error })),
+    ).toEqual({
       kind: 'error',
       message: 'An unexpected error occurred.',
     });
@@ -184,17 +262,20 @@ describe('CardErrorService', () => {
 
     expect(service.presentation(response)).toEqual({
       kind: 'error',
-      message: 'Service temporarily unavailable.',
+      message:
+        'Alma is temporarily unavailable. Reload the patron before trying again. If the problem persists, contact support.',
     });
   });
 
   it('omits correlation ids containing characters outside the support-id allowlist', () => {
     const message = service.message({
-      ...cardError('STALE_ELEMENT_REFERENCE'),
+      ...cardError('UPSTREAM_FAILURE'),
       errorId: 'support-123<script>',
     });
 
-    expect(message).toBe('The element reference is stale.');
+    expect(message).toBe(
+      'Alma returned an unexpected response. Reload the patron and try again. If the problem persists, contact support.',
+    );
   });
 });
 

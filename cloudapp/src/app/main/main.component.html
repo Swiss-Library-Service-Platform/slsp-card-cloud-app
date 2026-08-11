@@ -81,11 +81,8 @@
       "
       class="select-entities"
     >
-      <p id="entities-list-label" class="entities-list-label">
-        {{ 'Welcome.SelectUser' | translate }}
-      </p>
       <mat-action-list
-        aria-labelledby="entities-list-label"
+        [attr.aria-label]="'Welcome.SelectUser' | translate"
         class="entities-action-list"
       >
         <button
@@ -93,10 +90,26 @@
           *ngFor="let entity of vm.entities; trackBy: trackEntity"
           class="entity-action"
           type="button"
+          [disabled]="!entityEditable(entity)"
           (click)="entitySelected(entity)"
         >
-          <span class="entity-content">
-            <span class="entity-name">{{ entity.description }}</span>
+          <span class="entity-row">
+            <span class="entity-content">
+              <span class="entity-name">{{ entity.description }}</span>
+              <span
+                *ngIf="entityPrimaryIdentifier(entity) as primaryIdentifier"
+                class="entity-primary-identifier"
+              >
+                {{ primaryIdentifier }}
+              </span>
+            </span>
+            <mat-icon
+              *ngIf="entityEditable(entity)"
+              class="entity-navigation-icon"
+              aria-hidden="true"
+            >
+              chevron_right
+            </mat-icon>
           </span>
         </button>
       </mat-action-list>

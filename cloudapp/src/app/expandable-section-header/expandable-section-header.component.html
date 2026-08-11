@@ -2,7 +2,7 @@
   <div class="slsp-section__heading">
     <h2 class="slsp-section__title">{{ title }}</h2>
   </div>
-  <div class="expandable-section-header__actions">
+  <div *ngIf="status || infoLabel" class="expandable-section-header__actions">
     <span
       *ngIf="status"
       class="slsp-status"
@@ -11,6 +11,7 @@
       {{ status }}
     </span>
     <button
+      *ngIf="infoLabel"
       mat-icon-button
       type="button"
       class="info-button"
@@ -21,12 +22,13 @@
       [attr.aria-expanded]="expanded"
       (click)="toggle()"
     >
-      <mat-icon>info</mat-icon>
+      <mat-icon>info_outline</mat-icon>
     </button>
   </div>
 </header>
 
 <div
+  *ngIf="infoLabel"
   class="expandable-information"
   [class.expandable-information--expanded]="expanded"
   [id]="panelId"

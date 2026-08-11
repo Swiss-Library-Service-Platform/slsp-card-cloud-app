@@ -4,6 +4,10 @@ import {
   CardApiError,
   CardErrorType,
   CardPatron,
+  InvoiceEmailAddressView,
+  InvoicePostalAddressView,
+  SetInvoiceEmailAddressRequest,
+  SetInvoicePostalAddressRequest,
   SetPreferredAddressRequest,
 } from './card-api.model';
 
@@ -47,6 +51,9 @@ describe('Card API models', () => {
         preferred: false,
       },
     ],
+    preferredEmailAddress: null,
+    invoicePostalAddress: null,
+    invoiceEmailAddress: null,
   };
   const errorTypes: Readonly<Record<CardErrorType, true>> = {
     AUTHENTICATION_FAILED: true,
@@ -59,6 +66,9 @@ describe('Card API models', () => {
     BLOCK_COMMENT_REQUIRED: true,
     STALE_ELEMENT_REFERENCE: true,
     INVALID_SETTINGS_NOTE: true,
+    INVALID_INVOICE_POSTAL_ADDRESS: true,
+    INVALID_INVOICE_EMAIL_ADDRESS: true,
+    UPSTREAM_REQUEST_REJECTED: true,
     UPSTREAM_FAILURE: true,
     DEPENDENCY_UNAVAILABLE: true,
     UNEXPECTED_FAILURE: true,
@@ -78,7 +88,7 @@ describe('Card API models', () => {
       context: { operation: 'card_remove' },
     };
 
-    expect(Reflect.ownKeys(errorTypes)).toHaveSize(13);
+    expect(Reflect.ownKeys(errorTypes)).toHaveSize(16);
     expect(error).toEqual({
       type: 'STALE_ELEMENT_REFERENCE',
       errorId: 'error-id',
@@ -98,5 +108,42 @@ describe('Card API models', () => {
       { code: '09', comment: 'comment' },
       { elementReference: '0.opaque-address-fingerprint' },
     ]);
+  });
+
+  it('represents nullable invoice contacts and freshness-aware requests', () => {
+    const postal: InvoicePostalAddressView = {
+      elementReference: 'postal-reference',
+      line1: null,
+      line2: null,
+      line3: null,
+      line4: null,
+      postalCode: null,
+      city: null,
+      countryCode: null,
+    };
+    const email: InvoiceEmailAddressView = {
+      elementReference: 'email-reference',
+      emailAddress: null,
+    };
+    const createPostal: SetInvoicePostalAddressRequest = {
+      elementReference: null,
+      line1: 'Example AG',
+      line2: null,
+      line3: null,
+      line4: null,
+      postalCode: '8000',
+      city: 'Zürich',
+      countryCode: 'CHE',
+    };
+    const replaceEmail: SetInvoiceEmailAddressRequest = {
+      elementReference: email.elementReference,
+      emailAddress: 'invoice@example.org',
+    };
+
+    expect(postal.elementReference).toBe('postal-reference');
+    expect(email.emailAddress).toBeNull();
+    expect(createPostal.elementReference).toBeNull();
+    expect(replaceEmail.elementReference).toBe('email-reference');
+    expect(patron.preferredEmailAddress).toBeNull();
   });
 });

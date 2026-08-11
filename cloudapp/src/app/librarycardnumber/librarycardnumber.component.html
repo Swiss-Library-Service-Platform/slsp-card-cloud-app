@@ -1,13 +1,9 @@
 <ng-container *ngIf="patron$ | async as patron">
   <div class="slsp-screen">
     <section class="slsp-section" data-section="cards">
-      <header class="slsp-section__header">
-        <div class="slsp-section__heading">
-          <h2 class="slsp-section__title">
-            {{ 'LibraryCardNumber.CurrentLibraryCardNumbers' | translate }}
-          </h2>
-        </div>
-      </header>
+      <app-expandable-section-header
+        [title]="'LibraryCardNumber.LibraryCardNumbers' | translate"
+      ></app-expandable-section-header>
 
       <ul class="slsp-data-list">
         <li
@@ -67,7 +63,6 @@
         *ngIf="patron.libraryCardNumbers.length === 0"
         class="slsp-empty-state"
       >
-        <mat-icon>credit_card_off</mat-icon>
         <span>
           {{ 'LibraryCardNumber.NoCurrentLibraryCardNumbers' | translate }}
         </span>
