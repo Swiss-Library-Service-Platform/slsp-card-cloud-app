@@ -7,7 +7,8 @@
 
 This repository contains the [Alma Cloud App](https://developers.exlibrisgroup.com/cloudapps/) for Swisscovery Library Card Management from [SLSP](https://slsp.ch/).
 
-Manage account settings on the network level by managing blocks, the preferred address and the library card numbers of a user.
+Manage account settings on the network level by managing library card numbers,
+blocks, the preferred postal address, and invoice postal/e-mail contacts.
 
 This Alma Cloud App is a product for SLSP libraries.
 
@@ -21,8 +22,6 @@ In order to use this app
   - Fulfillment Services Manager
   - User Manager
   - General System Administrator
-
-tex
 
 ## Local development
 
@@ -41,10 +40,7 @@ cd ../slsp-card-cloud-app && npm run start
 ```
 
 Use the local URL printed by the Cloud App development server from a real Alma
-sandbox Cloud App session. Run the manual parity checklist in
-`docs/plans/steps/step1.md` only with safe test patrons, and record only
-pass/fail plus sanitized support correlation IDs. Do not record patron or
-operator details.
+sandbox Cloud App session.
 
 Beta deployment and production cutover are later work. Local development does
 not replace or modify the currently released production Cloud App.
