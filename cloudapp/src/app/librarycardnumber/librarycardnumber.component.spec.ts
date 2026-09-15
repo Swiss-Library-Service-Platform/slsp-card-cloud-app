@@ -50,6 +50,8 @@ describe('LibraryCardNumberComponent', () => {
     elementReference: null,
   };
   const patron: CardPatron = {
+    currentUserGroupCode: null,
+    currentUserGroupDescription: null,
     fullName: 'Test Patron',
     external: false,
     libraryCardNumbers: [removableCard, aliasCard],

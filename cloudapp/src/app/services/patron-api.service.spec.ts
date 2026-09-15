@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, Subject, of, throwError } from 'rxjs';
 
 import {
   CardPatron,
@@ -13,6 +13,8 @@ describe('PatronApiService', () => {
   let service: PatronApiService;
   let backend: jasmine.SpyObj<BackendHttpService>;
   const patron: CardPatron = {
+    currentUserGroupCode: null,
+    currentUserGroupDescription: null,
     fullName: 'Test Patron',
     external: false,
     libraryCardNumbers: [],
@@ -179,6 +181,64 @@ describe('PatronApiService', () => {
         );
         done();
       });
+  });
+
+  it('loads eligible groups and preserves their codes and ordering', () => {
+    const groups = {
+      eligibleGroups: [
+        { code: '01', displayName: 'Student', description: 'Eligible' },
+      ],
+    };
+
+    backend.get.and.returnValue(of(groups));
+    service
+      .getEligibleUserGroups('p/q')
+      .subscribe((result) => expect(result).toEqual(groups));
+    expect(backend.get).toHaveBeenCalledOnceWith(
+      '/api/v1/patrons/p%2Fq/eligible-user-groups',
+    );
+  });
+
+  it('sets the group and sends an empty body for synchronous sync', () => {
+    service
+      .setUserGroup('p/q', '01')
+      .subscribe((result) => expect(result).toBe(patron));
+    expect(backend.put).toHaveBeenCalledOnceWith(
+      '/api/v1/patrons/p%2Fq/user-group',
+      { groupCode: '01' },
+    );
+    service.syncEduId('p/q').subscribe((result) => expect(result).toBe(patron));
+    expect(backend.post).toHaveBeenCalledOnceWith(
+      '/api/v1/patrons/p%2Fq/edu-id-sync',
+      {},
+    );
+  });
+
+  it('prevents competing mutations while sync is pending and releases after completion', () => {
+    const pending = new Subject<CardPatron>();
+
+    backend.post.and.returnValue(pending);
+    service.syncEduId('p').subscribe();
+    service.setPreferredAddress('p', 'address').subscribe();
+    expect(backend.put).not.toHaveBeenCalled();
+    pending.complete();
+    service.setPreferredAddress('p', 'address').subscribe();
+    expect(backend.put).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps the mutation guard until server completion after the initiating view unsubscribes', () => {
+    const pending = new Subject<CardPatron>();
+
+    backend.post.and.returnValue(pending);
+
+    const subscription = service.syncEduId('p').subscribe();
+
+    subscription.unsubscribe();
+    service.setPreferredAddress('other', 'address').subscribe();
+    expect(backend.put).not.toHaveBeenCalled();
+    pending.complete();
+    service.setPreferredAddress('other', 'address').subscribe();
+    expect(backend.put).toHaveBeenCalledTimes(1);
   });
 
   const operations = [

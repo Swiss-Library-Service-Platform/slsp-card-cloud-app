@@ -12,20 +12,10 @@
       (busyChange)="setMutationBusy($event)"
     ></app-invoice-contacts>
 
-    <section
-      class="slsp-section slsp-placeholder"
-      data-placeholder="user-group"
-    >
-      <app-expandable-section-header
-        [title]="'Settings.UserGroup' | translate"
-        [infoLabel]="'Settings.MoreInformation' | translate"
-        [status]="'Settings.NotAvailableYet' | translate"
-      >
-        <p class="slsp-section__information">
-          {{ 'Settings.UserGroupDescription' | translate }}
-        </p>
-      </app-expandable-section-header>
-    </section>
+    <app-user-group
+      [patron]="patron"
+      [disabled]="mutationBusy"
+    ></app-user-group>
   </div>
 </ng-container>
 

@@ -54,6 +54,8 @@ describe('BlockComponent', () => {
     '08': block('08'),
   };
   const patron = (external: boolean, blocks = allBlocks): CardPatron => ({
+    currentUserGroupCode: null,
+    currentUserGroupDescription: null,
     fullName: 'Test Patron',
     external,
     libraryCardNumbers: [],
@@ -135,7 +137,7 @@ describe('BlockComponent', () => {
         RemoveSuccess: 'Block removed',
       },
       Errors: {
-        DependencyUnavailable:
+        AlmaUnavailable:
           'Alma is temporarily unavailable. Reload the patron before trying again. If the problem persists, contact support.',
         UnexpectedFailure: 'An unexpected error occurred.',
         SelectedPatron: 'The selected patron',
@@ -309,7 +311,7 @@ describe('BlockComponent', () => {
           new HttpErrorResponse({
             status: 503,
             error: {
-              type: 'DEPENDENCY_UNAVAILABLE',
+              type: 'ALMA_UNAVAILABLE',
               errorId: 'support-block-503',
               context: {},
             },

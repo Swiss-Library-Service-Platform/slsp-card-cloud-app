@@ -18,9 +18,9 @@ const ALL_CARD_ERROR_TYPES = [
   'INVALID_SETTINGS_NOTE',
   'INVALID_INVOICE_POSTAL_ADDRESS',
   'INVALID_INVOICE_EMAIL_ADDRESS',
-  'UPSTREAM_REQUEST_REJECTED',
-  'UPSTREAM_FAILURE',
-  'DEPENDENCY_UNAVAILABLE',
+  'ALMA_REQUEST_REJECTED',
+  'ALMA_FAILURE',
+  'ALMA_UNAVAILABLE',
   'UNEXPECTED_FAILURE',
 ] as const satisfies readonly CardErrorType[];
 
@@ -47,12 +47,18 @@ describe('CardErrorService', () => {
         InvalidSettingsNote: 'The shared settings are invalid.',
         InvalidInvoicePostalAddress: 'The invoice postal address is invalid.',
         InvalidInvoiceEmailAddress: 'The invoice e-mail address is invalid.',
-        UpstreamRequestRejected:
+        AlmaRequestRejected:
           'Alma could not process the request. Reload the patron and try again. If the problem persists, contact support.',
-        UpstreamFailure:
+        AlmaFailure:
           'Alma returned an unexpected response. Reload the patron and try again. If the problem persists, contact support.',
-        DependencyUnavailable:
+        AlmaUnavailable:
           'Alma is temporarily unavailable. Reload the patron before trying again. If the problem persists, contact support.',
+        RegistrationPlatformFailure:
+          'The Registration Platform could not process the request.',
+        RegistrationPlatformUnavailable:
+          'The Registration Platform is temporarily unavailable.',
+        UpstreamFailure: 'A required service returned an unexpected response.',
+        DependencyUnavailable: 'A required service is temporarily unavailable.',
         UnexpectedFailure: 'An unexpected error occurred.',
         SelectedPatron: 'The selected patron',
         SupportId: 'Support ID: {{errorId}}',
@@ -86,9 +92,9 @@ describe('CardErrorService', () => {
       'AUTHENTICATION_FAILED',
       'ACCESS_DENIED',
       'PATRON_NOT_FOUND',
-      'UPSTREAM_REQUEST_REJECTED',
-      'UPSTREAM_FAILURE',
-      'DEPENDENCY_UNAVAILABLE',
+      'ALMA_REQUEST_REJECTED',
+      'ALMA_FAILURE',
+      'ALMA_UNAVAILABLE',
       'UNEXPECTED_FAILURE',
     ];
     const withoutSupportId = ALL_CARD_ERROR_TYPES.filter(
@@ -168,23 +174,57 @@ describe('CardErrorService', () => {
   });
 
   it('distinguishes rejected, invalid, and unavailable Alma responses', () => {
-    expect(
-      service.presentation(cardError('UPSTREAM_REQUEST_REJECTED')),
-    ).toEqual({
+    expect(service.presentation(cardError('ALMA_REQUEST_REJECTED'))).toEqual({
       kind: 'error',
       message:
         'Alma could not process the request. Reload the patron and try again. If the problem persists, contact support. Support ID: support-123',
     });
-    expect(service.presentation(cardError('UPSTREAM_FAILURE'))).toEqual({
+    expect(service.presentation(cardError('ALMA_FAILURE'))).toEqual({
       kind: 'error',
       message:
         'Alma returned an unexpected response. Reload the patron and try again. If the problem persists, contact support. Support ID: support-123',
     });
-    expect(service.presentation(cardError('DEPENDENCY_UNAVAILABLE'))).toEqual({
+    expect(service.presentation(cardError('ALMA_UNAVAILABLE'))).toEqual({
       kind: 'error',
       message:
         'Alma is temporarily unavailable. Reload the patron before trying again. If the problem persists, contact support. Support ID: support-123',
     });
+  });
+
+  it('names Registration Platform failures and preserves their support IDs', () => {
+    for (const [type, status, message] of [
+      [
+        'REGISTRATION_PLATFORM_FAILURE',
+        502,
+        'The Registration Platform could not process the request.',
+      ],
+      [
+        'REGISTRATION_PLATFORM_UNAVAILABLE',
+        503,
+        'The Registration Platform is temporarily unavailable.',
+      ],
+    ] as const) {
+      expect(
+        service.message(
+          new HttpErrorResponse({ status, error: cardError(type) }),
+        ),
+      ).toBe(`${message} Support ID: support-123`);
+      expect(
+        service.message(
+          new HttpErrorResponse({ status: 500, error: cardError(type) }),
+        ),
+      ).toBe('An unexpected error occurred.');
+    }
+  });
+
+  it('does not infer a service from untyped gateway or connection failures', () => {
+    for (const status of [0, 502, 503, 504]) {
+      const message = service.message(new HttpErrorResponse({ status }));
+
+      expect(message).not.toContain('Alma');
+      expect(message).not.toContain('Registration Platform');
+      expect(message).not.toContain('Support ID');
+    }
   });
 
   it('uses a generic error without unsafe fields for unknown or malformed responses', () => {
@@ -240,7 +280,7 @@ describe('CardErrorService', () => {
   });
 
   it('accepts an upstream rejection only with HTTP 502', () => {
-    const error = cardError('UPSTREAM_REQUEST_REJECTED');
+    const error = cardError('ALMA_REQUEST_REJECTED');
 
     expect(
       service.presentation(new HttpErrorResponse({ status: 502, error })),
@@ -262,14 +302,13 @@ describe('CardErrorService', () => {
 
     expect(service.presentation(response)).toEqual({
       kind: 'error',
-      message:
-        'Alma is temporarily unavailable. Reload the patron before trying again. If the problem persists, contact support.',
+      message: 'A required service is temporarily unavailable.',
     });
   });
 
   it('omits correlation ids containing characters outside the support-id allowlist', () => {
     const message = service.message({
-      ...cardError('UPSTREAM_FAILURE'),
+      ...cardError('ALMA_FAILURE'),
       errorId: 'support-123<script>',
     });
 

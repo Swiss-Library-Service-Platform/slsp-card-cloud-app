@@ -129,11 +129,11 @@ describe('MainComponent', () => {
         BlockCommentRequired: 'A block comment is required.',
         StaleElementReference: 'The element reference is stale.',
         InvalidSettingsNote: 'The shared settings are invalid.',
-        UpstreamRequestRejected:
+        AlmaRequestRejected:
           'Alma could not process the request. Reload the patron and try again. If the problem persists, contact support.',
-        UpstreamFailure:
+        AlmaFailure:
           'Alma returned an unexpected response. Reload the patron and try again. If the problem persists, contact support.',
-        DependencyUnavailable:
+        AlmaUnavailable:
           'Alma is temporarily unavailable. Reload the patron before trying again. If the problem persists, contact support.',
         UnexpectedFailure: 'An unexpected error occurred.',
         SelectedPatron: 'The selected patron',
@@ -240,6 +240,8 @@ describe('MainComponent', () => {
       status: 'ready',
       entity: selected,
       patron: {
+        currentUserGroupCode: null,
+        currentUserGroupDescription: null,
         fullName: 'User One',
         external: false,
         libraryCardNumbers: [],
@@ -278,7 +280,7 @@ describe('MainComponent', () => {
               status: 'error',
               entity: selected,
               error: {
-                type: 'DEPENDENCY_UNAVAILABLE',
+                type: 'ALMA_UNAVAILABLE',
                 errorId: '',
                 context: {},
               },
@@ -357,7 +359,7 @@ describe('MainComponent', () => {
       status: 'error',
       entity: selected,
       error: {
-        type: 'DEPENDENCY_UNAVAILABLE',
+        type: 'ALMA_UNAVAILABLE',
         errorId: 'support-503',
         context: {},
       },

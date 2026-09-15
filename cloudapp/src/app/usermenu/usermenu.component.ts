@@ -3,6 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { Observable, combineLatest, filter, map, shareReplay } from 'rxjs';
 
+import { MutationActivityService } from '../services/mutation-activity.service';
 import { CardPatron } from '../models/card-api.model';
 import { BackendHttpService } from '../services/backend-http.service';
 import { PatronStateService } from '../services/patron-state.service';
@@ -19,6 +20,7 @@ interface UsermenuViewModel {
   styleUrls: ['./usermenu.component.scss'],
 })
 export class UsermenuComponent implements OnInit {
+  public readonly activity = inject(MutationActivityService);
   public readonly vm$: Observable<UsermenuViewModel | null>;
 
   private readonly backend = inject(BackendHttpService);

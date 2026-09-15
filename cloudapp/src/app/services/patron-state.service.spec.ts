@@ -17,6 +17,7 @@ import {
 
 import { CardApiError, CardPatron } from '../models/card-api.model';
 import { AuthorizationService } from './authorization.service';
+import { MutationActivityService } from './mutation-activity.service';
 import { PatronApiService } from './patron-api.service';
 import {
   PatronMutationContext,
@@ -26,6 +27,8 @@ import {
 } from './patron-state.service';
 
 const patron = (fullName: string): CardPatron => ({
+  currentUserGroupCode: null,
+  currentUserGroupDescription: null,
   fullName,
   external: false,
   libraryCardNumbers: [],
@@ -137,6 +140,22 @@ describe('PatronStateService', () => {
   };
 
   afterEach(() => TestBed.resetTestingModule());
+
+  it('waits for an in-flight mutation before loading a reselected patron', () => {
+    const service = configure();
+    const pending = new Subject<void>();
+    const activity = TestBed.inject(MutationActivityService);
+
+    api.getPatron.and.returnValue(of(patron('Confirmed')));
+    service.patronState$.subscribe();
+    service.select(entity('first'));
+    activity.run(() => pending).subscribe();
+    service.clear();
+    service.select(entity('first'));
+    expect(api.getPatron).toHaveBeenCalledTimes(1);
+    pending.complete();
+    expect(api.getPatron).toHaveBeenCalledTimes(2);
+  });
 
   it('filters SDK entities to USER metadata', () => {
     const service = configure();
@@ -577,9 +596,9 @@ describe('PatronStateService', () => {
     ['BLOCK_COMMENT_REQUIRED', 400],
     ['STALE_ELEMENT_REFERENCE', 409],
     ['INVALID_SETTINGS_NOTE', 409],
-    ['UPSTREAM_REQUEST_REJECTED', 502],
-    ['UPSTREAM_FAILURE', 502],
-    ['DEPENDENCY_UNAVAILABLE', 503],
+    ['ALMA_REQUEST_REJECTED', 502],
+    ['ALMA_FAILURE', 502],
+    ['ALMA_UNAVAILABLE', 503],
     ['UNEXPECTED_FAILURE', 500],
   ].forEach(([type, status]) => {
     it(`accepts ${type} only at its backend HTTP status`, () => {

@@ -14,6 +14,12 @@ export type CardErrorPresentation =
   | { readonly kind: 'error'; readonly message: string };
 
 const ERROR_KEYS: Record<CardErrorType, string> = {
+  INVALID_USER_GROUP: 'Errors.InvalidUserGroup',
+  USER_GROUP_NOT_ELIGIBLE: 'Errors.UserGroupNotEligible',
+  EDU_ID_SYNC_NOT_SUPPORTED: 'Errors.EduIdSyncNotSupported',
+  SYNC_OUTCOME_UNKNOWN: 'Errors.SyncOutcomeUnknown',
+  SYNC_REFRESH_FAILED: 'Errors.SyncRefreshFailed',
+  SYNC_PATRON_UNAVAILABLE: 'Errors.SyncPatronUnavailable',
   AUTHENTICATION_FAILED: 'Errors.AuthenticationFailed',
   ACCESS_DENIED: 'Errors.AccessDenied',
   INVALID_PATRON_ID: 'Errors.InvalidPatronId',
@@ -26,12 +32,22 @@ const ERROR_KEYS: Record<CardErrorType, string> = {
   INVALID_SETTINGS_NOTE: 'Errors.InvalidSettingsNote',
   INVALID_INVOICE_POSTAL_ADDRESS: 'Errors.InvalidInvoicePostalAddress',
   INVALID_INVOICE_EMAIL_ADDRESS: 'Errors.InvalidInvoiceEmailAddress',
-  UPSTREAM_REQUEST_REJECTED: 'Errors.UpstreamRequestRejected',
+  ALMA_REQUEST_REJECTED: 'Errors.AlmaRequestRejected',
+  ALMA_FAILURE: 'Errors.AlmaFailure',
+  REGISTRATION_PLATFORM_FAILURE: 'Errors.RegistrationPlatformFailure',
+  REGISTRATION_PLATFORM_UNAVAILABLE: 'Errors.RegistrationPlatformUnavailable',
   UPSTREAM_FAILURE: 'Errors.UpstreamFailure',
   DEPENDENCY_UNAVAILABLE: 'Errors.DependencyUnavailable',
+  ALMA_UNAVAILABLE: 'Errors.AlmaUnavailable',
   UNEXPECTED_FAILURE: 'Errors.UnexpectedFailure',
 };
 const ERROR_KINDS: Record<CardErrorType, 'access' | 'warning' | 'error'> = {
+  INVALID_USER_GROUP: 'warning',
+  USER_GROUP_NOT_ELIGIBLE: 'warning',
+  EDU_ID_SYNC_NOT_SUPPORTED: 'warning',
+  SYNC_OUTCOME_UNKNOWN: 'error',
+  SYNC_REFRESH_FAILED: 'error',
+  SYNC_PATRON_UNAVAILABLE: 'warning',
   AUTHENTICATION_FAILED: 'access',
   ACCESS_DENIED: 'access',
   INVALID_PATRON_ID: 'warning',
@@ -44,18 +60,27 @@ const ERROR_KINDS: Record<CardErrorType, 'access' | 'warning' | 'error'> = {
   INVALID_SETTINGS_NOTE: 'warning',
   INVALID_INVOICE_POSTAL_ADDRESS: 'warning',
   INVALID_INVOICE_EMAIL_ADDRESS: 'warning',
-  UPSTREAM_REQUEST_REJECTED: 'error',
+  ALMA_REQUEST_REJECTED: 'error',
+  ALMA_FAILURE: 'error',
+  REGISTRATION_PLATFORM_FAILURE: 'error',
+  REGISTRATION_PLATFORM_UNAVAILABLE: 'error',
   UPSTREAM_FAILURE: 'error',
   DEPENDENCY_UNAVAILABLE: 'error',
+  ALMA_UNAVAILABLE: 'error',
   UNEXPECTED_FAILURE: 'error',
 };
 const SUPPORT_ID_TYPES: ReadonlySet<CardErrorType> = new Set([
+  'SYNC_OUTCOME_UNKNOWN',
+  'SYNC_REFRESH_FAILED',
+  'SYNC_PATRON_UNAVAILABLE',
   'AUTHENTICATION_FAILED',
   'ACCESS_DENIED',
   'PATRON_NOT_FOUND',
-  'UPSTREAM_REQUEST_REJECTED',
-  'UPSTREAM_FAILURE',
-  'DEPENDENCY_UNAVAILABLE',
+  'ALMA_REQUEST_REJECTED',
+  'ALMA_FAILURE',
+  'REGISTRATION_PLATFORM_FAILURE',
+  'REGISTRATION_PLATFORM_UNAVAILABLE',
+  'ALMA_UNAVAILABLE',
   'UNEXPECTED_FAILURE',
 ]);
 const SAFE_SUPPORT_ID = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/u;
@@ -152,6 +177,8 @@ function isHttpCardApiError(
 ): value is CardApiError {
   return (
     isCardApiError(value) &&
+    value.type !== 'UPSTREAM_FAILURE' &&
+    value.type !== 'DEPENDENCY_UNAVAILABLE' &&
     value.errorId.trim() !== '' &&
     SAFE_SUPPORT_ID.test(value.errorId.trim()) &&
     errorStatus(value.type) === status
@@ -188,6 +215,18 @@ function safeEntityDescription(description: string | undefined): string {
 
 function errorStatus(type: CardErrorType): number {
   switch (type) {
+    case 'SYNC_PATRON_UNAVAILABLE':
+      return 404;
+    case 'SYNC_REFRESH_FAILED':
+      return 502;
+    case 'SYNC_OUTCOME_UNKNOWN':
+      return 503;
+    case 'EDU_ID_SYNC_NOT_SUPPORTED':
+      return 400;
+    case 'USER_GROUP_NOT_ELIGIBLE':
+      return 409;
+    case 'INVALID_USER_GROUP':
+      return 400;
     case 'AUTHENTICATION_FAILED':
       return 401;
     case 'ACCESS_DENIED':
@@ -206,9 +245,13 @@ function errorStatus(type: CardErrorType): number {
     case 'INVALID_SETTINGS_NOTE':
       return 409;
     case 'UPSTREAM_FAILURE':
-    case 'UPSTREAM_REQUEST_REJECTED':
+    case 'REGISTRATION_PLATFORM_FAILURE':
+    case 'ALMA_FAILURE':
+    case 'ALMA_REQUEST_REJECTED':
       return 502;
     case 'DEPENDENCY_UNAVAILABLE':
+    case 'REGISTRATION_PLATFORM_UNAVAILABLE':
+    case 'ALMA_UNAVAILABLE':
       return 503;
     case 'UNEXPECTED_FAILURE':
       return 500;

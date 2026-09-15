@@ -30,7 +30,12 @@
     </div>
   </header>
 
-  <mat-tab-group mat-stretch-tabs class="slsp-primary-tabs">
+  <mat-tab-group
+    mat-stretch-tabs
+    class="slsp-primary-tabs"
+    [attr.inert]="(activity.busy$ | async) ? '' : null"
+    [attr.aria-busy]="activity.busy$ | async"
+  >
     <mat-tab>
       <ng-template mat-tab-label>
         <span data-tab-label>{{ 'Main.Cards' | translate }}</span>
@@ -62,6 +67,7 @@
   </mat-tab-group>
 
   <div class="patron-message-area">
+    <app-edu-id-sync></app-edu-id-sync>
     <cloudapp-alert></cloudapp-alert>
 
     <div class="slsp-guidance propagation-guidance">

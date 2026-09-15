@@ -10,6 +10,8 @@ import {
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 
+import { MutationActivityService } from '../services/mutation-activity.service';
+import { Subject } from 'rxjs';
 import { BackendHttpService } from '../services/backend-http.service';
 import {
   PatronState,
@@ -33,6 +35,8 @@ describe('UsermenuComponent', () => {
       status: 'ready',
       entity: selected,
       patron: {
+        currentUserGroupCode: null,
+        currentUserGroupDescription: null,
         fullName: 'Test Patron',
         external: false,
         libraryCardNumbers: [],
@@ -197,7 +201,7 @@ describe('UsermenuComponent', () => {
     expect(getComputedStyle(tabGroup).minHeight).toBe('0px');
   });
 
-  it('hides patron actions until an action is available', () => {
+  it('places synchronization in the footer and keeps the header focused on navigation', () => {
     const fixture = TestBed.createComponent(UsermenuComponent);
 
     fixture.detectChanges();
@@ -205,6 +209,32 @@ describe('UsermenuComponent', () => {
     expect(
       fixture.nativeElement.querySelector('[data-patron-actions]'),
     ).toBeNull();
-    expect(document.querySelector('[data-action="edu-id-sync"]')).toBeNull();
+    expect(
+      fixture.nativeElement.querySelector(
+        '.patron-message-area app-edu-id-sync',
+      ),
+    ).toBeTruthy();
+  });
+  it('makes all mutation tabs inert during a shared mutation and restores them afterward', () => {
+    const fixture = TestBed.createComponent(UsermenuComponent);
+    const pending = new Subject<void>();
+
+    fixture.detectChanges();
+    TestBed.inject(MutationActivityService)
+      .run(() => pending)
+      .subscribe();
+    fixture.detectChanges();
+    expect(
+      fixture.nativeElement
+        .querySelector('mat-tab-group')
+        .hasAttribute('inert'),
+    ).toBeTrue();
+    pending.complete();
+    fixture.detectChanges();
+    expect(
+      fixture.nativeElement
+        .querySelector('mat-tab-group')
+        .hasAttribute('inert'),
+    ).toBeFalse();
   });
 });

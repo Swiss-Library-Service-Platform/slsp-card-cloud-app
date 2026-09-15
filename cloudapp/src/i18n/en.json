@@ -48,15 +48,25 @@
     "UnsupportedBlock": "This block type is not supported.",
     "BlockCommentRequired": "A comment is required for this block.",
     "StaleElementReference": "The selected item changed. Reload the patron and try again.",
-    "InvalidSettingsNote": "The preferred address could not be changed because the shared settings are invalid.",
+    "InvalidSettingsNote": "The change could not be saved. Please contact support.",
     "InvalidInvoicePostalAddress": "Enter a valid invoice postal address.",
     "InvalidInvoiceEmailAddress": "Enter a valid invoice e-mail address.",
-    "UpstreamRequestRejected": "Alma could not process the request. Reload the patron and try again. If the problem persists, contact support.",
-    "UpstreamFailure": "Alma returned an unexpected response. Reload the patron and try again. If the problem persists, contact support.",
-    "DependencyUnavailable": "Alma is temporarily unavailable. Reload the patron before trying again. If the problem persists, contact support.",
+    "AlmaRequestRejected": "Alma could not process the request. Reload the patron and try again. If the problem persists, contact support.",
+    "AlmaFailure": "Alma returned an unexpected response. Reload the patron and try again. If the problem persists, contact support.",
+    "RegistrationPlatformFailure": "The Registration Platform returned an unexpected response. Reload the patron and try again. If the problem persists, contact support.",
+    "UpstreamFailure": "A required service returned an unexpected response. Reload the patron and try again. If the problem persists, contact support.",
+    "AlmaUnavailable": "Alma is temporarily unavailable. Reload the patron before trying again. If the problem persists, contact support.",
+    "RegistrationPlatformUnavailable": "The Registration Platform is temporarily unavailable. Reload the patron before trying again. If the problem persists, contact support.",
+    "DependencyUnavailable": "Communication with the service failed. Please try again.",
     "UnexpectedFailure": "An unexpected error occurred. Please try again.",
     "SelectedPatron": "The selected patron",
-    "SupportId": "Support ID: {{errorId}}"
+    "SupportId": "Support ID: {{errorId}}",
+    "InvalidUserGroup": "Select a valid user group.",
+    "UserGroupNotEligible": "This group is no longer eligible. Reload the eligible groups and choose again.",
+    "EduIdSyncNotSupported": "edu-ID synchronization is not available for this patron.",
+    "SyncOutcomeUnknown": "Synchronization completion could not be confirmed. It may still be running. Refresh the patron before considering another sync.",
+    "SyncRefreshFailed": "Synchronization completed, but the updated patron could not be loaded. Refresh the patron without repeating synchronization.",
+    "SyncPatronUnavailable": "The patron is no longer available after synchronization. Select the current account in Alma."
   },
   "LibraryCardNumber": {
     "Add": "Add",
@@ -78,7 +88,6 @@
     "PreferredAddressDescription": "The preferred address defines the address to which by default invoices and books are sent. User data like addresses can be changed on the ",
     "PreferredAddressDescriptionLink": "SWITCH edu-ID account management page.",
     "MoreInformation": "More information",
-    "NotAvailableYet": "Not available yet",
     "UserGroup": "User Group",
     "InvoiceContacts": "Invoice contact details",
     "InvoiceContactsDescription": "Choose whether invoices use the patron's preferred contact details or separate invoice contact details.",
@@ -107,7 +116,7 @@
     "InvoicePostalRemoveSuccess": "Invoices now use the preferred postal address.",
     "InvoiceEmailSetSuccess": "Invoice e-mail address saved.",
     "InvoiceEmailRemoveSuccess": "Invoices now use the preferred e-mail address.",
-    "UserGroupDescription": "Available user groups will be supplied by the registration platform as the authoritative source.",
+    "UserGroupDescription": "Select one of the available user groups for this account.",
     "AddressType": "Address Type",
     "Preferred": "Preferred",
     "UseAsPreferred": "Use as preferred address",
@@ -147,5 +156,25 @@
     "RemoveSuccess": "Block successfully removed.",
     "AddError": "Block could not be added.",
     "AddSuccess": "Block successfully added."
+  },
+  "UserGroup": {
+    "Current": "Current user group",
+    "None": "Not set",
+    "Loading": "Loading eligible groups…",
+    "Retry": "Try again",
+    "Eligible": "Change user group",
+    "OnlyEligible": "Only eligible group",
+    "Select": "Select this group",
+    "Save": "Save user group",
+    "Confirm": "Change this patron’s user group?",
+    "Success": "User group updated.",
+    "LoadError": "Unable to load eligible groups"
+  },
+  "EduIdSync": {
+    "Action": "Sync from edu-ID",
+    "Refresh": "Refresh patron",
+    "Working": "Updating patron data. Please wait…",
+    "Confirm": "Refresh this patron’s edu-ID-managed data now? This may take a while. Changes may take a few minutes to reach Institution Zones.",
+    "Success": "edu-ID synchronization completed. Institution Zone propagation may take a few minutes."
   }
 }

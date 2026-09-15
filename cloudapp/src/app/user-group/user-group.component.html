@@ -1,0 +1,106 @@
+<section class="slsp-section" data-section="user-group">
+  <app-expandable-section-header
+    [title]="'Settings.UserGroup' | translate"
+    [infoLabel]="'Settings.MoreInformation' | translate"
+  >
+    <p class="slsp-section__information">
+      {{ 'Settings.UserGroupDescription' | translate }}
+    </p>
+  </app-expandable-section-header>
+
+  <div class="user-group__body">
+    <div class="user-group__current">
+      <span class="user-group__label"
+        >{{ 'UserGroup.Current' | translate }}:</span
+      >
+      <strong>{{
+        patron.currentUserGroupDescription ||
+          patron.currentUserGroupCode ||
+          ('UserGroup.None' | translate)
+      }}</strong>
+    </div>
+
+    <div *ngIf="loading" class="user-group__loading" role="status">
+      <mat-spinner diameter="18" aria-hidden="true"></mat-spinner>
+      <span>{{ 'UserGroup.Loading' | translate }}</span>
+    </div>
+
+    <ng-container *ngIf="error">
+      <div class="user-group__error" role="alert">
+        <mat-icon aria-hidden="true">error_outline</mat-icon>
+        <div class="user-group__error-content">
+          <p class="user-group__error-title">
+            {{ 'UserGroup.LoadError' | translate }}
+          </p>
+          <p>{{ error }}</p>
+          <p *ngIf="errorId" class="user-group__support" data-support-reference>
+            {{ 'Errors.SupportId' | translate: { errorId: errorId } }}
+          </p>
+        </div>
+      </div>
+      <div class="user-group__actions">
+        <button
+          mat-stroked-button
+          type="button"
+          data-action="retry-groups"
+          (click)="loadGroups()"
+          [disabled]="disabled || activity.busy"
+        >
+          <mat-icon aria-hidden="true">refresh</mat-icon>
+          {{ 'UserGroup.Retry' | translate }}
+        </button>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="!loading && !error && groups.length">
+      <mat-form-field *ngIf="groups.length > 1; else singleGroup">
+        <mat-label>{{ 'UserGroup.Eligible' | translate }}</mat-label>
+        <mat-select
+          [(ngModel)]="selectedCode"
+          [disabled]="disabled || activity.busy || saving"
+        >
+          <mat-option
+            *ngFor="let group of groups; trackBy: trackGroup"
+            [value]="group.code"
+          >
+            {{ group.displayName }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <ng-template #singleGroup>
+        <div class="user-group__single">
+          <span class="user-group__label">{{
+            'UserGroup.OnlyEligible' | translate
+          }}</span>
+          <strong>{{ groups[0].displayName }}</strong>
+          <button
+            *ngIf="selectedCode !== groups[0].code"
+            mat-button
+            type="button"
+            (click)="selectedCode = groups[0].code"
+            [disabled]="disabled || activity.busy || saving"
+          >
+            {{ 'UserGroup.Select' | translate }}
+          </button>
+        </div>
+      </ng-template>
+      <p class="user-group__description">
+        {{
+          (selectedGroup || (groups.length === 1 ? groups[0] : null))
+            ?.description
+        }}
+      </p>
+      <div class="user-group__actions">
+        <button
+          mat-flat-button
+          color="primary"
+          type="button"
+          (click)="save()"
+          [disabled]="!canSave"
+        >
+          {{ 'UserGroup.Save' | translate }}
+        </button>
+      </div>
+    </ng-container>
+  </div>
+</section>

@@ -24,8 +24,13 @@ import { InvoiceContactsComponent } from './invoice-contacts/invoice-contacts.co
 import { InvoicePostalAddressComponent } from './invoice-contacts/invoice-postal-address.component';
 import { InvoiceEmailAddressComponent } from './invoice-contacts/invoice-email-address.component';
 
+import { UserGroupComponent } from './user-group/user-group.component';
+import { EduIdSyncComponent } from './edu-id-sync/edu-id-sync.component';
+
 @NgModule({
   declarations: [
+    UserGroupComponent,
+    EduIdSyncComponent,
     AppComponent,
     MainComponent,
     BlockComponent,

@@ -13,6 +13,8 @@ import {
 
 describe('Card API models', () => {
   const patron: CardPatron = {
+    currentUserGroupCode: null,
+    currentUserGroupDescription: null,
     fullName: 'Test Patron',
     external: true,
     libraryCardNumbers: [
@@ -56,6 +58,12 @@ describe('Card API models', () => {
     invoiceEmailAddress: null,
   };
   const errorTypes: Readonly<Record<CardErrorType, true>> = {
+    INVALID_USER_GROUP: true,
+    USER_GROUP_NOT_ELIGIBLE: true,
+    EDU_ID_SYNC_NOT_SUPPORTED: true,
+    SYNC_OUTCOME_UNKNOWN: true,
+    SYNC_REFRESH_FAILED: true,
+    SYNC_PATRON_UNAVAILABLE: true,
     AUTHENTICATION_FAILED: true,
     ACCESS_DENIED: true,
     INVALID_PATRON_ID: true,
@@ -68,9 +76,13 @@ describe('Card API models', () => {
     INVALID_SETTINGS_NOTE: true,
     INVALID_INVOICE_POSTAL_ADDRESS: true,
     INVALID_INVOICE_EMAIL_ADDRESS: true,
-    UPSTREAM_REQUEST_REJECTED: true,
+    ALMA_REQUEST_REJECTED: true,
+    ALMA_FAILURE: true,
+    REGISTRATION_PLATFORM_FAILURE: true,
+    REGISTRATION_PLATFORM_UNAVAILABLE: true,
     UPSTREAM_FAILURE: true,
     DEPENDENCY_UNAVAILABLE: true,
+    ALMA_UNAVAILABLE: true,
     UNEXPECTED_FAILURE: true,
   };
 
@@ -81,14 +93,14 @@ describe('Card API models', () => {
     expect('contact_info' in patron).toBeFalse();
   });
 
-  it('represents all stable backend error types and safe error fields', () => {
+  it('represents backend errors, client fallbacks and safe error fields', () => {
     const error: CardApiError = {
       type: 'STALE_ELEMENT_REFERENCE',
       errorId: 'error-id',
       context: { operation: 'card_remove' },
     };
 
-    expect(Reflect.ownKeys(errorTypes)).toHaveSize(16);
+    expect(Reflect.ownKeys(errorTypes)).toHaveSize(26);
     expect(error).toEqual({
       type: 'STALE_ELEMENT_REFERENCE',
       errorId: 'error-id',

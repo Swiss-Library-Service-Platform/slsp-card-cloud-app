@@ -6,7 +6,7 @@ import {
   EntityType,
 } from '@exlibris/exl-cloudapp-angular-lib';
 import { TranslateService } from '@ngx-translate/core';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject, Subject, of } from 'rxjs';
 
 import { AppModule } from '../app.module';
 import { InvoiceContactsComponent } from '../invoice-contacts/invoice-contacts.component';
@@ -33,6 +33,8 @@ describe('SettingsComponent', () => {
     description: 'Selected patron',
   };
   const patron: CardPatron = {
+    currentUserGroupCode: null,
+    currentUserGroupDescription: null,
     fullName: 'Test Patron',
     external: false,
     libraryCardNumbers: [],
@@ -78,12 +80,15 @@ describe('SettingsComponent', () => {
     );
     state.currentMutationContext.and.returnValue(context);
     api = jasmine.createSpyObj<PatronApiService>('PatronApiService', [
+      'getEligibleUserGroups',
       'setPreferredAddress',
       'setInvoicePostalAddress',
       'removeInvoicePostalAddress',
       'setInvoiceEmailAddress',
       'removeInvoiceEmailAddress',
     ]);
+
+    api.getEligibleUserGroups.and.returnValue(of({ eligibleGroups: [] }));
 
     await TestBed.configureTestingModule({
       imports: [AppModule],
@@ -109,7 +114,7 @@ describe('SettingsComponent', () => {
         InvoiceContacts: 'Invoice contact details',
         InvoiceContactsDescription: 'Independent invoice contacts',
         MoreInformation: 'More information',
-        NotAvailableYet: 'Not available yet',
+
         UserGroup: 'User group',
         UserGroupDescription: 'User group description',
       },
@@ -120,7 +125,7 @@ describe('SettingsComponent', () => {
     fixture.detectChanges();
   });
 
-  it('composes preferred address and live invoice contacts while retaining only the user-group placeholder', () => {
+  it('composes preferred address, invoice contacts and live user groups', () => {
     expect(
       fixture.debugElement.query(By.directive(PreferredAddressComponent)),
     ).toBeTruthy();
@@ -136,7 +141,7 @@ describe('SettingsComponent', () => {
       ),
     ).toBeNull();
     expect(
-      fixture.nativeElement.querySelector('[data-placeholder="user-group"]'),
+      fixture.nativeElement.querySelector('[data-section="user-group"]'),
     ).toBeTruthy();
     expect(fixture.nativeElement.textContent).toContain(
       'Invoice contact details',

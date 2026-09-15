@@ -33,6 +33,7 @@ import {
   AuthorizationService,
 } from './authorization.service';
 import { normalizeCardError } from './card-error.service';
+import { MutationActivityService } from './mutation-activity.service';
 import { PatronApiService } from './patron-api.service';
 
 export type PatronState =
@@ -112,6 +113,7 @@ export class PatronStateService {
   public readonly userEntities$: Observable<readonly Entity[]>;
 
   private readonly api = inject(PatronApiService);
+  private readonly activity = inject(MutationActivityService);
   private readonly authorization = inject(AuthorizationService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly events = inject(CloudAppEventsService);
@@ -233,7 +235,11 @@ export class PatronStateService {
       map(({ patron }): PatronState => ({ status: 'ready', entity, patron })),
       share(),
     );
-    const initial$ = this.api.getPatron(mutationContext.patronId).pipe(
+    // A reselected account must be read after any pending write has settled.
+    const initial$ = this.activity.busy$.pipe(
+      filter((busy) => !busy),
+      take(1),
+      switchMap(() => this.api.getPatron(mutationContext.patronId)),
       map((patron): PatronState => ({ status: 'ready', entity, patron })),
       catchError((error: unknown) => of(this.errorState(entity, error))),
       takeUntil(replacement$),

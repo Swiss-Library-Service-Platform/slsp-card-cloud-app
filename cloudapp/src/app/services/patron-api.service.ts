@@ -6,15 +6,47 @@ import {
   AddLibraryCardNumberRequest,
   AddableBlockCode,
   CardPatron,
+  EligibleUserGroups,
   SetInvoiceEmailAddressRequest,
   SetInvoicePostalAddressRequest,
   SetPreferredAddressRequest,
 } from '../models/card-api.model';
+import { MutationActivityService } from './mutation-activity.service';
 import { BackendHttpService } from './backend-http.service';
 
 @Injectable({ providedIn: 'root' })
 export class PatronApiService {
+  private readonly activity = inject(MutationActivityService);
   private readonly backend = inject(BackendHttpService);
+
+  public getEligibleUserGroups(
+    patronId: string,
+  ): Observable<EligibleUserGroups> {
+    return this.backend.get<EligibleUserGroups>(
+      `/api/v1/patrons/${encodePatronId(patronId)}/eligible-user-groups`,
+    );
+  }
+
+  public setUserGroup(
+    patronId: string,
+    groupCode: string,
+  ): Observable<CardPatron> {
+    return this.activity.run(() =>
+      this.backend.put<CardPatron, { groupCode: string }>(
+        `/api/v1/patrons/${encodePatronId(patronId)}/user-group`,
+        { groupCode },
+      ),
+    );
+  }
+
+  public syncEduId(patronId: string): Observable<CardPatron> {
+    return this.activity.run(() =>
+      this.backend.post<CardPatron, object>(
+        `/api/v1/patrons/${encodePatronId(patronId)}/edu-id-sync`,
+        {},
+      ),
+    );
+  }
 
   public getPatron(patronId: string): Observable<CardPatron> {
     return this.backend.get<CardPatron>(
@@ -28,9 +60,11 @@ export class PatronApiService {
   ): Observable<CardPatron> {
     const request: AddLibraryCardNumberRequest = { value };
 
-    return this.backend.post<CardPatron, AddLibraryCardNumberRequest>(
-      `/api/v1/patrons/${encodePatronId(patronId)}/library-card-numbers`,
-      request,
+    return this.activity.run(() =>
+      this.backend.post<CardPatron, AddLibraryCardNumberRequest>(
+        `/api/v1/patrons/${encodePatronId(patronId)}/library-card-numbers`,
+        request,
+      ),
     );
   }
 
@@ -38,8 +72,10 @@ export class PatronApiService {
     patronId: string,
     elementReference: string,
   ): Observable<CardPatron> {
-    return this.backend.delete<CardPatron>(
-      `/api/v1/patrons/${encodePatronId(patronId)}/library-card-numbers/${encodeURIComponent(elementReference)}`,
+    return this.activity.run(() =>
+      this.backend.delete<CardPatron>(
+        `/api/v1/patrons/${encodePatronId(patronId)}/library-card-numbers/${encodeURIComponent(elementReference)}`,
+      ),
     );
   }
 
@@ -50,9 +86,11 @@ export class PatronApiService {
   ): Observable<CardPatron> {
     const request: AddBlockRequest = { code, comment };
 
-    return this.backend.post<CardPatron, AddBlockRequest>(
-      `/api/v1/patrons/${encodePatronId(patronId)}/blocks`,
-      request,
+    return this.activity.run(() =>
+      this.backend.post<CardPatron, AddBlockRequest>(
+        `/api/v1/patrons/${encodePatronId(patronId)}/blocks`,
+        request,
+      ),
     );
   }
 
@@ -60,8 +98,10 @@ export class PatronApiService {
     patronId: string,
     elementReference: string,
   ): Observable<CardPatron> {
-    return this.backend.delete<CardPatron>(
-      `/api/v1/patrons/${encodePatronId(patronId)}/blocks/${encodeURIComponent(elementReference)}`,
+    return this.activity.run(() =>
+      this.backend.delete<CardPatron>(
+        `/api/v1/patrons/${encodePatronId(patronId)}/blocks/${encodeURIComponent(elementReference)}`,
+      ),
     );
   }
 
@@ -71,9 +111,11 @@ export class PatronApiService {
   ): Observable<CardPatron> {
     const request: SetPreferredAddressRequest = { elementReference };
 
-    return this.backend.put<CardPatron, SetPreferredAddressRequest>(
-      `/api/v1/patrons/${encodePatronId(patronId)}/preferred-address`,
-      request,
+    return this.activity.run(() =>
+      this.backend.put<CardPatron, SetPreferredAddressRequest>(
+        `/api/v1/patrons/${encodePatronId(patronId)}/preferred-address`,
+        request,
+      ),
     );
   }
 
@@ -81,9 +123,11 @@ export class PatronApiService {
     patronId: string,
     request: SetInvoicePostalAddressRequest,
   ): Observable<CardPatron> {
-    return this.backend.put<CardPatron, SetInvoicePostalAddressRequest>(
-      `/api/v1/patrons/${encodePatronId(patronId)}/invoice-postal-address`,
-      request,
+    return this.activity.run(() =>
+      this.backend.put<CardPatron, SetInvoicePostalAddressRequest>(
+        `/api/v1/patrons/${encodePatronId(patronId)}/invoice-postal-address`,
+        request,
+      ),
     );
   }
 
@@ -91,8 +135,10 @@ export class PatronApiService {
     patronId: string,
     elementReference: string,
   ): Observable<CardPatron> {
-    return this.backend.delete<CardPatron>(
-      `/api/v1/patrons/${encodePatronId(patronId)}/invoice-postal-address/${encodeURIComponent(elementReference)}`,
+    return this.activity.run(() =>
+      this.backend.delete<CardPatron>(
+        `/api/v1/patrons/${encodePatronId(patronId)}/invoice-postal-address/${encodeURIComponent(elementReference)}`,
+      ),
     );
   }
 
@@ -100,9 +146,11 @@ export class PatronApiService {
     patronId: string,
     request: SetInvoiceEmailAddressRequest,
   ): Observable<CardPatron> {
-    return this.backend.put<CardPatron, SetInvoiceEmailAddressRequest>(
-      `/api/v1/patrons/${encodePatronId(patronId)}/invoice-email-address`,
-      request,
+    return this.activity.run(() =>
+      this.backend.put<CardPatron, SetInvoiceEmailAddressRequest>(
+        `/api/v1/patrons/${encodePatronId(patronId)}/invoice-email-address`,
+        request,
+      ),
     );
   }
 
@@ -110,8 +158,10 @@ export class PatronApiService {
     patronId: string,
     elementReference: string,
   ): Observable<CardPatron> {
-    return this.backend.delete<CardPatron>(
-      `/api/v1/patrons/${encodePatronId(patronId)}/invoice-email-address/${encodeURIComponent(elementReference)}`,
+    return this.activity.run(() =>
+      this.backend.delete<CardPatron>(
+        `/api/v1/patrons/${encodePatronId(patronId)}/invoice-email-address/${encodeURIComponent(elementReference)}`,
+      ),
     );
   }
 }

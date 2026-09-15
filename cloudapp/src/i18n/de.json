@@ -48,15 +48,25 @@
     "UnsupportedBlock": "Dieser Sperrentyp wird nicht unterstützt.",
     "BlockCommentRequired": "Für diese Sperre ist ein Kommentar erforderlich.",
     "StaleElementReference": "Das ausgewählte Element wurde geändert. Laden Sie den Benutzer neu und versuchen Sie es erneut.",
-    "InvalidSettingsNote": "Die bevorzugte Adresse konnte nicht geändert werden, weil die gemeinsamen Einstellungen ungültig sind.",
+    "InvalidSettingsNote": "Die Änderung konnte nicht gespeichert werden. Bitte kontaktieren Sie den Support.",
     "InvalidInvoicePostalAddress": "Geben Sie eine gültige Rechnungsadresse ein.",
     "InvalidInvoiceEmailAddress": "Geben Sie eine gültige Rechnungs-E-Mail-Adresse ein.",
-    "UpstreamRequestRejected": "Alma konnte die Anfrage nicht verarbeiten. Laden Sie den Benutzer neu und versuchen Sie es erneut. Wenn das Problem weiterhin besteht, kontaktieren Sie den Support.",
-    "UpstreamFailure": "Alma hat eine unerwartete Antwort zurückgegeben. Laden Sie den Benutzer neu und versuchen Sie es erneut. Wenn das Problem weiterhin besteht, kontaktieren Sie den Support.",
-    "DependencyUnavailable": "Alma ist vorübergehend nicht verfügbar. Laden Sie den Benutzer neu, bevor Sie es erneut versuchen. Wenn das Problem weiterhin besteht, kontaktieren Sie den Support.",
+    "AlmaRequestRejected": "Alma konnte die Anfrage nicht verarbeiten. Laden Sie den Benutzer neu und versuchen Sie es erneut. Wenn das Problem weiterhin besteht, kontaktieren Sie den Support.",
+    "AlmaFailure": "Alma hat eine unerwartete Antwort zurückgegeben. Laden Sie den Benutzer neu und versuchen Sie es erneut. Wenn das Problem weiterhin besteht, kontaktieren Sie den Support.",
+    "RegistrationPlatformFailure": "Die Registrierungsplattform hat eine unerwartete Antwort zurückgegeben. Laden Sie den Benutzer neu und versuchen Sie es erneut. Wenn das Problem weiterhin besteht, kontaktieren Sie den Support.",
+    "UpstreamFailure": "Ein benötigter Dienst hat eine unerwartete Antwort zurückgegeben. Laden Sie den Benutzer neu und versuchen Sie es erneut. Wenn das Problem weiterhin besteht, kontaktieren Sie den Support.",
+    "AlmaUnavailable": "Alma ist vorübergehend nicht verfügbar. Laden Sie den Benutzer neu, bevor Sie es erneut versuchen. Wenn das Problem weiterhin besteht, kontaktieren Sie den Support.",
+    "RegistrationPlatformUnavailable": "Die Registrierungsplattform ist vorübergehend nicht verfügbar. Laden Sie den Benutzer neu, bevor Sie es erneut versuchen. Wenn das Problem weiterhin besteht, kontaktieren Sie den Support.",
+    "DependencyUnavailable": "Die Kommunikation mit dem Dienst ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
     "UnexpectedFailure": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
     "SelectedPatron": "Der ausgewählte Benutzer",
-    "SupportId": "Support-ID: {{errorId}}"
+    "SupportId": "Support-ID: {{errorId}}",
+    "InvalidUserGroup": "Wählen Sie eine gültige Benutzergruppe.",
+    "UserGroupNotEligible": "Diese Gruppe ist nicht mehr verfügbar. Laden Sie die verfügbaren Gruppen neu und wählen Sie erneut.",
+    "EduIdSyncNotSupported": "Die edu-ID-Synchronisierung ist für dieses Konto nicht verfügbar.",
+    "SyncOutcomeUnknown": "Der Abschluss der Synchronisierung konnte nicht bestätigt werden. Sie läuft möglicherweise noch. Laden Sie die Benutzerdaten neu, bevor Sie erneut synchronisieren.",
+    "SyncRefreshFailed": "Die Synchronisierung wurde abgeschlossen, aber die aktualisierten Benutzerdaten konnten nicht geladen werden. Laden Sie die Daten neu, ohne erneut zu synchronisieren.",
+    "SyncPatronUnavailable": "Das Konto ist nach der Synchronisierung nicht mehr verfügbar. Wählen Sie das aktuelle Konto in Alma."
   },
   "LibraryCardNumber": {
     "Add": "Hinzufügen",
@@ -79,7 +89,6 @@
     "PreferredAddressDescriptionLink": "SWITCH edu-ID Account-Management-Seite.",
     "MoreInformation": "Weitere Informationen",
     "UserGroup": "User Gruppe",
-    "NotAvailableYet": "Noch nicht verfügbar",
     "InvoiceContacts": "Rechnungskontaktdaten",
     "InvoiceContactsDescription": "Wählen Sie, ob Rechnungen die bevorzugten Kontaktdaten oder separate Rechnungskontaktdaten verwenden.",
     "PostalAddress": "Postadresse",
@@ -107,7 +116,7 @@
     "InvoicePostalRemoveSuccess": "Rechnungen verwenden wieder die bevorzugte Postadresse.",
     "InvoiceEmailSetSuccess": "Rechnungs-E-Mail-Adresse gespeichert.",
     "InvoiceEmailRemoveSuccess": "Rechnungen verwenden wieder die bevorzugte E-Mail-Adresse.",
-    "UserGroupDescription": "Die verfügbaren Benutzergruppen werden künftig von der Registrierungsplattform als führender Quelle geliefert.",
+    "UserGroupDescription": "Wählen Sie eine der für dieses Konto verfügbaren Benutzergruppen.",
     "AddressType": "Adress-Typ",
     "Preferred": "Bevorzugt",
     "UseAsPreferred": "Als Bevorzugt markieren",
@@ -147,5 +156,25 @@
     "WrongEmailDescription": "Diese Sperre wird verwendet, wenn ein Benutzerkonto eine falsche E-Mail-Adresse enthält. Da die E-Mail-Adresse ausschliesslich im Switch edu-ID-Konto angepasst werden können, wird die Sperre automatisch aufgehoben, sobald das System eine Aktualisierung der E-Mail-Adresse von Switch edu-ID erhält.",
     "email-block-external-info": "E-Mail-Sperren werden automatisch aufgehoben, sobald die Benutzerin / der Benutzer die E-Mail-Adresse im edu-ID-Konto geändert hat.",
     "email-block-internal-info": "E-Mail-Sperren, welche institutionellen Konten hinzugefügt wurden, werden von SLSP bearbeitet."
+  },
+  "UserGroup": {
+    "Current": "Aktuelle Benutzergruppe",
+    "None": "Nicht festgelegt",
+    "Loading": "Verfügbare Gruppen werden geladen…",
+    "Retry": "Erneut versuchen",
+    "Eligible": "Benutzergruppe ändern",
+    "OnlyEligible": "Einzige verfügbare Gruppe",
+    "Select": "Diese Gruppe auswählen",
+    "Save": "Benutzergruppe speichern",
+    "Confirm": "Benutzergruppe dieser Person ändern?",
+    "Success": "Benutzergruppe aktualisiert.",
+    "LoadError": "Verfügbare Benutzergruppen konnten nicht geladen werden"
+  },
+  "EduIdSync": {
+    "Action": "Mit edu-ID synchronisieren",
+    "Refresh": "Benutzerdaten neu laden",
+    "Working": "Benutzerdaten werden aktualisiert. Bitte warten…",
+    "Confirm": "Die von edu-ID verwalteten Daten dieser Person jetzt aktualisieren? Dies kann etwas dauern. Änderungen können die Institutionszonen erst nach einigen Minuten erreichen.",
+    "Success": "edu-ID-Synchronisierung abgeschlossen. Die Übernahme in die Institutionszonen kann einige Minuten dauern."
   }
 }

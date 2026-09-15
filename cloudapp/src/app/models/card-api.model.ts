@@ -43,7 +43,19 @@ export interface InvoiceEmailAddressView {
   readonly emailAddress: string | null;
 }
 
+export interface EligibleUserGroup {
+  readonly code: string;
+  readonly displayName: string;
+  readonly description: string;
+}
+
+export interface EligibleUserGroups {
+  readonly eligibleGroups: readonly EligibleUserGroup[];
+}
+
 export interface CardPatron {
+  readonly currentUserGroupCode: string | null;
+  readonly currentUserGroupDescription: string | null;
   readonly fullName: string | null;
   readonly external: boolean;
   readonly libraryCardNumbers: readonly LibraryCardNumberView[];
@@ -86,6 +98,12 @@ export interface SetInvoiceEmailAddressRequest {
 }
 
 export type CardErrorType =
+  | 'INVALID_USER_GROUP'
+  | 'USER_GROUP_NOT_ELIGIBLE'
+  | 'EDU_ID_SYNC_NOT_SUPPORTED'
+  | 'SYNC_OUTCOME_UNKNOWN'
+  | 'SYNC_REFRESH_FAILED'
+  | 'SYNC_PATRON_UNAVAILABLE'
   | 'AUTHENTICATION_FAILED'
   | 'ACCESS_DENIED'
   | 'INVALID_PATRON_ID'
@@ -98,10 +116,15 @@ export type CardErrorType =
   | 'INVALID_SETTINGS_NOTE'
   | 'INVALID_INVOICE_POSTAL_ADDRESS'
   | 'INVALID_INVOICE_EMAIL_ADDRESS'
-  | 'UPSTREAM_REQUEST_REJECTED'
+  | 'ALMA_REQUEST_REJECTED'
+  | 'REGISTRATION_PLATFORM_FAILURE'
+  | 'REGISTRATION_PLATFORM_UNAVAILABLE'
+  | 'ALMA_FAILURE'
+  | 'ALMA_UNAVAILABLE'
+  | 'UNEXPECTED_FAILURE'
+  // Client-only fallbacks when no valid typed backend response is available.
   | 'UPSTREAM_FAILURE'
-  | 'DEPENDENCY_UNAVAILABLE'
-  | 'UNEXPECTED_FAILURE';
+  | 'DEPENDENCY_UNAVAILABLE';
 
 export interface CardApiError {
   readonly type: CardErrorType;

@@ -48,15 +48,25 @@
     "UnsupportedBlock": "Questo tipo di blocco non è supportato.",
     "BlockCommentRequired": "È necessario un commento per questo blocco.",
     "StaleElementReference": "L'elemento selezionato è cambiato. Ricarica l'utente e riprova.",
-    "InvalidSettingsNote": "Non è stato possibile modificare l'indirizzo preferito perché le impostazioni condivise non sono valide.",
+    "InvalidSettingsNote": "Non è stato possibile salvare la modifica. Contattare l’assistenza.",
     "InvalidInvoicePostalAddress": "Inserisci un indirizzo postale di fatturazione valido.",
     "InvalidInvoiceEmailAddress": "Inserisci un indirizzo e-mail di fatturazione valido.",
-    "UpstreamRequestRejected": "Alma non ha potuto elaborare la richiesta. Ricarica l’utente e riprova. Se il problema persiste, contatta l’assistenza.",
-    "UpstreamFailure": "Alma ha restituito una risposta imprevista. Ricarica l’utente e riprova. Se il problema persiste, contatta l’assistenza.",
-    "DependencyUnavailable": "Alma è temporaneamente non disponibile. Ricarica l’utente prima di riprovare. Se il problema persiste, contatta l’assistenza.",
+    "AlmaRequestRejected": "Alma non ha potuto elaborare la richiesta. Ricarica l’utente e riprova. Se il problema persiste, contatta l’assistenza.",
+    "AlmaFailure": "Alma ha restituito una risposta imprevista. Ricarica l’utente e riprova. Se il problema persiste, contatta l’assistenza.",
+    "RegistrationPlatformFailure": "La piattaforma di registrazione ha restituito una risposta imprevista. Ricarica l’utente e riprova. Se il problema persiste, contatta l’assistenza.",
+    "UpstreamFailure": "Un servizio necessario ha restituito una risposta imprevista. Ricarica l’utente e riprova. Se il problema persiste, contatta l’assistenza.",
+    "AlmaUnavailable": "Alma è temporaneamente non disponibile. Ricarica l’utente prima di riprovare. Se il problema persiste, contatta l’assistenza.",
+    "RegistrationPlatformUnavailable": "La piattaforma di registrazione è temporaneamente non disponibile. Ricarica l’utente prima di riprovare. Se il problema persiste, contatta l’assistenza.",
+    "DependencyUnavailable": "La comunicazione con il servizio non è riuscita. Riprovare.",
     "UnexpectedFailure": "Si è verificato un errore imprevisto. Riprova.",
     "SelectedPatron": "L'utente selezionato",
-    "SupportId": "ID assistenza: {{errorId}}"
+    "SupportId": "ID assistenza: {{errorId}}",
+    "InvalidUserGroup": "Selezionare un gruppo valido.",
+    "UserGroupNotEligible": "Questo gruppo non è più disponibile. Ricaricare i gruppi disponibili e scegliere nuovamente.",
+    "EduIdSyncNotSupported": "La sincronizzazione edu-ID non è disponibile per questo account.",
+    "SyncOutcomeUnknown": "Non è stato possibile confermare il completamento della sincronizzazione. Potrebbe essere ancora in corso. Ricaricare i dati prima di considerare una nuova sincronizzazione.",
+    "SyncRefreshFailed": "La sincronizzazione è completata, ma non è stato possibile caricare i dati aggiornati. Ricaricare i dati senza ripetere la sincronizzazione.",
+    "SyncPatronUnavailable": "L’account non è più disponibile dopo la sincronizzazione. Selezionare l’account attuale in Alma."
   },
   "LibraryCardNumber": {
     "Add": "Aggiungere",
@@ -79,7 +89,6 @@
     "PreferredAddressDescriptionLink": "pagina di gestione dell'account SWITCH edu-ID.",
     "MoreInformation": "Ulteriori informazioni",
     "UserGroup": "Gruppo utente",
-    "NotAvailableYet": "Non ancora disponibile",
     "InvoiceContacts": "Contatti di fatturazione",
     "InvoiceContactsDescription": "Scegli se le fatture devono utilizzare i dati di contatto preferiti o dati di fatturazione separati.",
     "PostalAddress": "Indirizzo postale",
@@ -107,7 +116,7 @@
     "InvoicePostalRemoveSuccess": "Le fatture ora utilizzano l'indirizzo postale preferito.",
     "InvoiceEmailSetSuccess": "Indirizzo e-mail di fatturazione salvato.",
     "InvoiceEmailRemoveSuccess": "Le fatture ora utilizzano l'indirizzo e-mail preferito.",
-    "UserGroupDescription": "I gruppi disponibili saranno forniti dalla piattaforma di registrazione come fonte autorevole.",
+    "UserGroupDescription": "Selezionare uno dei gruppi disponibili per questo account.",
     "AddressType": "Tipo di indirizzo",
     "Preferred": "Preferito",
     "UseAsPreferred": "Usare come indirizzo preferito",
@@ -147,5 +156,25 @@
     "WrongEmailDescription": "Questo blocco viene utilizzato quando un utente ha nel suo account un indirizzo e-mail errato. Poiché gli indirizzi possono essere modificati solo nell\\'account Switch edu-ID, il blocco viene automaticamente rimosso non appena il sistema riceve un aggiornamento dell\\'indirizzo e-mail da Switch edu-ID.",
     "email-block-external-info": "Blocchi legati all\\'indirizzo vengono rimossi automaticamente una volta che l\\'utente modifica l\\'indirizzo e-mail nell\\'account edu-ID.",
     "email-block-internal-info": "Blocchi e-mail aggiunti ad account istituzionali vengono gestiti da SLSP."
+  },
+  "UserGroup": {
+    "Current": "Gruppo attuale",
+    "None": "Non impostato",
+    "Loading": "Caricamento dei gruppi disponibili…",
+    "Retry": "Riprova",
+    "Eligible": "Cambia gruppo utente",
+    "OnlyEligible": "Unico gruppo disponibile",
+    "Select": "Seleziona questo gruppo",
+    "Save": "Salva gruppo",
+    "Confirm": "Modificare il gruppo di questa persona?",
+    "Success": "Gruppo aggiornato.",
+    "LoadError": "Impossibile caricare i gruppi disponibili"
+  },
+  "EduIdSync": {
+    "Action": "Sincronizza da edu-ID",
+    "Refresh": "Ricarica i dati",
+    "Working": "Aggiornamento dei dati. Attendere…",
+    "Confirm": "Aggiornare ora i dati di questa persona gestiti da edu-ID? Potrebbe richiedere del tempo. Le modifiche possono impiegare alcuni minuti per raggiungere le zone istituzionali.",
+    "Success": "Sincronizzazione edu-ID completata. La propagazione alle zone istituzionali può richiedere alcuni minuti."
   }
 }

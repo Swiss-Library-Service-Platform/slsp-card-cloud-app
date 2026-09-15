@@ -20,6 +20,8 @@ describe('InvoicePostalAddressComponent', () => {
   let state: jasmine.SpyObj<PatronStateService>;
   const context = { patronId: 'patron-1' } as PatronMutationContext;
   const patron: CardPatron = {
+    currentUserGroupCode: null,
+    currentUserGroupDescription: null,
     fullName: 'Test Patron',
     external: false,
     libraryCardNumbers: [],

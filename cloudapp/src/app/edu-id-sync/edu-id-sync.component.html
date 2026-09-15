@@ -1,0 +1,22 @@
+<div *ngIf="supported" class="edu-id-sync">
+  <button
+    mat-stroked-button
+    type="button"
+    *ngIf="!needsRefresh"
+    (click)="sync()"
+    [disabled]="loading || activity.busy"
+  >
+    <mat-icon>sync</mat-icon>
+    {{ 'EduIdSync.Action' | translate }}
+  </button>
+  <button
+    mat-stroked-button
+    type="button"
+    *ngIf="needsRefresh"
+    (click)="refresh()"
+    [disabled]="loading || activity.busy"
+  >
+    {{ 'EduIdSync.Refresh' | translate }}
+  </button>
+  <p *ngIf="loading" role="status">{{ 'EduIdSync.Working' | translate }}</p>
+</div>

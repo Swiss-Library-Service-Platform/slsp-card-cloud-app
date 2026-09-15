@@ -35,7 +35,7 @@ describe('MutationFeedbackService', () => {
       Success: 'Saved',
       Errors: {
         InvalidInvoicePostalAddress: 'Invalid invoice address.',
-        UpstreamRequestRejected: 'Alma rejected the request.',
+        AlmaRequestRejected: 'Alma rejected the request.',
         UnexpectedFailure: 'Unexpected failure.',
         SelectedPatron: 'Selected patron',
         SupportId: 'Support ID: {{errorId}}',
@@ -107,7 +107,7 @@ describe('MutationFeedbackService', () => {
         new HttpErrorResponse({
           status: 502,
           error: {
-            type: 'UPSTREAM_REQUEST_REJECTED',
+            type: 'ALMA_REQUEST_REJECTED',
             errorId: 'support-rejected-502',
             context: {},
           },
