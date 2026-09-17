@@ -97,14 +97,14 @@ describe('Card API models', () => {
     const error: CardApiError = {
       type: 'STALE_ELEMENT_REFERENCE',
       errorId: 'error-id',
-      context: { operation: 'card_remove' },
+      messages: [],
     };
 
     expect(Reflect.ownKeys(errorTypes)).toHaveSize(26);
     expect(error).toEqual({
       type: 'STALE_ELEMENT_REFERENCE',
       errorId: 'error-id',
-      context: { operation: 'card_remove' },
+      messages: [],
     });
   });
 

@@ -273,7 +273,7 @@ describe('MainComponent', () => {
               error: {
                 type: 'PATRON_NOT_FOUND',
                 errorId: '',
-                context: {},
+                messages: [],
               },
             }
           : {
@@ -282,7 +282,7 @@ describe('MainComponent', () => {
               error: {
                 type: 'ALMA_UNAVAILABLE',
                 errorId: '',
-                context: {},
+                messages: [],
               },
             };
 
@@ -315,7 +315,7 @@ describe('MainComponent', () => {
       error: {
         type: 'PATRON_NOT_FOUND',
         errorId: 'support-404',
-        context: { entityDescription: 'private backend patron' },
+        messages: [],
       },
     });
     await fixture.whenStable();
@@ -339,7 +339,7 @@ describe('MainComponent', () => {
       error: {
         type: 'STALE_ELEMENT_REFERENCE',
         errorId: 'support-409',
-        context: { detail: 'private backend detail' },
+        messages: [],
       },
     });
     await fixture.whenStable();
@@ -361,7 +361,7 @@ describe('MainComponent', () => {
       error: {
         type: 'ALMA_UNAVAILABLE',
         errorId: 'support-503',
-        context: {},
+        messages: [],
       },
     });
     await fixture.whenStable();
@@ -382,7 +382,7 @@ describe('MainComponent', () => {
       error: {
         type: 'AUTHENTICATION_FAILED',
         errorId: 'support-401',
-        context: {},
+        messages: [],
       },
     });
     await fixture.whenStable();
@@ -418,7 +418,7 @@ describe('MainComponent', () => {
       error: {
         type: 'ACCESS_DENIED',
         errorId: 'support-403',
-        context: { detail: 'private backend detail' },
+        messages: [],
       },
     });
     fixture.detectChanges();

@@ -341,7 +341,7 @@ describe('LibraryCardNumberComponent', () => {
             error: {
               type: 'DUPLICATE_LIBRARY_CARD_NUMBER',
               errorId: 'support-card-409',
-              context: { detail: 'private backend detail' },
+              messages: [],
             },
           }),
       ),

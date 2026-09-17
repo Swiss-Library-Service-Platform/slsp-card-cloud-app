@@ -121,10 +121,16 @@ export class CardErrorService {
     entityDescription: string | undefined,
   ): string {
     const description = safeEntityDescription(entityDescription);
-    const message = this.translate.instant(ERROR_KEYS[error.type], {
+    const messages = error.messages.filter((detail) => detail.trim() !== '');
+    const key =
+      error.type === 'ALMA_REQUEST_REJECTED' && messages.length > 0
+        ? 'Errors.AlmaRequestRejectedWithMessages'
+        : ERROR_KEYS[error.type];
+    const explanation = this.translate.instant(key, {
       entityDescription:
         description || this.translate.instant('Errors.SelectedPatron'),
     });
+    const message = [explanation, ...messages.map(escapeHtml)].join('<br>');
     const errorId = SUPPORT_ID_TYPES.has(error.type)
       ? safeSupportId(error.errorId)
       : null;
@@ -171,7 +177,10 @@ function isCardApiError(value: unknown): value is CardApiError {
     typeof candidate['type'] === 'string' &&
     Object.prototype.hasOwnProperty.call(ERROR_KEYS, candidate['type']) &&
     typeof candidate['errorId'] === 'string' &&
-    isStringRecord(candidate['context'])
+    Array.isArray(candidate['messages']) &&
+    candidate['messages'].every(
+      (message: unknown) => typeof message === 'string',
+    )
   );
 }
 
@@ -189,16 +198,6 @@ function isHttpCardApiError(
   );
 }
 
-function isStringRecord(
-  value: unknown,
-): value is Readonly<Record<string, string>> {
-  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
-    return false;
-  }
-
-  return Object.values(value).every((item) => typeof item === 'string');
-}
-
 function safeSupportId(errorId: string): string | null {
   const value = errorId.trim();
 
@@ -206,10 +205,16 @@ function safeSupportId(errorId: string): string | null {
 }
 
 function safeEntityDescription(description: string | undefined): string {
-  return (description ?? '')
-    .replace(/[\u0000-\u001f\u007f]/gu, '')
-    .trim()
-    .slice(0, 200)
+  return escapeHtml(
+    (description ?? '')
+      .replace(/[\u0000-\u001f\u007f]/gu, '')
+      .trim()
+      .slice(0, 200),
+  );
+}
+
+function escapeHtml(value: string): string {
+  return value
     .replace(/&/gu, '&amp;')
     .replace(/</gu, '&lt;')
     .replace(/>/gu, '&gt;')
@@ -263,5 +268,5 @@ function errorStatus(type: CardErrorType): number {
 }
 
 function emptyError(type: CardErrorType): CardApiError {
-  return { type, errorId: '', context: {} };
+  return { type, errorId: '', messages: [] };
 }

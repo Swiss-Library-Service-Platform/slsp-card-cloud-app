@@ -36,6 +36,7 @@ describe('MutationFeedbackService', () => {
       Errors: {
         InvalidInvoicePostalAddress: 'Invalid invoice address.',
         AlmaRequestRejected: 'Alma rejected the request.',
+        AlmaRequestRejectedWithMessages: 'Alma rejected the request:',
         UnexpectedFailure: 'Unexpected failure.',
         SelectedPatron: 'Selected patron',
         SupportId: 'Support ID: {{errorId}}',
@@ -71,7 +72,7 @@ describe('MutationFeedbackService', () => {
           error: {
             type: 'INVALID_INVOICE_POSTAL_ADDRESS',
             errorId: 'support-123',
-            context: {},
+            messages: [],
           },
         }),
     )
@@ -109,7 +110,7 @@ describe('MutationFeedbackService', () => {
           error: {
             type: 'ALMA_REQUEST_REJECTED',
             errorId: 'support-rejected-502',
-            context: {},
+            messages: ['<script>alert(1)</script>', 'Second detail'],
           },
         }),
     )
@@ -117,7 +118,7 @@ describe('MutationFeedbackService', () => {
       .subscribe();
 
     expect(alert.error).toHaveBeenCalledOnceWith(
-      'Alma rejected the request. <small class="slsp-support-reference">Support ID: support-rejected-502</small>',
+      'Alma rejected the request:<br>&lt;script&gt;alert(1)&lt;/script&gt;<br>Second detail <small class="slsp-support-reference">Support ID: support-rejected-502</small>',
       PERSISTENT_ALERT_OPTIONS,
     );
     expect(alert.warn).not.toHaveBeenCalled();

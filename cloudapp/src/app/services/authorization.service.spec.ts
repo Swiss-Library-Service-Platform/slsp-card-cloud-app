@@ -48,7 +48,7 @@ describe('AuthorizationService', () => {
             ? 'AUTHENTICATION_FAILED'
             : 'ACCESS_DENIED',
         errorId: `support-${status}`,
-        context: {},
+        messages: [],
       };
 
       backend.get.and.returnValue(
@@ -77,7 +77,7 @@ describe('AuthorizationService', () => {
       expect(result.error).toEqual({
         type: 'UNEXPECTED_FAILURE',
         errorId: '',
-        context: {},
+        messages: [],
       });
       done();
     });
@@ -98,7 +98,7 @@ describe('AuthorizationService', () => {
       expect(result.error).toEqual({
         type: 'DEPENDENCY_UNAVAILABLE',
         errorId: '',
-        context: {},
+        messages: [],
       });
       done();
     });
@@ -113,7 +113,7 @@ describe('AuthorizationService', () => {
             error: {
               type: 'AUTHENTICATION_FAILED',
               errorId: '<unsafe>',
-              context: { detail: 'private backend detail' },
+              messages: [],
             },
           }),
       ),
@@ -125,7 +125,7 @@ describe('AuthorizationService', () => {
         error: {
           type: 'UNEXPECTED_FAILURE',
           errorId: '',
-          context: {},
+          messages: [],
         },
       });
       done();

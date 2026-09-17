@@ -25,7 +25,7 @@ describe('EduIdSyncComponent', () => {
   const failure = (type: string, status: number): HttpErrorResponse =>
     new HttpErrorResponse({
       status,
-      error: { type, errorId: 'test-error', context: {} },
+      error: { type, errorId: 'test-error', messages: [] },
     });
 
   beforeEach(() => {

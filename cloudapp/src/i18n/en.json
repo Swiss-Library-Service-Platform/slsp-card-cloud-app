@@ -50,6 +50,7 @@
     "InvalidInvoicePostalAddress": "Enter a valid invoice postal address.",
     "InvalidInvoiceEmailAddress": "Enter a valid invoice e-mail address.",
     "AlmaRequestRejected": "Alma could not process the request. Reload the patron and try again.",
+    "AlmaRequestRejectedWithMessages": "Alma could not process the request:",
     "AlmaFailure": "Alma returned an unexpected response. Reload the patron and try again.",
     "RegistrationPlatformFailure": "The Registration Platform returned an unexpected response. Reload the patron and try again.",
     "UpstreamFailure": "A required service returned an unexpected response. Reload the patron and try again.",

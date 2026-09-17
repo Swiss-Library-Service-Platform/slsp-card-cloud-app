@@ -50,6 +50,7 @@
     "InvalidInvoicePostalAddress": "Saisissez une adresse postale de facturation valide.",
     "InvalidInvoiceEmailAddress": "Saisissez une adresse e-mail de facturation valide.",
     "AlmaRequestRejected": "Alma n’a pas pu traiter la requête. Rechargez le compte et réessayez.",
+    "AlmaRequestRejectedWithMessages": "Alma n’a pas pu traiter la demande :",
     "AlmaFailure": "Alma a renvoyé une réponse inattendue. Rechargez le compte et réessayez.",
     "RegistrationPlatformFailure": "La plateforme d’enregistrement a renvoyé une réponse inattendue. Rechargez le compte et réessayez.",
     "UpstreamFailure": "Un service nécessaire a renvoyé une réponse inattendue. Rechargez le compte et réessayez.",

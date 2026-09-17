@@ -287,7 +287,7 @@ describe('InvoicePostalAddressComponent', () => {
             error: {
               type: 'INVALID_INVOICE_POSTAL_ADDRESS',
               errorId: 'support-postal',
-              context: {},
+              messages: [],
             },
           }),
       ),

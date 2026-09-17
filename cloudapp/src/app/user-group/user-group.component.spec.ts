@@ -52,10 +52,7 @@ describe('UserGroupComponent', () => {
             }),
           },
         },
-        {
-          provide: CardErrorService,
-          useValue: { message: (): string => 'Unavailable' },
-        },
+        CardErrorService,
         {
           provide: MutationFeedbackService,
           useValue: {
@@ -73,6 +70,17 @@ describe('UserGroupComponent', () => {
         },
       ],
     });
+
+    const translate = TestBed.inject(TranslateService);
+
+    translate.setTranslation('en', {
+      Errors: {
+        UnexpectedFailure: 'Unavailable',
+        AlmaRequestRejectedWithMessages: 'Alma rejected the request:',
+        SupportId: 'Support ID: {{errorId}}',
+      },
+    });
+    translate.use('en');
     component = TestBed.runInInjectionContext(() => new UserGroupComponent());
     component.patron = { currentUserGroupCode: '02' } as CardPatron;
   });
@@ -92,24 +100,28 @@ describe('UserGroupComponent', () => {
     expect(component.error).toBe('Unavailable');
     expect(component.canSave).toBeFalse();
   });
-  it('shows a support reference separately and clears it when retrying', () => {
+  it('renders literal upstream messages and one support reference, and clears them when retrying', () => {
     const supportId = 'fad72b4a-8761-4d60-b621-f767f08998a0';
     const pending = new Subject<{ eligibleGroups: [] }>();
     const translate = TestBed.inject(TranslateService);
 
-    translate.setTranslation('en', {
-      Errors: { SupportId: 'Support ID: {{errorId}}' },
-    });
+    translate.setTranslation(
+      'en',
+      {
+        Errors: { SupportId: 'Support ID: {{errorId}}' },
+      },
+      true,
+    );
     translate.use('en');
     api.getEligibleUserGroups.and.returnValue(
       throwError(
         () =>
           new HttpErrorResponse({
-            status: 503,
+            status: 502,
             error: {
-              type: 'ALMA_UNAVAILABLE',
+              type: 'ALMA_REQUEST_REJECTED',
               errorId: supportId,
-              context: {},
+              messages: ['<b>Invalid & value</b>', 'Second detail'],
             },
           }),
       ),
@@ -121,18 +133,26 @@ describe('UserGroupComponent', () => {
     fixture.detectChanges();
     expect(
       fixture.nativeElement.querySelector('[role="alert"]').textContent,
-    ).toContain('Unavailable');
+    ).toContain('Alma rejected the request:');
     expect(
-      fixture.nativeElement.querySelector('[data-support-reference]')
+      fixture.nativeElement.querySelector('.slsp-support-reference')
         ?.textContent,
     ).toContain(supportId);
+
+    const alert = fixture.nativeElement.querySelector('[role="alert"]');
+
+    expect(alert.textContent).toContain('<b>Invalid & value</b>');
+    expect(alert.textContent).toContain('Second detail');
+    expect(alert.querySelector('b')).toBeNull();
+    expect(alert.querySelectorAll('br').length).toBe(2);
+    expect(alert.textContent.split(supportId).length - 1).toBe(1);
 
     api.getEligibleUserGroups.and.returnValue(pending);
     fixture.nativeElement.querySelector('[data-action="retry-groups"]').click();
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('[role="alert"]')).toBeNull();
     expect(
-      fixture.nativeElement.querySelector('[data-support-reference]'),
+      fixture.nativeElement.querySelector('.slsp-support-reference'),
     ).toBeNull();
     pending.complete();
   });
@@ -248,7 +268,7 @@ describe('UserGroupComponent', () => {
             error: {
               type: 'USER_GROUP_NOT_ELIGIBLE',
               errorId: 'test-error',
-              context: {},
+              messages: [],
             },
           }),
       ),

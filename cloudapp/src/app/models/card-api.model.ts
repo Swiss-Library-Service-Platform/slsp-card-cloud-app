@@ -129,5 +129,5 @@ export type CardErrorType =
 export interface CardApiError {
   readonly type: CardErrorType;
   readonly errorId: string;
-  readonly context: Readonly<Record<string, string>>;
+  readonly messages: readonly string[];
 }

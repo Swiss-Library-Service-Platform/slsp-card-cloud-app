@@ -314,7 +314,7 @@ describe('BlockComponent', () => {
             error: {
               type: 'ALMA_UNAVAILABLE',
               errorId: 'support-block-503',
-              context: {},
+              messages: [],
             },
           }),
       ),

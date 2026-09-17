@@ -39,7 +39,6 @@ export class UserGroupComponent implements OnChanges {
   public loading = false;
   public saving = false;
   public error = '';
-  public errorId = '';
   public readonly activity = inject(MutationActivityService);
   private readonly api = inject(PatronApiService);
   private readonly errors = inject(CardErrorService);
@@ -95,7 +94,6 @@ export class UserGroupComponent implements OnChanges {
 
     this.groups = [];
     this.error = '';
-    this.errorId = '';
 
     if (!context) {
       return;
@@ -127,8 +125,7 @@ export class UserGroupComponent implements OnChanges {
           ) {
             const apiError = normalizeCardError(error);
 
-            this.error = this.errors.message({ ...apiError, errorId: '' });
-            this.errorId = apiError.errorId;
+            this.error = this.errors.message(apiError);
           }
         },
       });

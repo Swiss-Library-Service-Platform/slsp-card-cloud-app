@@ -79,7 +79,7 @@ export class EduIdSyncService {
               ? {
                   type: 'SYNC_OUTCOME_UNKNOWN' as const,
                   errorId: '',
-                  context: {},
+                  messages: [],
                 }
               : normalizeCardError(error);
           const type = apiError.type;

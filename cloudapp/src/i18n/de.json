@@ -50,6 +50,7 @@
     "InvalidInvoicePostalAddress": "Geben Sie eine gültige Rechnungsadresse ein.",
     "InvalidInvoiceEmailAddress": "Geben Sie eine gültige Rechnungs-E-Mail-Adresse ein.",
     "AlmaRequestRejected": "Alma konnte die Anfrage nicht verarbeiten. Laden Sie den Benutzer neu und versuchen Sie es erneut.",
+    "AlmaRequestRejectedWithMessages": "Alma konnte die Anfrage nicht verarbeiten:",
     "AlmaFailure": "Alma hat eine unerwartete Antwort zurückgegeben. Laden Sie den Benutzer neu und versuchen Sie es erneut.",
     "RegistrationPlatformFailure": "Die Registrierungsplattform hat eine unerwartete Antwort zurückgegeben. Laden Sie den Benutzer neu und versuchen Sie es erneut.",
     "UpstreamFailure": "Ein benötigter Dienst hat eine unerwartete Antwort zurückgegeben. Laden Sie den Benutzer neu und versuchen Sie es erneut.",

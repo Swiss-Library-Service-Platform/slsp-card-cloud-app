@@ -68,15 +68,86 @@ describe('CardErrorService', () => {
     service = TestBed.inject(CardErrorService);
   });
 
-  it('maps every backend error type and ignores backend context', () => {
+  it('renders supplied Alma messages as literal text on separate lines with a short heading', () => {
+    TestBed.inject(TranslateService).setTranslation(
+      'en',
+      {
+        Errors: {
+          AlmaRequestRejectedWithMessages: 'Alma rejected the request:',
+        },
+      },
+      true,
+    );
+
+    const message = service.message(
+      new HttpErrorResponse({
+        status: 502,
+        error: {
+          type: 'ALMA_REQUEST_REJECTED',
+          errorId: 'support-123',
+          messages: ['<b>Invalid & "value"</b>', '  ', "Second 'message'"],
+        },
+      }),
+    );
+
+    expect(message).toBe(
+      'Alma rejected the request:<br>&lt;b&gt;Invalid &amp; &quot;value&quot;&lt;/b&gt;<br>Second &#39;message&#39; <small class="slsp-support-reference">Support ID: support-123</small>',
+    );
+  });
+
+  it('rejects missing, null, object, and mixed messages without exposing their content', () => {
+    for (const messages of [undefined, null, {}, ['private', 42]]) {
+      expect(
+        service.message(
+          new HttpErrorResponse({
+            status: 502,
+            error: {
+              type: 'ALMA_REQUEST_REJECTED',
+              errorId: 'support-123',
+              messages,
+            },
+          }),
+        ),
+      ).toBe('A required service returned an unexpected response.');
+    }
+    expect(
+      service.message(
+        new HttpErrorResponse({
+          status: 502,
+          error: {
+            type: 'ALMA_REQUEST_REJECTED',
+            errorId: 'support-123',
+            context: {},
+          },
+        }),
+      ),
+    ).toBe('A required service returned an unexpected response.');
+  });
+
+  it('retains existing guidance for blank-only messages', () => {
+    expect(
+      service.message({
+        ...cardError('ALMA_REQUEST_REJECTED'),
+        messages: [' ', '\n'],
+      }),
+    ).toBe(service.message(cardError('ALMA_REQUEST_REJECTED')));
+  });
+
+  it('includes messages for other typed errors without replacing their explanation', () => {
+    expect(
+      service.message({
+        ...cardError('INVALID_USER_GROUP'),
+        messages: ['First', 'Second'],
+      }),
+    ).toBe('Errors.InvalidUserGroup<br>First<br>Second');
+  });
+
+  it('maps every backend error type', () => {
     for (const type of ALL_CARD_ERROR_TYPES) {
       const message = service.message({
         type,
         errorId: 'support-123',
-        context: {
-          detail: 'private backend detail',
-          entityDescription: 'backend-selected patron',
-        },
+        messages: [],
       });
 
       expect(message).withContext(type).not.toContain(type);
@@ -154,7 +225,7 @@ describe('CardErrorService', () => {
     const message = service.message(
       {
         ...cardError('PATRON_NOT_FOUND'),
-        context: { entityDescription: 'backend-selected patron' },
+        messages: [],
       },
       'Selected patron',
     );
@@ -235,7 +306,7 @@ describe('CardErrorService', () => {
     const malformed = {
       type: 'NEW_BACKEND_ERROR',
       errorId: '<script>alert(1)</script>',
-      context: { detail: 'private backend detail' },
+      messages: [],
     };
 
     expect(service.presentation(malformed)).toEqual({
@@ -254,7 +325,7 @@ describe('CardErrorService', () => {
       status: 500,
       error: {
         ...cardError('STALE_ELEMENT_REFERENCE'),
-        context: { detail: 'private backend detail' },
+        messages: [],
       },
     });
 
@@ -323,5 +394,5 @@ describe('CardErrorService', () => {
 });
 
 function cardError(type: CardErrorType): CardApiError {
-  return { type, errorId: 'support-123', context: {} };
+  return { type, errorId: 'support-123', messages: [] };
 }

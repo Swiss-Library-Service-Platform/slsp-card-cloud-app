@@ -322,7 +322,7 @@ describe('PatronStateService', () => {
         error: {
           type: 'ACCESS_DENIED',
           errorId: 'support-403',
-          context: {},
+          messages: [],
         },
       }),
     );
@@ -390,7 +390,7 @@ describe('PatronStateService', () => {
         error: {
           type: 'ACCESS_DENIED',
           errorId: 'support-403',
-          context: {},
+          messages: [],
         },
       }),
     );
@@ -491,7 +491,7 @@ describe('PatronStateService', () => {
     const error: CardApiError = {
       type: 'PATRON_NOT_FOUND',
       errorId: 'support-1',
-      context: {},
+      messages: [],
     };
     let observed: PatronState = { status: 'empty' };
 
@@ -525,7 +525,7 @@ describe('PatronStateService', () => {
             error: {
               type: 'PATRON_NOT_FOUND',
               errorId: 'support-1',
-              context: {},
+              messages: [],
             },
           }),
       ),
@@ -538,29 +538,29 @@ describe('PatronStateService', () => {
     expect(observed as PatronState).toEqual({
       status: 'error',
       entity: selected,
-      error: { type: 'UNEXPECTED_FAILURE', errorId: '', context: {} },
+      error: { type: 'UNEXPECTED_FAILURE', errorId: '', messages: [] },
     });
   });
 
   [
     {
       label: 'blank error id',
-      body: { type: 'PATRON_NOT_FOUND', errorId: '  ', context: {} },
+      body: { type: 'PATRON_NOT_FOUND', errorId: '  ', messages: [] },
     },
     {
-      label: 'non-string context value',
+      label: 'non-string message',
       body: {
         type: 'PATRON_NOT_FOUND',
         errorId: 'support-1',
-        context: { unsafe: { nested: 'private' } },
+        messages: ['safe', { nested: 'private' }],
       },
     },
     {
-      label: 'array context',
+      label: 'object messages',
       body: {
         type: 'PATRON_NOT_FOUND',
         errorId: 'support-1',
-        context: ['private'],
+        messages: { detail: 'private' },
       },
     },
   ].forEach(({ label, body }) => {
@@ -580,7 +580,7 @@ describe('PatronStateService', () => {
       expect(observed as PatronState).toEqual({
         status: 'error',
         entity: selected,
-        error: { type: 'UNEXPECTED_FAILURE', errorId: '', context: {} },
+        error: { type: 'UNEXPECTED_FAILURE', errorId: '', messages: [] },
       });
     });
   });
@@ -608,7 +608,7 @@ describe('PatronStateService', () => {
       const error: CardApiError = {
         type: type as CardApiError['type'],
         errorId: 'support-1',
-        context: { operation: 'safe' },
+        messages: [],
       };
 
       api.getPatron.and.returnValue(
@@ -655,7 +655,7 @@ describe('PatronStateService', () => {
     expect(observed as PatronState).toEqual({
       status: 'error',
       entity: selected,
-      error: { type: 'DEPENDENCY_UNAVAILABLE', errorId: '', context: {} },
+      error: { type: 'DEPENDENCY_UNAVAILABLE', errorId: '', messages: [] },
     });
   });
 
@@ -673,7 +673,7 @@ describe('PatronStateService', () => {
     expect(observed as PatronState).toEqual({
       status: 'error',
       entity: selected,
-      error: { type: 'UNEXPECTED_FAILURE', errorId: '', context: {} },
+      error: { type: 'UNEXPECTED_FAILURE', errorId: '', messages: [] },
     });
   });
 
