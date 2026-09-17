@@ -1,5 +1,6 @@
-import { Component, DestroyRef, inject } from '@angular/core';
+import { Component, DestroyRef, inject, ViewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { MatMenuTrigger } from '@angular/material/menu';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { filter, take } from 'rxjs';
@@ -12,8 +13,11 @@ import { EduIdSyncService } from './edu-id-sync.service';
 @Component({
   selector: 'app-edu-id-sync',
   templateUrl: './edu-id-sync.component.html',
+  styleUrls: ['./edu-id-sync.component.scss'],
 })
 export class EduIdSyncComponent {
+  @ViewChild(MatMenuTrigger) private menuTrigger?: MatMenuTrigger;
+
   public readonly activity = inject(MutationActivityService);
   private readonly syncService = inject(EduIdSyncService);
   private readonly state = inject(PatronStateService);
@@ -43,6 +47,8 @@ export class EduIdSyncComponent {
     ) {
       return;
     }
+    this.menuTrigger?.closeMenu();
+    this.menuTrigger?.focus();
     this.dialog
       .open(ConfirmationdialogComponent, {
         data: { confirmMessage: this.translate.instant('EduIdSync.Confirm') },
@@ -54,9 +60,5 @@ export class EduIdSyncComponent {
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe(() => this.syncService.sync(context));
-  }
-
-  public refresh(): void {
-    this.syncService.refresh();
   }
 }

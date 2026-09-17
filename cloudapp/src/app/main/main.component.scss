@@ -4,18 +4,18 @@
 }
 
 .entity-action {
-  --mdc-list-list-item-one-line-container-height: 64px;
+  --mdc-list-list-item-one-line-container-height: 56px;
 
   border-bottom: 1px solid var(--slsp-border-light);
   cursor: pointer;
 
   &:not(:disabled):hover,
   &:not(:disabled):focus-visible {
-    background-color: var(--slsp-purple-light);
+    background-color: var(--slsp-accent-subtle);
 
     .entity-navigation-icon {
       opacity: 1;
-      color: var(--slsp-purple);
+      color: var(--slsp-accent);
       transform: translateX(2px);
     }
   }
@@ -75,17 +75,17 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   color: var(--slsp-text-secondary);
-  font-size: 0.875rem;
+  font-size: var(--slsp-font-size-support);
   font-weight: var(--slsp-font-weight-regular);
 }
 
 .select-entities {
-  padding-top: 1rem;
+  padding-top: 12px;
 }
 
 .user-not-allowed,
 .institution-now-allowed {
-  padding-top: 1rem;
+  padding-top: 12px;
 
   h1 {
     display: flex;

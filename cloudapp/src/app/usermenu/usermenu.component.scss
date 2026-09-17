@@ -21,28 +21,51 @@
   flex: 0 0 auto;
   margin-left: 2px;
   border-radius: 50%;
-  background: var(--slsp-danger-on-dark);
-  box-shadow: 0 0 0 2px white;
+  background: #ffb4ab;
 }
 
 .patron-message-area {
-  position: relative;
   flex: 0 0 auto;
-  margin: 0.5rem 1px 1rem;
+  min-height: 0;
+  max-height: 35%;
+  overflow-y: auto;
+}
 
-  cloudapp-alert {
-    position: absolute !important;
-    inset-inline: 0;
-    bottom: calc(100% + 0.5rem) !important;
-    width: auto;
+.patron-sync-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  color: var(--slsp-text-secondary);
+  font-size: var(--slsp-font-size-body);
+
+  [role='status'] {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  mat-spinner {
+    flex: 0 0 auto;
   }
 }
 
 .propagation-guidance {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: flex-start;
+  gap: 6px;
   margin: 0;
-}
+  padding: 8px 12px;
+  color: var(--slsp-text-secondary);
+  font-size: var(--slsp-font-size-support);
+  line-height: var(--slsp-line-height-body);
 
-app-edu-id-sync {
-  display: block;
-  margin-bottom: 0.5rem;
+  mat-icon {
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+  }
 }

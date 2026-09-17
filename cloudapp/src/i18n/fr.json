@@ -28,15 +28,13 @@
     "Blocks": "Blocages",
     "ActiveBlocksIndicator": "Blocages actifs",
     "LibraryCardNumber": "Numéro de carte",
-    "PleaseNote": "Note:",
-    "TakesAFewMinutes": "Cela prend quelques minutes avant que les modifications ne soient actives dans Alma.",
+    "TakesAFewMinutes": "Les modifications peuvent mettre quelques minutes à apparaître dans Alma.",
     "UserNotFound": " n'a pas été trouvé dans la zone réseau.",
     "TemporarilyUnavailable": "Service temporairement non disponible.",
     "Help": "Aide",
     "Sandbox": "Sandbox",
     "SandboxDescription": "Environnement de test",
-    "PatronActions": "Actions sur le compte",
-    "EduIdSync": "Synchroniser avec edu-ID"
+    "PatronActions": "Actions sur le compte"
   },
   "Errors": {
     "AuthenticationFailed": "Votre session n'a pas pu être authentifiée. Veuillez rouvrir l'application.",
@@ -173,8 +171,9 @@
   "EduIdSync": {
     "Action": "Synchroniser depuis edu-ID",
     "Refresh": "Recharger les données",
-    "Working": "Mise à jour des données. Veuillez patienter…",
+    "Working": "Synchronisation depuis edu-ID…",
     "Confirm": "Actualiser maintenant les données de cette personne gérées par edu-ID ? Cela peut prendre un moment. Les modifications peuvent mettre quelques minutes à parvenir aux zones institutionnelles.",
-    "Success": "Synchronisation edu-ID terminée. La propagation aux zones institutionnelles peut prendre quelques minutes."
+    "Success": "Synchronisation edu-ID terminée. La propagation aux zones institutionnelles peut prendre quelques minutes.",
+    "Refreshing": "Rechargement des données…"
   }
 }

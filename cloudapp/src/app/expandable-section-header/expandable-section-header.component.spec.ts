@@ -124,12 +124,12 @@ describe('ExpandableSectionHeaderComponent', () => {
     const titleStyle = getComputedStyle(title);
 
     expect(headerStyle.alignItems).toBe('center');
-    expect(headerStyle.minHeight).toBe('56px');
-    expect(headerStyle.paddingTop).toBe('12px');
-    expect(headerStyle.paddingRight).toBe('16px');
-    expect(headerStyle.paddingBottom).toBe('12px');
-    expect(headerStyle.paddingLeft).toBe('16px');
+    expect(headerStyle.minHeight).toBe('44px');
+    expect(headerStyle.paddingTop).toBe('6px');
+    expect(headerStyle.paddingRight).toBe('12px');
+    expect(headerStyle.paddingBottom).toBe('6px');
+    expect(headerStyle.paddingLeft).toBe('12px');
     expect(titleStyle.marginBottom).toBe('0px');
-    expect(titleStyle.fontWeight).toBe('400');
+    expect(titleStyle.fontWeight).toBe('500');
   });
 });

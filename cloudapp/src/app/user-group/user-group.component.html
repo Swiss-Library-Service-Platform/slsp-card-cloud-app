@@ -38,18 +38,6 @@
           </p>
         </div>
       </div>
-      <div class="user-group__actions">
-        <button
-          mat-stroked-button
-          type="button"
-          data-action="retry-groups"
-          (click)="loadGroups()"
-          [disabled]="disabled || activity.busy"
-        >
-          <mat-icon aria-hidden="true">refresh</mat-icon>
-          {{ 'UserGroup.Retry' | translate }}
-        </button>
-      </div>
     </ng-container>
 
     <ng-container *ngIf="!loading && !error && groups.length">
@@ -90,17 +78,29 @@
             ?.description
         }}
       </p>
-      <div class="user-group__actions">
-        <button
-          mat-flat-button
-          color="primary"
-          type="button"
-          (click)="save()"
-          [disabled]="!canSave"
-        >
-          {{ 'UserGroup.Save' | translate }}
-        </button>
-      </div>
     </ng-container>
+  </div>
+  <div *ngIf="error" class="slsp-actions">
+    <button
+      mat-stroked-button
+      type="button"
+      data-action="retry-groups"
+      (click)="loadGroups()"
+      [disabled]="disabled || activity.busy"
+    >
+      <mat-icon aria-hidden="true">refresh</mat-icon>
+      {{ 'UserGroup.Retry' | translate }}
+    </button>
+  </div>
+  <div *ngIf="!loading && !error && groups.length" class="slsp-actions">
+    <button
+      mat-flat-button
+      color="primary"
+      type="button"
+      (click)="save()"
+      [disabled]="!canSave"
+    >
+      {{ 'UserGroup.Save' | translate }}
+    </button>
   </div>
 </section>

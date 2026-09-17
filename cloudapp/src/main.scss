@@ -15,7 +15,29 @@
     height: 100%;
   }
 
-  body[class*='cloudapp-theme'] {
+  :root body[class*='cloudapp-theme'] {
+    // Keep Material controls and overlays on the same three text roles.
+    @each $role in body-large, body-medium {
+      --sys-#{$role}-size: var(--slsp-font-size-body);
+      --sys-#{$role}-weight: var(--slsp-font-weight-regular);
+      --sys-#{$role}-tracking: 0;
+    }
+
+    @each $role in body-small, label-medium, label-small {
+      --sys-#{$role}-size: var(--slsp-font-size-support);
+      --sys-#{$role}-weight: var(--slsp-font-weight-regular);
+      --sys-#{$role}-tracking: 0;
+    }
+
+    @each $role in title-large, title-medium, title-small, headline-small,
+      label-large
+    {
+      --sys-#{$role}-size: var(--slsp-font-size-title);
+      --sys-#{$role}-weight: var(--slsp-font-weight-medium);
+      --sys-#{$role}-tracking: 0;
+      --sys-#{$role}-line-height: 1.35rem;
+    }
+
     margin: 0;
     padding: 0;
     font-size: var(--slsp-font-size-body);
@@ -38,12 +60,11 @@
   cloudapp-alert {
     display: block;
     position: static !important;
-    z-index: 110;
     width: 100%;
     font-weight: var(--slsp-font-weight-regular);
 
     .alert {
-      --slsp-alert-accent: var(--slsp-purple);
+      --slsp-alert-accent: var(--slsp-accent);
       --slsp-alert-icon: 'info';
 
       box-sizing: border-box;
@@ -53,7 +74,7 @@
       gap: var(--slsp-space-2);
       width: 100%;
       margin: 0 !important;
-      padding: var(--slsp-space-3) var(--slsp-space-4) !important;
+      padding: var(--slsp-space-3) var(--slsp-space-3) !important;
       border: 0 !important;
       border-radius: 0 !important;
       box-shadow: inset 3px 0 var(--slsp-alert-accent);
@@ -108,21 +129,31 @@
     }
 
     .alert-info {
-      background: var(--slsp-purple-light) !important;
+      background: var(--slsp-accent-subtle) !important;
     }
   }
 
-  a {
-    color: var(--slsp-purple);
+  body[class*='cloudapp-theme'] a {
+    color: var(--slsp-accent);
+
+    &:hover {
+      color: var(--slsp-accent);
+      text-decoration: underline;
+    }
+  }
+
+  strong,
+  b {
+    font-weight: var(--slsp-font-weight-medium);
   }
 
   .warning {
     color: var(--slsp-danger);
-    font-weight: var(--slsp-font-weight-semibold);
+    font-weight: var(--slsp-font-weight-medium);
   }
 
   .confirm-button {
-    background: var(--slsp-purple) !important;
+    background: var(--slsp-accent) !important;
     color: white !important;
   }
 

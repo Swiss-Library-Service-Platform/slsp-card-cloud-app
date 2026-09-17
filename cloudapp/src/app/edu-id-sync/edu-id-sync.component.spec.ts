@@ -1,9 +1,11 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { TestBed } from '@angular/core/testing';
+import { fakeAsync, flush, tick, TestBed } from '@angular/core/testing';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDialog } from '@angular/material/dialog';
 import { AppModule } from '../app.module';
 import { AlertService } from '@exlibris/exl-cloudapp-angular-lib';
 import { Observable, of, Subject, throwError } from 'rxjs';
+import { EduIdSyncService } from './edu-id-sync.service';
 import { EduIdSyncComponent } from './edu-id-sync.component';
 import { CardPatron } from '../models/card-api.model';
 import { PatronApiService } from '../services/patron-api.service';
@@ -36,7 +38,7 @@ describe('EduIdSyncComponent', () => {
     ]);
     state.currentMutationContext.and.returnValue(context);
     TestBed.configureTestingModule({
-      imports: [AppModule],
+      imports: [AppModule, NoopAnimationsModule],
       providers: [
         { provide: PatronApiService, useValue: api },
         { provide: PatronStateService, useValue: state },
@@ -107,7 +109,7 @@ describe('EduIdSyncComponent', () => {
       component.sync();
       confirmation.next(true);
       expect(component.needsRefresh).toBeTrue();
-      component.refresh();
+      TestBed.inject(EduIdSyncService).refresh();
       expect(TestBed.inject(AlertService).clear).toHaveBeenCalled();
       expect(component.needsRefresh).toBeFalse();
       expect(api.syncEduId).toHaveBeenCalledTimes(1);
@@ -165,7 +167,7 @@ describe('EduIdSyncComponent', () => {
     expect(reopened.componentInstance.needsRefresh).toBeTrue();
     expect(TestBed.inject(AlertService).error).toHaveBeenCalled();
     api.getPatron.and.returnValue(of(patron));
-    reopened.componentInstance.refresh();
+    TestBed.inject(EduIdSyncService).refresh();
     expect(api.syncEduId).toHaveBeenCalledTimes(1);
     expect(reopened.componentInstance.needsRefresh).toBeFalse();
   });
@@ -204,29 +206,98 @@ describe('EduIdSyncComponent', () => {
     expect(component.needsRefresh).toBeTrue();
   });
 
-  it('renders the sync button, pending status and refresh recovery', () => {
-    const pending = new Subject<CardPatron>();
-
-    api.syncEduId.and.returnValue(pending);
-
+  it('opens the patron menu before requesting confirmation', fakeAsync(() => {
     const fixture = TestBed.createComponent(EduIdSyncComponent);
 
     fixture.detectChanges();
 
-    const button = fixture.nativeElement.querySelector(
-      'button',
+    const trigger = fixture.nativeElement.querySelector(
+      '[data-patron-actions]',
     ) as HTMLButtonElement;
 
-    expect(button.textContent).toContain('EduIdSync.Action');
-    button.click();
+    expect(trigger).not.toBeNull();
+    trigger.click();
+    fixture.detectChanges();
+    tick();
+
+    const item = document.querySelector(
+      '[role="menuitem"]',
+    ) as HTMLButtonElement;
+
+    expect(item.textContent).toContain('EduIdSync.Action');
+    item.click();
+    fixture.detectChanges();
+    tick(500);
+    expect(document.querySelector('[role="menu"]')).toBeNull();
+    expect(api.syncEduId).not.toHaveBeenCalled();
+    confirmation.next(false);
+    expect(api.syncEduId).not.toHaveBeenCalled();
+  }));
+
+  it('closes the menu on Escape and restores focus to the trigger', fakeAsync(() => {
+    const fixture = TestBed.createComponent(EduIdSyncComponent);
+
+    fixture.detectChanges();
+
+    const trigger = fixture.nativeElement.querySelector(
+      '[data-patron-actions]',
+    ) as HTMLButtonElement;
+
+    trigger.focus();
+    trigger.click();
+    fixture.detectChanges();
+    tick();
+
+    const item = document.querySelector(
+      '[role="menuitem"]',
+    ) as HTMLButtonElement;
+
+    item.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        key: 'Escape',
+        keyCode: 27,
+        bubbles: true,
+      }),
+    );
+    fixture.detectChanges();
+    tick();
+    expect(trigger.getAttribute('aria-expanded')).toBe('false');
+    expect(document.activeElement).toBe(trigger);
+    expect(api.syncEduId).not.toHaveBeenCalled();
+    flush();
+  }));
+
+  it('disables the patron menu during another mutation', () => {
+    const fixture = TestBed.createComponent(EduIdSyncComponent);
+    const pending = new Subject<void>();
+
+    TestBed.inject(MutationActivityService)
+      .run(() => pending)
+      .subscribe();
+    fixture.detectChanges();
+    expect(
+      fixture.nativeElement.querySelector('[data-patron-actions]').disabled,
+    ).toBeTrue();
+    pending.complete();
+    fixture.detectChanges();
+    expect(
+      fixture.nativeElement.querySelector('[data-patron-actions]').disabled,
+    ).toBeFalse();
+  });
+
+  it('removes the sync menu when recovery is required', () => {
+    api.syncEduId.and.returnValue(
+      throwError(() => failure('SYNC_REFRESH_FAILED', 502)),
+    );
+
+    const fixture = TestBed.createComponent(EduIdSyncComponent);
+
+    fixture.detectChanges();
+    fixture.componentInstance.sync();
     confirmation.next(true);
     fixture.detectChanges();
-    expect(button.disabled).toBeTrue();
-    expect(fixture.nativeElement.querySelector('[role="status"]')).toBeTruthy();
-    pending.error(failure('SYNC_REFRESH_FAILED', 502));
-    fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('button').textContent).toContain(
-      'EduIdSync.Refresh',
-    );
+    expect(
+      fixture.nativeElement.querySelector('[data-patron-actions]'),
+    ).toBeNull();
   });
 });

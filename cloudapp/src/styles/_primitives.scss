@@ -23,9 +23,7 @@
   }
 
   .slsp-environment-banner__label {
-    font-weight: var(--slsp-font-weight-bold);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    font-weight: var(--slsp-font-weight-medium);
   }
 
   .slsp-patron-bar {
@@ -39,7 +37,7 @@
   .slsp-patron-bar__back {
     width: 2.5rem;
     height: 2.5rem;
-    color: var(--slsp-purple-dark);
+    color: var(--slsp-accent);
 
     mat-icon {
       margin: 0;
@@ -55,7 +53,7 @@
 
     > mat-icon {
       flex: 0 0 auto;
-      color: var(--slsp-purple);
+      color: var(--slsp-accent);
     }
   }
 
@@ -65,17 +63,17 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     color: var(--slsp-text);
-    font-weight: var(--slsp-font-weight-semibold);
+    font-weight: var(--slsp-font-weight-medium);
     text-align: right;
   }
 
   .slsp-screen {
-    padding: var(--slsp-space-4) 1px var(--slsp-space-1);
+    padding: var(--slsp-space-3) 1px var(--slsp-space-1);
   }
 
   .slsp-section {
     overflow: hidden;
-    margin-bottom: var(--slsp-space-4);
+    margin-bottom: var(--slsp-space-3);
     border: 1px solid var(--slsp-border);
     border-radius: var(--slsp-radius);
     background: white;
@@ -84,13 +82,13 @@
   .slsp-section__header {
     box-sizing: border-box;
     display: flex;
-    min-height: 56px;
+    min-height: 44px;
     align-items: center;
     justify-content: space-between;
     gap: var(--slsp-space-3);
-    padding: 12px 16px;
+    padding: 6px 12px;
     border-bottom: 1px solid var(--slsp-border-light);
-    background: var(--slsp-purple-light);
+    background: var(--slsp-accent-subtle);
   }
 
   .slsp-section__heading {
@@ -101,7 +99,7 @@
     margin: 0;
     color: var(--slsp-text);
     font-size: var(--slsp-font-size-title);
-    font-weight: var(--slsp-font-weight-regular);
+    font-weight: var(--slsp-font-weight-medium);
     letter-spacing: normal;
     line-height: var(--slsp-line-height-compact);
   }
@@ -118,7 +116,7 @@
     align-items: center;
     justify-content: space-between;
     gap: var(--slsp-space-3);
-    padding: var(--slsp-space-3) var(--slsp-space-4);
+    padding: var(--slsp-space-3) var(--slsp-space-3);
     border-bottom: 1px solid var(--slsp-border-light);
 
     &:last-child {
@@ -136,8 +134,7 @@
   .slsp-data-row__label {
     color: var(--slsp-text-secondary);
     font-size: var(--slsp-font-size-body);
-    font-weight: var(--slsp-font-weight-semibold);
-    letter-spacing: 0.02em;
+    font-weight: var(--slsp-font-weight-medium);
   }
 
   .slsp-data-row__value {
@@ -149,18 +146,18 @@
 
   .slsp-data-row__meta {
     color: var(--slsp-text-secondary);
-    font-size: var(--slsp-font-size-body);
-    font-style: italic;
+    font-size: var(--slsp-font-size-support);
   }
 
   .slsp-actions {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: flex-end;
     gap: var(--slsp-space-2);
-    padding: var(--slsp-space-3) var(--slsp-space-4);
+    padding: 8px 12px;
     border-top: 1px solid var(--slsp-border-light);
-    background: var(--slsp-surface-subtle);
+    background: white;
   }
 
   .slsp-status {
@@ -170,10 +167,10 @@
     gap: var(--slsp-space-1);
     padding: 0.15rem 0.45rem;
     border-radius: 999px;
-    background: var(--slsp-purple-light);
-    color: var(--slsp-purple-dark);
+    background: var(--slsp-accent-subtle);
+    color: var(--slsp-accent);
     font-size: var(--slsp-font-size-body);
-    font-weight: var(--slsp-font-weight-semibold);
+    font-weight: var(--slsp-font-weight-medium);
 
     mat-icon {
       width: 0.8rem;
@@ -189,7 +186,7 @@
 
   .slsp-placeholder {
     border-style: dashed;
-    background: var(--slsp-surface-subtle);
+    background: white;
 
     .slsp-section__header {
       background: transparent;
@@ -198,8 +195,8 @@
 
   .slsp-section__information {
     margin: 0;
-    padding: var(--slsp-space-3) var(--slsp-space-4);
-    background: var(--slsp-surface-subtle);
+    padding: var(--slsp-space-3) var(--slsp-space-3);
+    background: white;
     color: var(--slsp-text-secondary);
     font-size: var(--slsp-font-size-body);
     line-height: var(--slsp-line-height-body);
@@ -208,7 +205,7 @@
   .slsp-empty-state {
     display: flex;
     align-items: center;
-    padding: var(--slsp-space-4);
+    padding: var(--slsp-space-3);
     color: var(--slsp-text-secondary);
     font-size: var(--slsp-font-size-body);
     font-style: normal;
@@ -220,8 +217,8 @@
     display: flex;
     align-items: flex-start;
     gap: var(--slsp-space-3);
-    padding: var(--slsp-space-4);
-    background: var(--slsp-surface-subtle);
+    padding: var(--slsp-space-3);
+    background: white;
 
     mat-form-field {
       min-width: 0;
@@ -241,18 +238,16 @@
     display: flex;
     align-items: flex-start;
     gap: var(--slsp-space-2);
-    padding: var(--slsp-space-3) var(--slsp-space-4);
-    border-left: 3px solid var(--slsp-purple);
-    background: var(--slsp-purple-light);
+    padding: var(--slsp-space-3) var(--slsp-space-3);
     color: var(--slsp-text-secondary);
-    font-size: var(--slsp-font-size-body);
+    font-size: var(--slsp-font-size-support);
     line-height: var(--slsp-line-height-body);
 
     mat-icon {
       width: 1.1rem;
       height: 1.1rem;
       flex: 0 0 auto;
-      color: var(--slsp-purple);
+      color: var(--slsp-text-secondary);
       font-size: 1.1rem;
     }
   }

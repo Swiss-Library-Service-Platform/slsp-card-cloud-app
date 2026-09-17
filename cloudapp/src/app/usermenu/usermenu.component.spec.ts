@@ -17,6 +17,7 @@ import {
   PatronState,
   PatronStateService,
 } from '../services/patron-state.service';
+import { EduIdSyncService } from '../edu-id-sync/edu-id-sync.service';
 import { UsermenuComponent } from './usermenu.component';
 
 describe('UsermenuComponent', () => {
@@ -75,6 +76,14 @@ describe('UsermenuComponent', () => {
         { provide: PatronStateService, useValue: state },
         { provide: Router, useValue: router },
         {
+          provide: EduIdSyncService,
+          useValue: {
+            loading: false,
+            needsRefresh: false,
+            refresh: jasmine.createSpy('refresh'),
+          },
+        },
+        {
           provide: BackendHttpService,
           useValue: { isSandbox$: (): Observable<boolean> => of(true) },
         },
@@ -93,7 +102,6 @@ describe('UsermenuComponent', () => {
         ActiveBlocksIndicator: 'Active blocks',
         Sandbox: 'Sandbox',
         SandboxDescription: 'Test environment',
-        PleaseNote: 'Please note:',
         TakesAFewMinutes: 'Changes take a few minutes.',
       },
     });
@@ -160,9 +168,7 @@ describe('UsermenuComponent', () => {
       ),
     ).not.toBeNull();
     expect(
-      fixture.nativeElement.querySelector(
-        '.patron-message-area > .propagation-guidance',
-      ),
+      fixture.nativeElement.querySelector('.propagation-guidance'),
     ).not.toBeNull();
     expect(
       fixture.nativeElement.querySelector('.mat-mdc-tab-group-stretch-tabs'),
@@ -201,19 +207,47 @@ describe('UsermenuComponent', () => {
     expect(getComputedStyle(tabGroup).minHeight).toBe('0px');
   });
 
-  it('places synchronization in the footer and keeps the header focused on navigation', () => {
+  it('places synchronization in the patron header and recovery outside the tabs', () => {
     const fixture = TestBed.createComponent(UsermenuComponent);
 
     fixture.detectChanges();
-
     expect(
-      fixture.nativeElement.querySelector('[data-patron-actions]'),
-    ).toBeNull();
-    expect(
-      fixture.nativeElement.querySelector(
-        '.patron-message-area app-edu-id-sync',
-      ),
+      fixture.nativeElement.querySelector('.slsp-patron-bar app-edu-id-sync'),
     ).toBeTruthy();
+
+    const sync = TestBed.inject(EduIdSyncService);
+
+    Object.defineProperty(sync, 'needsRefresh', {
+      value: true,
+      writable: true,
+    });
+    fixture.detectChanges();
+
+    const refresh = fixture.nativeElement.querySelector(
+      '[data-sync-refresh]',
+    ) as HTMLButtonElement;
+
+    expect(refresh.closest('mat-tab-group')).toBeNull();
+    refresh.click();
+    expect(sync.refresh).toHaveBeenCalled();
+    sync.loading = true;
+    fixture.detectChanges();
+    expect(
+      fixture.nativeElement.querySelector('[data-sync-status]').textContent,
+    ).toContain('EduIdSync.Refreshing');
+    expect(refresh.disabled).toBeTrue();
+  });
+
+  it('shows sync progress outside the disabled tabs', () => {
+    const fixture = TestBed.createComponent(UsermenuComponent);
+
+    TestBed.inject(EduIdSyncService).loading = true;
+    fixture.detectChanges();
+
+    const status = fixture.nativeElement.querySelector('[data-sync-status]');
+
+    expect(status.textContent).toContain('EduIdSync.Working');
+    expect(status.closest('mat-tab-group')).toBeNull();
   });
   it('makes all mutation tabs inert during a shared mutation and restores them afterward', () => {
     const fixture = TestBed.createComponent(UsermenuComponent);

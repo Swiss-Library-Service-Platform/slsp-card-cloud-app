@@ -1,22 +1,24 @@
-<div *ngIf="supported" class="edu-id-sync">
+<ng-container *ngIf="supported && !needsRefresh">
   <button
-    mat-stroked-button
+    mat-icon-button
     type="button"
-    *ngIf="!needsRefresh"
-    (click)="sync()"
+    data-patron-actions
+    [matMenuTriggerFor]="patronMenu"
     [disabled]="loading || activity.busy"
+    [attr.aria-label]="'Main.PatronActions' | translate"
+    [attr.title]="'Main.PatronActions' | translate"
   >
-    <mat-icon>sync</mat-icon>
-    {{ 'EduIdSync.Action' | translate }}
+    <mat-icon>more_horiz</mat-icon>
   </button>
-  <button
-    mat-stroked-button
-    type="button"
-    *ngIf="needsRefresh"
-    (click)="refresh()"
-    [disabled]="loading || activity.busy"
-  >
-    {{ 'EduIdSync.Refresh' | translate }}
-  </button>
-  <p *ngIf="loading" role="status">{{ 'EduIdSync.Working' | translate }}</p>
-</div>
+  <mat-menu #patronMenu="matMenu" class="slsp-patron-menu" xPosition="before">
+    <button
+      mat-menu-item
+      type="button"
+      (click)="sync()"
+      [disabled]="loading || activity.busy"
+    >
+      <mat-icon aria-hidden="true">sync</mat-icon>
+      <span>{{ 'EduIdSync.Action' | translate }}</span>
+    </button>
+  </mat-menu>
+</ng-container>

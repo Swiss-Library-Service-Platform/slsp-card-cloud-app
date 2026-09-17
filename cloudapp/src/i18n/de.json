@@ -28,15 +28,13 @@
     "Blocks": "Sperren",
     "ActiveBlocksIndicator": "Aktive Sperren",
     "LibraryCardNumber": "Nummer",
-    "PleaseNote": "Bitte beachten:",
-    "TakesAFewMinutes": "Es wird einige Minuten dauern bis Änderungen im Bibliothekssystem aktiv werden.",
+    "TakesAFewMinutes": "Änderungen können erst nach einigen Minuten in Alma erscheinen.",
     "UserNotFound": " wurde nicht in der Network Zone gefunden.",
     "TemporarilyUnavailable": "Dienst vorübergehend nicht verfügbar.",
     "Help": "Hilfe",
     "Sandbox": "Sandbox",
     "SandboxDescription": "Testumgebung",
-    "PatronActions": "Benutzeraktionen",
-    "EduIdSync": "Mit edu-ID synchronisieren"
+    "PatronActions": "Benutzeraktionen"
   },
   "Errors": {
     "AuthenticationFailed": "Ihre Sitzung konnte nicht authentifiziert werden. Bitte öffnen Sie die App erneut.",
@@ -173,8 +171,9 @@
   "EduIdSync": {
     "Action": "Mit edu-ID synchronisieren",
     "Refresh": "Benutzerdaten neu laden",
-    "Working": "Benutzerdaten werden aktualisiert. Bitte warten…",
+    "Working": "Synchronisierung mit edu-ID läuft…",
     "Confirm": "Die von edu-ID verwalteten Daten dieser Person jetzt aktualisieren? Dies kann etwas dauern. Änderungen können die Institutionszonen erst nach einigen Minuten erreichen.",
-    "Success": "edu-ID-Synchronisierung abgeschlossen. Die Übernahme in die Institutionszonen kann einige Minuten dauern."
+    "Success": "edu-ID-Synchronisierung abgeschlossen. Die Übernahme in die Institutionszonen kann einige Minuten dauern.",
+    "Refreshing": "Benutzerdaten werden neu geladen…"
   }
 }

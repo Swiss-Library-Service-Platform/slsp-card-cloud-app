@@ -28,15 +28,13 @@
     "Blocks": "Blocks",
     "ActiveBlocksIndicator": "Active blocks",
     "LibraryCardNumber": "Card Number",
-    "PleaseNote": "Please note:",
-    "TakesAFewMinutes": "It will take a few minutes until changes become active in the library system.",
+    "TakesAFewMinutes": "Changes may take a few minutes to appear in Alma.",
     "UserNotFound": " was not found in the Network Zone.",
     "TemporarilyUnavailable": "Service temporarily unavailable",
     "Help": "Help",
     "Sandbox": "Sandbox",
     "SandboxDescription": "Test environment",
-    "PatronActions": "Patron actions",
-    "EduIdSync": "Synchronize with edu-ID"
+    "PatronActions": "Patron actions"
   },
   "Errors": {
     "AuthenticationFailed": "Your session could not be authenticated. Please reopen the app.",
@@ -173,8 +171,9 @@
   "EduIdSync": {
     "Action": "Sync from edu-ID",
     "Refresh": "Refresh patron",
-    "Working": "Updating patron data. Please wait…",
+    "Working": "Syncing from edu-ID…",
     "Confirm": "Refresh this patron’s edu-ID-managed data now? This may take a while. Changes may take a few minutes to reach Institution Zones.",
-    "Success": "edu-ID synchronization completed. Institution Zone propagation may take a few minutes."
+    "Success": "edu-ID synchronization completed. Institution Zone propagation may take a few minutes.",
+    "Refreshing": "Refreshing patron…"
   }
 }
