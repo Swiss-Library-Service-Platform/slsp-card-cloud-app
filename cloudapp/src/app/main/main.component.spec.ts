@@ -321,7 +321,7 @@ describe('MainComponent', () => {
     await fixture.whenStable();
 
     expect(alert.warn).toHaveBeenCalledOnceWith(
-      'Selected user was not found in the Network Zone. Support ID: support-404',
+      'Selected user was not found in the Network Zone. <small class="slsp-support-reference">Support ID: support-404</small>',
       { autoClose: false },
     );
     expect(alert.warn.calls.mostRecent().args[0]).not.toContain(
@@ -367,7 +367,7 @@ describe('MainComponent', () => {
     await fixture.whenStable();
 
     expect(alert.error).toHaveBeenCalledOnceWith(
-      'Alma is temporarily unavailable. Reload the patron before trying again. If the problem persists, contact support. Support ID: support-503',
+      'Alma is temporarily unavailable. Reload the patron before trying again. If the problem persists, contact support. <small class="slsp-support-reference">Support ID: support-503</small>',
       { autoClose: false },
     );
   });
@@ -392,7 +392,7 @@ describe('MainComponent', () => {
       fixture.nativeElement.querySelector('.institution-now-allowed'),
     ).not.toBeNull();
     expect(alert.error).toHaveBeenCalledOnceWith(
-      'Authentication failed. Support ID: support-401',
+      'Authentication failed. <small class="slsp-support-reference">Support ID: support-401</small>',
       { autoClose: false },
     );
     expect(state.clear).not.toHaveBeenCalled();
@@ -431,6 +431,10 @@ describe('MainComponent', () => {
     expect(fixture.nativeElement.textContent).toContain(
       'Access denied. Support ID: support-403',
     );
+    expect(
+      fixture.nativeElement.querySelector('.slsp-support-reference')
+        ?.textContent,
+    ).toBe('Support ID: support-403');
     expect(fixture.nativeElement.textContent).not.toContain(
       'private backend detail',
     );

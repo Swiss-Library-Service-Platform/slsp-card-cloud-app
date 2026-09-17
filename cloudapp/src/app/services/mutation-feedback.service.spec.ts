@@ -117,7 +117,7 @@ describe('MutationFeedbackService', () => {
       .subscribe();
 
     expect(alert.error).toHaveBeenCalledOnceWith(
-      'Alma rejected the request. Support ID: support-rejected-502',
+      'Alma rejected the request. <small class="slsp-support-reference">Support ID: support-rejected-502</small>',
       PERSISTENT_ALERT_OPTIONS,
     );
     expect(alert.warn).not.toHaveBeenCalled();

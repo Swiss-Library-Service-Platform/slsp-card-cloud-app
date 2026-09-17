@@ -118,12 +118,14 @@ describe('CardErrorService', () => {
     expect(service.presentation(cardError('AUTHENTICATION_FAILED'))).toEqual({
       kind: 'access',
       reason: 'authentication',
-      message: 'Authentication failed. Support ID: support-123',
+      message:
+        'Authentication failed. <small class="slsp-support-reference">Support ID: support-123</small>',
     });
     expect(service.presentation(cardError('ACCESS_DENIED'))).toEqual({
       kind: 'access',
       reason: 'authorization',
-      message: 'Access denied. Support ID: support-123',
+      message:
+        'Access denied. <small class="slsp-support-reference">Support ID: support-123</small>',
     });
   });
 
@@ -158,7 +160,7 @@ describe('CardErrorService', () => {
     );
 
     expect(message).toBe(
-      'Selected patron was not found in the Network Zone. Support ID: support-123',
+      'Selected patron was not found in the Network Zone. <small class="slsp-support-reference">Support ID: support-123</small>',
     );
   });
 
@@ -169,7 +171,7 @@ describe('CardErrorService', () => {
     );
 
     expect(message).toBe(
-      '&lt;strong&gt;Selected &amp; &quot;patron&quot;&lt;/strong&gt; was not found in the Network Zone. Support ID: support-123',
+      '&lt;strong&gt;Selected &amp; &quot;patron&quot;&lt;/strong&gt; was not found in the Network Zone. <small class="slsp-support-reference">Support ID: support-123</small>',
     );
   });
 
@@ -177,17 +179,17 @@ describe('CardErrorService', () => {
     expect(service.presentation(cardError('ALMA_REQUEST_REJECTED'))).toEqual({
       kind: 'error',
       message:
-        'Alma could not process the request. Reload the patron and try again. If the problem persists, contact support. Support ID: support-123',
+        'Alma could not process the request. Reload the patron and try again. If the problem persists, contact support. <small class="slsp-support-reference">Support ID: support-123</small>',
     });
     expect(service.presentation(cardError('ALMA_FAILURE'))).toEqual({
       kind: 'error',
       message:
-        'Alma returned an unexpected response. Reload the patron and try again. If the problem persists, contact support. Support ID: support-123',
+        'Alma returned an unexpected response. Reload the patron and try again. If the problem persists, contact support. <small class="slsp-support-reference">Support ID: support-123</small>',
     });
     expect(service.presentation(cardError('ALMA_UNAVAILABLE'))).toEqual({
       kind: 'error',
       message:
-        'Alma is temporarily unavailable. Reload the patron before trying again. If the problem persists, contact support. Support ID: support-123',
+        'Alma is temporarily unavailable. Reload the patron before trying again. If the problem persists, contact support. <small class="slsp-support-reference">Support ID: support-123</small>',
     });
   });
 
@@ -208,7 +210,9 @@ describe('CardErrorService', () => {
         service.message(
           new HttpErrorResponse({ status, error: cardError(type) }),
         ),
-      ).toBe(`${message} Support ID: support-123`);
+      ).toBe(
+        `${message} <small class="slsp-support-reference">Support ID: support-123</small>`,
+      );
       expect(
         service.message(
           new HttpErrorResponse({ status: 500, error: cardError(type) }),
@@ -287,7 +291,7 @@ describe('CardErrorService', () => {
     ).toEqual({
       kind: 'error',
       message:
-        'Alma could not process the request. Reload the patron and try again. If the problem persists, contact support. Support ID: support-123',
+        'Alma could not process the request. Reload the patron and try again. If the problem persists, contact support. <small class="slsp-support-reference">Support ID: support-123</small>',
     });
     expect(
       service.presentation(new HttpErrorResponse({ status: 400, error })),

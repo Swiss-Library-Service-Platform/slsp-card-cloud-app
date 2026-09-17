@@ -104,7 +104,6 @@ describe('BlockComponent', () => {
 
     translate.setTranslation('en', {
       Blocks: {
-        Status: 'Status:',
         Active: 'Active',
         MoreInformation: 'More information',
         ExistingBlocks: 'Account is blocked!',
@@ -124,6 +123,8 @@ describe('BlockComponent', () => {
         NoExpiringDate: 'Not expiring',
         Note: 'Note',
         GlobalBlockNote: 'Reason for blocking',
+        Reason: 'Reason',
+        LibraryCodeHint: 'Include your library code if possible.',
         RemoveBlock: 'Remove Block',
         AddBlock: 'Add Block',
         Comment: 'Comment',
@@ -322,7 +323,7 @@ describe('BlockComponent', () => {
     component.remove(block('02'));
 
     expect(alert.error).toHaveBeenCalledOnceWith(
-      'Alma is temporarily unavailable. Reload the patron before trying again. If the problem persists, contact support. Support ID: support-block-503',
+      'Alma is temporarily unavailable. Reload the patron before trying again. If the problem persists, contact support. <small class="slsp-support-reference">Support ID: support-block-503</small>',
       { autoClose: false },
     );
     expect(state.replacePatron).not.toHaveBeenCalled();

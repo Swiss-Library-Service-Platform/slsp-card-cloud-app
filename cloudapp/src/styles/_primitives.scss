@@ -193,7 +193,8 @@
     }
   }
 
-  .slsp-section__information {
+  // Override Material paragraph margins as well as setting the panel padding.
+  .slsp-section .slsp-section__information {
     margin: 0;
     padding: var(--slsp-space-3) var(--slsp-space-3);
     background: white;
@@ -234,22 +235,15 @@
     border-top: 1px solid var(--slsp-border-light);
   }
 
-  .slsp-guidance {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--slsp-space-2);
-    padding: var(--slsp-space-3) var(--slsp-space-3);
+  .slsp-support-reference {
+    display: block;
+    margin-top: 6px;
     color: var(--slsp-text-secondary);
     font-size: var(--slsp-font-size-support);
+    font-weight: var(--slsp-font-weight-regular);
     line-height: var(--slsp-line-height-body);
-
-    mat-icon {
-      width: 1.1rem;
-      height: 1.1rem;
-      flex: 0 0 auto;
-      color: var(--slsp-text-secondary);
-      font-size: 1.1rem;
-    }
+    overflow-wrap: anywhere;
+    user-select: text;
   }
 
   .slsp-visually-hidden {

@@ -6,8 +6,9 @@
 }
 
 .slsp-primary-tabs {
-  flex: 1 1 0;
-  min-height: 0;
+  flex: 1 0 140px;
+  // Keep the 40px tab bar and roughly 100px of form content visible.
+  min-height: 140px;
 }
 
 .slsp-environment-banner,
@@ -16,18 +17,19 @@
 }
 
 .blocks-tab-indicator {
-  width: 0.5rem;
-  height: 0.5rem;
+  box-sizing: border-box;
+  width: 8px;
+  height: 8px;
   flex: 0 0 auto;
   margin-left: 2px;
   border-radius: 50%;
-  background: #ffb4ab;
+  border: 1px solid white;
+  background: var(--slsp-danger);
 }
 
 .patron-message-area {
-  flex: 0 0 auto;
+  flex: 0 1 auto;
   min-height: 0;
-  max-height: 35%;
   overflow-y: auto;
 }
 
@@ -53,19 +55,34 @@
 
 .propagation-guidance {
   display: flex;
-  flex: 0 0 auto;
   align-items: flex-start;
   gap: 6px;
+  flex: 0 0 auto;
   margin: 0;
-  padding: 8px 12px;
+  padding: 8px 0;
   color: var(--slsp-text-secondary);
   font-size: var(--slsp-font-size-support);
   line-height: var(--slsp-line-height-body);
-
   mat-icon {
     flex: 0 0 auto;
+    // Center against the first text line, including when the note wraps.
+    margin-top: calc(
+      (var(--slsp-font-size-support) * var(--slsp-line-height-body) - 16px) / 2
+    );
     width: 16px;
     height: 16px;
     font-size: 16px;
+    line-height: 16px;
+  }
+}
+
+// In very short panes, scroll the shell instead of squeezing alerts/recovery away.
+@media (max-height: 400px) {
+  :host {
+    overflow-y: auto;
+  }
+
+  .patron-message-area {
+    flex-shrink: 0;
   }
 }

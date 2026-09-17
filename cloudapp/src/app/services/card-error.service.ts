@@ -89,6 +89,7 @@ const SAFE_SUPPORT_ID = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/u;
 export class CardErrorService {
   private readonly translate = inject(TranslateService);
 
+  // Render these messages through Angular’s HTML sanitization, as the SDK alerts do.
   public message(error: unknown, entityDescription?: string): string {
     return this.presentation(error, entityDescription).message;
   }
@@ -132,9 +133,12 @@ export class CardErrorService {
       return message;
     }
 
-    return `${message} ${this.translate.instant('Errors.SupportId', {
-      errorId,
-    })}`;
+    return `${message} <small class="slsp-support-reference">${this.translate.instant(
+      'Errors.SupportId',
+      {
+        errorId,
+      },
+    )}</small>`;
   }
 }
 

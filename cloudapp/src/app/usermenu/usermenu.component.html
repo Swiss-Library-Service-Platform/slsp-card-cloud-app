@@ -33,29 +33,6 @@
     </div>
   </header>
 
-  <div class="patron-message-area">
-    <div *ngIf="sync.loading || sync.needsRefresh" class="patron-sync-status">
-      <span *ngIf="sync.loading" role="status" data-sync-status>
-        <mat-spinner diameter="18" aria-hidden="true"></mat-spinner>
-        {{
-          (sync.needsRefresh ? 'EduIdSync.Refreshing' : 'EduIdSync.Working')
-            | translate
-        }}
-      </span>
-      <button
-        *ngIf="sync.needsRefresh"
-        mat-button
-        type="button"
-        data-sync-refresh
-        (click)="sync.refresh()"
-        [disabled]="sync.loading || activity.busy"
-      >
-        {{ 'EduIdSync.Refresh' | translate }}
-      </button>
-    </div>
-    <cloudapp-alert></cloudapp-alert>
-  </div>
-
   <mat-tab-group
     mat-stretch-tabs
     class="slsp-primary-tabs"
@@ -91,6 +68,29 @@
       <app-block></app-block>
     </mat-tab>
   </mat-tab-group>
+
+  <div class="patron-message-area">
+    <div *ngIf="sync.loading || sync.needsRefresh" class="patron-sync-status">
+      <span *ngIf="sync.loading" role="status" data-sync-status>
+        <mat-spinner diameter="18" aria-hidden="true"></mat-spinner>
+        {{
+          (sync.needsRefresh ? 'EduIdSync.Refreshing' : 'EduIdSync.Working')
+            | translate
+        }}
+      </span>
+      <button
+        *ngIf="sync.needsRefresh"
+        mat-button
+        type="button"
+        data-sync-refresh
+        (click)="sync.refresh()"
+        [disabled]="sync.loading || activity.busy"
+      >
+        {{ 'EduIdSync.Refresh' | translate }}
+      </button>
+    </div>
+    <cloudapp-alert></cloudapp-alert>
+  </div>
 
   <div class="propagation-guidance">
     <mat-icon aria-hidden="true">info_outline</mat-icon>

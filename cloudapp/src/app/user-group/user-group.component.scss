@@ -85,12 +85,3 @@
   color: var(--slsp-danger);
   font-weight: var(--slsp-font-weight-medium);
 }
-
-.user-group__support {
-  padding-top: var(--slsp-space-2);
-  border-top: 1px solid var(--slsp-border-light);
-  color: var(--slsp-text-secondary);
-  font-size: var(--slsp-font-size-support);
-  line-height: var(--slsp-line-height-body);
-  user-select: text;
-}

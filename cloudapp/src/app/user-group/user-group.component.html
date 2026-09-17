@@ -33,7 +33,11 @@
             {{ 'UserGroup.LoadError' | translate }}
           </p>
           <p>{{ error }}</p>
-          <p *ngIf="errorId" class="user-group__support" data-support-reference>
+          <p
+            *ngIf="errorId"
+            class="slsp-support-reference"
+            data-support-reference
+          >
             {{ 'Errors.SupportId' | translate: { errorId: errorId } }}
           </p>
         </div>

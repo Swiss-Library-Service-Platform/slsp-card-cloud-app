@@ -64,6 +64,8 @@
   }
 
   .mat-mdc-form-field {
+    --mdc-outlined-text-field-outline-color: #909090;
+    --mdc-outlined-text-field-hover-outline-color: #707070;
     --mdc-outlined-text-field-focus-outline-color: var(--slsp-accent);
     --mdc-outlined-text-field-focus-label-text-color: var(--slsp-accent);
 
@@ -80,17 +82,22 @@
   }
 
   button.slsp-destructive-action {
-    --mdc-outlined-button-label-text-color: var(--slsp-danger);
-    --mdc-outlined-button-outline-color: rgba(150, 48, 49, 0.55);
-    --mat-outlined-button-state-layer-color: var(--slsp-danger);
-    --mat-outlined-button-ripple-color: rgba(150, 48, 49, 0.16);
+    line-height: var(--slsp-line-height-compact);
+    --mdc-text-button-label-text-color: var(--slsp-danger);
+    --mat-text-button-state-layer-color: var(--slsp-danger);
+    --mat-text-button-ripple-color: rgba(150, 48, 49, 0.16);
 
     mat-icon {
+      width: 18px;
+      height: 18px;
+      font-size: 18px;
+      line-height: 18px;
+      // Optically center the delete glyph, whose ink sits low in its icon box.
       transform: translateY(-1px);
     }
 
-    &:hover,
-    &:focus-visible {
+    &:not(:disabled):hover,
+    &:not(:disabled):focus-visible {
       background: var(--slsp-danger-light);
     }
   }

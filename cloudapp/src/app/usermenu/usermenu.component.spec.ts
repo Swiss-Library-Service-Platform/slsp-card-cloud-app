@@ -203,8 +203,8 @@ describe('UsermenuComponent', () => {
 
     expect(getComputedStyle(patronBar).flexShrink).toBe('0');
     expect(getComputedStyle(environmentBanner).flexShrink).toBe('0');
-    expect(getComputedStyle(tabGroup).flexBasis).toBe('0px');
-    expect(getComputedStyle(tabGroup).minHeight).toBe('0px');
+    expect(getComputedStyle(tabGroup).flexBasis).toBe('140px');
+    expect(getComputedStyle(tabGroup).minHeight).toBe('140px');
   });
 
   it('places synchronization in the patron header and recovery outside the tabs', () => {

@@ -9,7 +9,6 @@
         hasBlocks(patron.blocks) ? 'warning' : 'check_circle'
       }}</mat-icon>
       <div>
-        <strong>{{ 'Blocks.Status' | translate }}</strong>
         <span *ngIf="hasBlocks(patron.blocks)">
           {{ 'Blocks.ExistingBlocks' | translate }}
         </span>
@@ -55,7 +54,7 @@
           </div>
           <div class="slsp-actions">
             <button
-              mat-stroked-button
+              mat-button
               type="button"
               class="slsp-destructive-action"
               data-action="remove"
@@ -128,7 +127,7 @@
           </div>
           <div class="slsp-actions">
             <button
-              mat-stroked-button
+              mat-button
               type="button"
               class="slsp-destructive-action"
               data-action="remove"
@@ -203,7 +202,7 @@
           </div>
           <div class="slsp-actions">
             <button
-              mat-stroked-button
+              mat-button
               type="button"
               class="slsp-destructive-action"
               data-action="remove"
@@ -262,13 +261,13 @@
               }}</span>
             </div>
             <div>
-              <strong>{{ 'Blocks.GlobalBlockNote' | translate }}</strong
+              <strong>{{ 'Blocks.Reason' | translate }}</strong
               ><span>{{ currentBlock.note }}</span>
             </div>
           </div>
           <div class="slsp-actions">
             <button
-              mat-stroked-button
+              mat-button
               type="button"
               class="slsp-destructive-action"
               data-action="remove"
@@ -280,11 +279,19 @@
           </div>
         </ng-container>
         <ng-template #addGlobal>
-          <div class="slsp-inline-form">
-            <mat-form-field
-              ><mat-label>{{ 'Blocks.GlobalBlockNote' | translate }}</mat-label
-              ><input [(ngModel)]="commentGlobal" matInput
-            /></mat-form-field>
+          <p class="block-global-hint" id="global-block-library-code-hint">
+            {{ 'Blocks.LibraryCodeHint' | translate }}
+          </p>
+          <div class="slsp-inline-form block-global-form">
+            <mat-form-field>
+              <mat-label>{{ 'Blocks.GlobalBlockNote' | translate }}</mat-label>
+              <input
+                [(ngModel)]="commentGlobal"
+                matInput
+                required
+                aria-describedby="global-block-library-code-hint"
+              />
+            </mat-form-field>
             <button
               mat-flat-button
               color="primary"
@@ -334,7 +341,7 @@
         </div>
         <div class="slsp-actions">
           <button
-            mat-stroked-button
+            mat-button
             type="button"
             class="slsp-destructive-action"
             data-action="remove"

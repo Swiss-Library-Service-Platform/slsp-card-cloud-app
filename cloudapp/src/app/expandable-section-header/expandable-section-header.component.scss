@@ -20,6 +20,7 @@
 
 .expandable-information--expanded {
   grid-template-rows: 1fr;
+  border-bottom: 1px solid var(--slsp-border-light);
   opacity: 1;
 }
 
