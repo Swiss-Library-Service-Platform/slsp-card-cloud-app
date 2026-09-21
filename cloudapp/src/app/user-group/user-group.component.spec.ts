@@ -189,6 +189,80 @@ describe('UserGroupComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('Details');
   });
 
+  it('shows no alternatives for the same code even when names differ', () => {
+    const fixture = TestBed.createComponent(UserGroupComponent);
+
+    fixture.componentRef.setInput('patron', {
+      currentUserGroupCode: '01',
+      currentUserGroupDescription: 'Alma name',
+    });
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('Alma name');
+    expect(fixture.nativeElement.textContent).toContain(
+      'UserGroup.NoOtherAvailable',
+    );
+    expect(
+      fixture.nativeElement.querySelector('.user-group__single'),
+    ).toBeNull();
+    expect(
+      fixture.nativeElement.querySelector('.user-group__description'),
+    ).toBeNull();
+    expect(fixture.nativeElement.querySelector('.slsp-actions')).toBeNull();
+    expect(fixture.nativeElement.querySelector('mat-select')).toBeNull();
+  });
+
+  ['02', '1', '01 ', null].forEach((currentCode) => {
+    it(`retains the sole alternative for current code ${JSON.stringify(currentCode)}`, () => {
+      const fixture = TestBed.createComponent(UserGroupComponent);
+
+      fixture.componentRef.setInput('patron', {
+        currentUserGroupCode: currentCode,
+        currentUserGroupDescription: 'Group',
+      });
+      api.setUserGroup.and.returnValue(
+        of({ currentUserGroupCode: '01' } as CardPatron),
+      );
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).not.toContain(
+        'UserGroup.NoOtherAvailable',
+      );
+
+      const select = fixture.nativeElement.querySelector(
+        '.user-group__single button',
+      ) as HTMLButtonElement;
+
+      expect(select).not.toBeNull();
+      select.click();
+      fixture.detectChanges();
+
+      const save = fixture.nativeElement.querySelector(
+        '.slsp-actions button',
+      ) as HTMLButtonElement;
+
+      expect(save.disabled).toBeFalse();
+      save.click();
+      expect(api.setUserGroup).toHaveBeenCalledWith(context.patronId, '01');
+    });
+  });
+
+  ['', '   ', 'Group', ' Group '].forEach((description) => {
+    it(`omits empty or repeated description ${JSON.stringify(description)}`, () => {
+      api.getEligibleUserGroups.and.returnValue(
+        of({
+          eligibleGroups: [{ code: '01', displayName: ' Group ', description }],
+        }),
+      );
+
+      const fixture = TestBed.createComponent(UserGroupComponent);
+
+      fixture.componentRef.setInput('patron', { currentUserGroupCode: '02' });
+      fixture.detectChanges();
+      expect(
+        fixture.nativeElement.querySelector('.user-group__description'),
+      ).toBeNull();
+    });
+  });
+
   it('renders descriptions as text and disables save during loading', () => {
     const pending = new Subject<{
       eligibleGroups: {

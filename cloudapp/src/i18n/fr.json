@@ -168,6 +168,7 @@
     "Retry": "Réessayer",
     "Eligible": "Changer de groupe",
     "OnlyEligible": "Seul groupe disponible",
+    "NoOtherAvailable": "Aucun autre groupe d’utilisateurs n’est disponible.",
     "Select": "Sélectionner ce groupe",
     "Save": "Enregistrer le groupe",
     "Confirm": "Modifier le groupe de cette personne ?",

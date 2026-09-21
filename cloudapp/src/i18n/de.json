@@ -168,6 +168,7 @@
     "Retry": "Erneut versuchen",
     "Eligible": "Benutzergruppe ändern",
     "OnlyEligible": "Einzige verfügbare Gruppe",
+    "NoOtherAvailable": "Es sind keine weiteren Benutzergruppen verfügbar.",
     "Select": "Diese Gruppe auswählen",
     "Save": "Benutzergruppe speichern",
     "Confirm": "Benutzergruppe dieser Person ändern?",

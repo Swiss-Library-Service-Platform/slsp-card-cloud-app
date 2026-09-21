@@ -61,6 +61,26 @@ export class UserGroupComponent implements OnChanges {
     return this.groups.find((group) => group.code === this.selectedCode);
   }
 
+  public get onlyCurrentGroupAvailable(): boolean {
+    return (
+      !this.loading &&
+      !this.error &&
+      this.groups.length === 1 &&
+      this.groups[0].code === this.patron.currentUserGroupCode
+    );
+  }
+
+  public get groupDescription(): string | null {
+    const group =
+      this.selectedGroup ||
+      (this.groups.length === 1 ? this.groups[0] : undefined);
+    const description = group?.description.trim();
+
+    return description && description !== group?.displayName.trim()
+      ? description
+      : null;
+  }
+
   public get canSave(): boolean {
     return (
       !this.disabled &&

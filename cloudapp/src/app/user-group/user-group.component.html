@@ -37,7 +37,12 @@
       </div>
     </ng-container>
 
-    <ng-container *ngIf="!loading && !error && groups.length">
+    <p *ngIf="onlyCurrentGroupAvailable" class="user-group__label">
+      {{ 'UserGroup.NoOtherAvailable' | translate }}
+    </p>
+    <ng-container
+      *ngIf="!loading && !error && groups.length && !onlyCurrentGroupAvailable"
+    >
       <mat-form-field *ngIf="groups.length > 1; else singleGroup">
         <mat-label>{{ 'UserGroup.Eligible' | translate }}</mat-label>
         <mat-select
@@ -69,11 +74,11 @@
           </button>
         </div>
       </ng-template>
-      <p class="user-group__description">
-        {{
-          (selectedGroup || (groups.length === 1 ? groups[0] : null))
-            ?.description
-        }}
+      <p
+        *ngIf="groupDescription as description"
+        class="user-group__description"
+      >
+        {{ description }}
       </p>
     </ng-container>
   </div>
@@ -89,7 +94,10 @@
       {{ 'UserGroup.Retry' | translate }}
     </button>
   </div>
-  <div *ngIf="!loading && !error && groups.length" class="slsp-actions">
+  <div
+    *ngIf="!loading && !error && groups.length && !onlyCurrentGroupAvailable"
+    class="slsp-actions"
+  >
     <button
       mat-flat-button
       color="primary"
