@@ -123,7 +123,7 @@
     "UserGroupDescription": "Wählen Sie eine der für dieses Konto verfügbaren Benutzergruppen.",
     "AddressType": "Adress-Typ",
     "Preferred": "Bevorzugt",
-    "UseAsPreferred": "Als Bevorzugt markieren",
+    "UseAsPreferred": "Als bevorzugt festlegen",
     "NoAddresses": "Dieser Nutzer hat keine Adress-Einträge in der Network-Zone.",
     "SetError": "Die bevorzugte Adresse konnte nicht geändert werden.",
     "SetSuccess": "Bevorzugte Adresse erfolgreich geändert."

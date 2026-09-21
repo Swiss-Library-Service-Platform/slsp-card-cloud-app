@@ -123,7 +123,7 @@
     "UserGroupDescription": "Sélectionnez un des groupes disponibles pour ce compte.",
     "AddressType": "Type d'adresse",
     "Preferred": "Préférée",
-    "UseAsPreferred": "Utiliser comme adresse préférée",
+    "UseAsPreferred": "Définir comme préférée",
     "NoAddresses": "Cet utilisateur n'a pas d'adresse renseignée dans la zone réseau.",
     "SetError": "L'adresse préférée n'a pas pu être changée.",
     "SetSuccess": "L'adresse préférée a pu être modifiée avec succès."

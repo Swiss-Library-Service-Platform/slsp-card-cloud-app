@@ -1,11 +1,18 @@
 .address-row {
-  align-items: flex-end;
+  align-items: stretch;
+  flex-direction: column;
 }
 
-.address-row__heading {
+.address-row__action {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  justify-content: flex-end;
+  width: 100%;
+
+  button {
+    white-space: normal;
+    height: auto;
+    min-height: 36px;
+  }
 }
 
 .address-row__address {
@@ -13,15 +20,4 @@
   color: var(--slsp-text-secondary);
   font-size: var(--slsp-font-size-body);
   line-height: var(--slsp-line-height-body);
-}
-
-@media (max-width: 420px) {
-  .address-row {
-    align-items: flex-start;
-    flex-direction: column;
-
-    button {
-      align-self: flex-end;
-    }
-  }
 }

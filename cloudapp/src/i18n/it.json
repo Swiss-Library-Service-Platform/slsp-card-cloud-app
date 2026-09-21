@@ -123,7 +123,7 @@
     "UserGroupDescription": "Selezionare uno dei gruppi disponibili per questo account.",
     "AddressType": "Tipo di indirizzo",
     "Preferred": "Preferito",
-    "UseAsPreferred": "Usare come indirizzo preferito",
+    "UseAsPreferred": "Imposta come preferito",
     "NoAddresses": "Questo utente non ha alcuna voce di indirizzo presente nella NZ.",
     "SetError": "Indirizzo preferito non può essere cambiato.",
     "SetSuccess": "Indirizzo preferito cambiato con successo."

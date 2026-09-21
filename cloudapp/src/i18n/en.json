@@ -123,7 +123,7 @@
     "UserGroupDescription": "Select one of the available user groups for this account.",
     "AddressType": "Address Type",
     "Preferred": "Preferred",
-    "UseAsPreferred": "Use as preferred address",
+    "UseAsPreferred": "Make preferred",
     "NoAddresses": "This user does not have any address entries in the NZ.",
     "SetError": "Preferred address could not be changed.",
     "SetSuccess": "Preferred address changed successfully."

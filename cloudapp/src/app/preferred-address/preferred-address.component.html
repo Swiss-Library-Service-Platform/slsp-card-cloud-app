@@ -22,15 +22,6 @@
       data-address
     >
       <div class="slsp-data-row__content">
-        <div class="address-row__heading">
-          <span class="slsp-data-row__label">
-            {{ 'Settings.AddressType' | translate }}
-          </span>
-          <span *ngIf="item.preferred" class="slsp-status">
-            <mat-icon>check</mat-icon>
-            {{ 'Settings.Preferred' | translate }}
-          </span>
-        </div>
         <span class="slsp-data-row__value">
           <strong>{{ item.types.join(', ') }}</strong>
         </span>
@@ -51,16 +42,23 @@
         </span>
       </div>
 
-      <button
-        *ngIf="!item.preferred"
-        mat-stroked-button
-        type="button"
-        data-action="prefer"
-        [disabled]="!item.elementReference || loading"
-        (click)="changePreferredAddress(item)"
-      >
-        {{ 'Settings.UseAsPreferred' | translate }}
-      </button>
+      <div class="address-row__action">
+        <span *ngIf="item.preferred" class="slsp-status">
+          <mat-icon aria-hidden="true">check</mat-icon>
+          {{ 'Settings.Preferred' | translate }}
+        </span>
+        <button
+          *ngIf="!item.preferred"
+          mat-flat-button
+          color="primary"
+          type="button"
+          data-action="prefer"
+          [disabled]="!item.elementReference || loading"
+          (click)="changePreferredAddress(item)"
+        >
+          {{ 'Settings.UseAsPreferred' | translate }}
+        </button>
+      </div>
     </li>
   </ul>
 </section>
