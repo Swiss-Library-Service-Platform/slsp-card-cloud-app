@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { AlertService } from '@exlibris/exl-cloudapp-angular-lib';
+import { inject, Injectable } from '@angular/core';
 import {
   BehaviorSubject,
   defer,
@@ -13,6 +14,7 @@ import {
 export class MutationActivityService {
   public readonly busy$: Observable<boolean>;
   public readonly eligibilityRefresh$ = new Subject<void>();
+  private readonly alert = inject(AlertService);
   private readonly active = new BehaviorSubject(false);
 
   public constructor() {
@@ -29,6 +31,7 @@ export class MutationActivityService {
         return EMPTY;
       }
       this.active.next(true);
+      this.alert.clear();
 
       return defer(request).pipe(finalize(() => this.active.next(false)));
     }).pipe(

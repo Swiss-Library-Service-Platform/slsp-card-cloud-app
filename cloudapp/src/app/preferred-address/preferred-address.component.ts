@@ -1,11 +1,4 @@
-import {
-  Component,
-  DestroyRef,
-  EventEmitter,
-  Input,
-  Output,
-  inject,
-} from '@angular/core';
+import { Component, DestroyRef, Input, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize, tap } from 'rxjs';
 
@@ -21,8 +14,6 @@ import { PatronStateService } from '../services/patron-state.service';
 })
 export class PreferredAddressComponent {
   @Input({ required: true }) public patron!: CardPatron;
-  @Input() public disabled = false;
-  @Output() public readonly busyChange = new EventEmitter<boolean>();
 
   public loading = false;
 
@@ -35,7 +26,6 @@ export class PreferredAddressComponent {
     const mutationContext = this.state.currentMutationContext();
 
     if (
-      this.disabled ||
       this.loading ||
       address.preferred ||
       !address.elementReference ||
@@ -44,7 +34,7 @@ export class PreferredAddressComponent {
       return;
     }
 
-    this.setBusy(true);
+    this.loading = true;
     this.api
       .setPreferredAddress(mutationContext.patronId, address.elementReference)
       .pipe(
@@ -52,7 +42,9 @@ export class PreferredAddressComponent {
           this.state.replacePatron(patron, mutationContext);
         }),
         this.feedback.handle('Settings.SetSuccess'),
-        finalize(() => this.setBusy(false)),
+        finalize(() => {
+          this.loading = false;
+        }),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe();
@@ -60,10 +52,5 @@ export class PreferredAddressComponent {
 
   public trackAddress(index: number, address: PostalAddressView): string {
     return address.elementReference ?? `${index}:${address.types.join(',')}`;
-  }
-
-  private setBusy(value: boolean): void {
-    this.loading = value;
-    this.busyChange.emit(value);
   }
 }

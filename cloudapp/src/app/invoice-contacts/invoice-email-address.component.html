@@ -15,7 +15,7 @@
         <mat-radio-button
           value="preferred"
           data-source="preferred"
-          [disabled]="preferredMissing || disabled || loading"
+          [disabled]="preferredMissing || loading"
         >
           {{ 'Settings.UsePreferredEmailAddress' | translate }}
         </mat-radio-button>
@@ -34,7 +34,7 @@
         <mat-radio-button
           value="custom"
           data-source="custom"
-          [disabled]="disabled || loading"
+          [disabled]="loading"
         >
           {{ 'Settings.UseCustomEmailAddress' | translate }}
         </mat-radio-button>
@@ -69,7 +69,7 @@
       mat-stroked-button
       type="button"
       data-action="cancel"
-      [disabled]="disabled || loading || form.pristine"
+      [disabled]="loading || form.pristine"
       (click)="cancel()"
     >
       {{ 'General.Cancel' | translate }}
@@ -79,7 +79,7 @@
       color="primary"
       type="button"
       data-action="save"
-      [disabled]="disabled || loading || !form.dirty"
+      [disabled]="loading || !form.dirty"
       (click)="save()"
     >
       {{ 'Settings.SaveEmailAddress' | translate }}

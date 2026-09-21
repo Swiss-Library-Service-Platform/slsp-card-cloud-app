@@ -1,5 +1,6 @@
 {
   "General": {
+    "PleaseWait": "Please wait …",
     "ChangePatron": "Change patron",
     "Yes": "Yes",
     "No": "No",
@@ -178,9 +179,7 @@
   "EduIdSync": {
     "Action": "Sync from edu-ID",
     "Refresh": "Refresh patron",
-    "Working": "Syncing from edu-ID…",
     "Confirm": "Refresh this patron’s edu-ID-managed data now? This may take a while. Changes may take a few minutes to reach Institution Zones.",
-    "Success": "edu-ID synchronization completed. Institution Zone propagation may take a few minutes.",
-    "Refreshing": "Refreshing patron…"
+    "Success": "edu-ID synchronization completed. Institution Zone propagation may take a few minutes."
   }
 }

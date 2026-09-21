@@ -1,100 +1,106 @@
 <ng-container *ngIf="vm$ | async as vm; else loading">
   <div
-    *ngIf="vm.sandbox"
-    class="slsp-environment-banner"
-    data-environment-banner
-    role="status"
-  >
-    <mat-icon>warning</mat-icon>
-    <span class="slsp-environment-banner__label">
-      {{ 'Main.Sandbox' | translate }}
-    </span>
-    <span>{{ 'Main.SandboxDescription' | translate }}</span>
-  </div>
-
-  <header class="slsp-patron-bar">
-    <button
-      mat-icon-button
-      class="slsp-patron-bar__back"
-      type="button"
-      (click)="navigateBack()"
-      [attr.aria-label]="'General.ChangePatron' | translate"
-      [attr.title]="'General.ChangePatron' | translate"
-    >
-      <mat-icon>arrow_back</mat-icon>
-    </button>
-
-    <div class="slsp-patron-bar__identity">
-      <mat-icon>account_circle</mat-icon>
-      <span class="slsp-patron-bar__name" [attr.title]="vm.patron.fullName">{{
-        vm.patron.fullName
-      }}</span>
-      <app-edu-id-sync></app-edu-id-sync>
-    </div>
-  </header>
-
-  <mat-tab-group
-    mat-stretch-tabs
-    class="slsp-primary-tabs"
+    class="account-content"
+    data-account-content
     [attr.inert]="(activity.busy$ | async) ? '' : null"
     [attr.aria-busy]="activity.busy$ | async"
   >
-    <mat-tab>
-      <ng-template mat-tab-label>
-        <span data-tab-label>{{ 'Main.Cards' | translate }}</span>
-      </ng-template>
-      <app-librarycardnumber></app-librarycardnumber>
-    </mat-tab>
-
-    <mat-tab>
-      <ng-template mat-tab-label>
-        <span data-tab-label>{{ 'Main.Account' | translate }}</span>
-      </ng-template>
-      <app-settings></app-settings>
-    </mat-tab>
-
-    <mat-tab>
-      <ng-template mat-tab-label>
-        <span data-tab-label>{{ 'Main.Blocks' | translate }}</span>
-        <span
-          *ngIf="vm.hasBlocks"
-          class="blocks-tab-indicator"
-          aria-hidden="true"
-        ></span>
-        <span *ngIf="vm.hasBlocks" class="slsp-visually-hidden">
-          {{ 'Main.ActiveBlocksIndicator' | translate }}
-        </span>
-      </ng-template>
-      <app-block></app-block>
-    </mat-tab>
-  </mat-tab-group>
-
-  <div class="patron-message-area">
-    <div *ngIf="sync.loading || sync.needsRefresh" class="patron-sync-status">
-      <span *ngIf="sync.loading" role="status" data-sync-status>
-        <mat-spinner diameter="18" aria-hidden="true"></mat-spinner>
-        {{
-          (sync.needsRefresh ? 'EduIdSync.Refreshing' : 'EduIdSync.Working')
-            | translate
-        }}
+    <div
+      *ngIf="vm.sandbox"
+      class="slsp-environment-banner"
+      data-environment-banner
+      role="status"
+    >
+      <mat-icon>warning</mat-icon>
+      <span class="slsp-environment-banner__label">
+        {{ 'Main.Sandbox' | translate }}
       </span>
-      <button
-        *ngIf="sync.needsRefresh"
-        mat-button
-        type="button"
-        data-sync-refresh
-        (click)="sync.refresh()"
-        [disabled]="sync.loading || activity.busy"
-      >
-        {{ 'EduIdSync.Refresh' | translate }}
-      </button>
+      <span>{{ 'Main.SandboxDescription' | translate }}</span>
     </div>
-    <cloudapp-alert></cloudapp-alert>
-  </div>
 
-  <div class="propagation-guidance">
-    <mat-icon aria-hidden="true">info_outline</mat-icon>
-    <span>{{ 'Main.TakesAFewMinutes' | translate }}</span>
+    <header class="slsp-patron-bar">
+      <button
+        mat-icon-button
+        class="slsp-patron-bar__back"
+        type="button"
+        (click)="navigateBack()"
+        [attr.aria-label]="'General.ChangePatron' | translate"
+        [attr.title]="'General.ChangePatron' | translate"
+      >
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+
+      <div class="slsp-patron-bar__identity">
+        <mat-icon>account_circle</mat-icon>
+        <span class="slsp-patron-bar__name" [attr.title]="vm.patron.fullName">{{
+          vm.patron.fullName
+        }}</span>
+        <app-edu-id-sync></app-edu-id-sync>
+      </div>
+    </header>
+
+    <mat-tab-group mat-stretch-tabs class="slsp-primary-tabs">
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span data-tab-label>{{ 'Main.Cards' | translate }}</span>
+        </ng-template>
+        <app-librarycardnumber></app-librarycardnumber>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span data-tab-label>{{ 'Main.Account' | translate }}</span>
+        </ng-template>
+        <app-settings></app-settings>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span data-tab-label>{{ 'Main.Blocks' | translate }}</span>
+          <span
+            *ngIf="vm.hasBlocks"
+            class="blocks-tab-indicator"
+            aria-hidden="true"
+          ></span>
+          <span *ngIf="vm.hasBlocks" class="slsp-visually-hidden">
+            {{ 'Main.ActiveBlocksIndicator' | translate }}
+          </span>
+        </ng-template>
+        <app-block></app-block>
+      </mat-tab>
+    </mat-tab-group>
+
+    <div class="patron-message-area">
+      <div *ngIf="sync.needsRefresh" class="patron-sync-status">
+        <button
+          mat-button
+          type="button"
+          data-sync-refresh
+          (click)="sync.refresh()"
+          [disabled]="sync.loading || activity.busy"
+        >
+          {{ 'EduIdSync.Refresh' | translate }}
+        </button>
+      </div>
+      <cloudapp-alert></cloudapp-alert>
+    </div>
+
+    <div class="propagation-guidance">
+      <mat-icon aria-hidden="true">info_outline</mat-icon>
+      <span>{{ 'Main.TakesAFewMinutes' | translate }}</span>
+    </div>
+  </div>
+  <div
+    *ngIf="activity.busy$ | async"
+    class="loading-shade mutation-overlay"
+    data-mutation-overlay
+  >
+    <div role="status" class="mutation-overlay__status">
+      <mat-spinner diameter="50" aria-hidden="true"></mat-spinner>
+      <span class="slsp-visually-hidden">{{
+        'General.PleaseWait' | translate
+      }}</span>
+    </div>
   </div>
 </ng-container>
 

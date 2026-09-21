@@ -202,10 +202,6 @@ describe('InvoicePostalAddressComponent', () => {
     fixture.componentInstance.form.markAsDirty();
     fixture.detectChanges();
     expect(cancel().disabled).toBeFalse();
-
-    fixture.componentRef.setInput('disabled', true);
-    fixture.detectChanges();
-    expect(cancel().disabled).toBeTrue();
   });
 
   it('displays and rejects a normalized unknown legacy country code', () => {

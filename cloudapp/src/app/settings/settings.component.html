@@ -1,24 +1,9 @@
 <ng-container *ngIf="patron$ | async as patron">
   <div class="slsp-screen">
-    <app-preferred-address
-      [patron]="patron"
-      [disabled]="mutationBusy"
-      (busyChange)="setMutationBusy($event)"
-    ></app-preferred-address>
+    <app-preferred-address [patron]="patron"></app-preferred-address>
 
-    <app-invoice-contacts
-      [patron]="patron"
-      [disabled]="mutationBusy"
-      (busyChange)="setMutationBusy($event)"
-    ></app-invoice-contacts>
+    <app-invoice-contacts [patron]="patron"></app-invoice-contacts>
 
-    <app-user-group
-      [patron]="patron"
-      [disabled]="mutationBusy"
-    ></app-user-group>
+    <app-user-group [patron]="patron"></app-user-group>
   </div>
 </ng-container>
-
-<div class="loading-shade" *ngIf="mutationBusy">
-  <mat-spinner diameter="50"></mat-spinner>
-</div>

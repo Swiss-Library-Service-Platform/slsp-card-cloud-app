@@ -1,5 +1,6 @@
 {
   "General": {
+    "PleaseWait": "Veuillez patienter …",
     "ChangePatron": "Changer de compte",
     "Yes": "Oui",
     "No": "Non",
@@ -178,9 +179,7 @@
   "EduIdSync": {
     "Action": "Synchroniser depuis edu-ID",
     "Refresh": "Recharger les données",
-    "Working": "Synchronisation depuis edu-ID…",
     "Confirm": "Actualiser maintenant les données de cette personne gérées par edu-ID ? Cela peut prendre un moment. Les modifications peuvent mettre quelques minutes à parvenir aux zones institutionnelles.",
-    "Success": "Synchronisation edu-ID terminée. La propagation aux zones institutionnelles peut prendre quelques minutes.",
-    "Refreshing": "Rechargement des données…"
+    "Success": "Synchronisation edu-ID terminée. La propagation aux zones institutionnelles peut prendre quelques minutes."
   }
 }

@@ -10,7 +10,6 @@ import { BehaviorSubject, Subject, of } from 'rxjs';
 
 import { AppModule } from '../app.module';
 import { InvoiceContactsComponent } from '../invoice-contacts/invoice-contacts.component';
-import { InvoicePostalAddressComponent } from '../invoice-contacts/invoice-postal-address.component';
 import { CardPatron } from '../models/card-api.model';
 import { PreferredAddressComponent } from '../preferred-address/preferred-address.component';
 import { PatronApiService } from '../services/patron-api.service';
@@ -148,28 +147,7 @@ describe('SettingsComponent', () => {
     );
   });
 
-  it('coordinates one shared Account mutation busy state', () => {
-    const preferred = fixture.debugElement.query(
-      By.directive(PreferredAddressComponent),
-    ).componentInstance as PreferredAddressComponent;
-    const postal = fixture.debugElement.query(
-      By.directive(InvoicePostalAddressComponent),
-    ).componentInstance as InvoicePostalAddressComponent;
-
-    postal.busyChange.emit(true);
-    fixture.detectChanges();
-
-    expect(fixture.componentInstance.mutationBusy).toBeTrue();
-    expect(preferred.disabled).toBeTrue();
-    expect(postal.disabled).toBeTrue();
-    expect(postal.form.disabled).toBeTrue();
-
-    postal.busyChange.emit(false);
-    fixture.detectChanges();
-    expect(fixture.componentInstance.mutationBusy).toBeFalse();
-  });
-
-  it('renders one shared loading spinner during a preferred-address mutation', () => {
+  it('leaves the mutation overlay to the account shell', () => {
     const preferred = fixture.debugElement.query(
       By.directive(PreferredAddressComponent),
     ).componentInstance as PreferredAddressComponent;
@@ -180,9 +158,9 @@ describe('SettingsComponent', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelectorAll('.loading-shade')).toHaveSize(
-      1,
+      0,
     );
-    expect(fixture.nativeElement.querySelectorAll('mat-spinner')).toHaveSize(1);
+    expect(fixture.nativeElement.querySelectorAll('mat-spinner')).toHaveSize(0);
 
     response.next(patron);
     response.complete();

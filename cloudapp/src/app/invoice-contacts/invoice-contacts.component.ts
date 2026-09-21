@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 import { CardPatron } from '../models/card-api.model';
 
@@ -9,6 +9,4 @@ import { CardPatron } from '../models/card-api.model';
 })
 export class InvoiceContactsComponent {
   @Input({ required: true }) public patron!: CardPatron;
-  @Input() public disabled = false;
-  @Output() public readonly busyChange = new EventEmitter<boolean>();
 }

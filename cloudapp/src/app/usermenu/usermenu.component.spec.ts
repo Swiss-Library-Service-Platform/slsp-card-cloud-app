@@ -233,22 +233,59 @@ describe('UsermenuComponent', () => {
     sync.loading = true;
     fixture.detectChanges();
     expect(
-      fixture.nativeElement.querySelector('[data-sync-status]').textContent,
-    ).toContain('EduIdSync.Refreshing');
+      fixture.nativeElement.querySelector('[data-sync-status]'),
+    ).toBeNull();
     expect(refresh.disabled).toBeTrue();
   });
 
-  it('shows sync progress outside the disabled tabs', () => {
-    const fixture = TestBed.createComponent(UsermenuComponent);
+  for (const outcome of ['success', 'error']) {
+    it(`shows one blocking overlay until mutation ${outcome}`, () => {
+      const fixture = TestBed.createComponent(UsermenuComponent);
+      const pending = new Subject<void>();
 
-    TestBed.inject(EduIdSyncService).loading = true;
-    fixture.detectChanges();
+      fixture.detectChanges();
+      TestBed.inject(MutationActivityService)
+        .run(() => pending)
+        .subscribe({ error: () => undefined });
+      fixture.detectChanges();
+      expect(
+        fixture.nativeElement.querySelectorAll('[data-mutation-overlay]'),
+      ).toHaveSize(1);
+      expect(
+        fixture.nativeElement
+          .querySelector('[data-account-content]')
+          .hasAttribute('inert'),
+      ).toBeTrue();
+      expect(
+        fixture.nativeElement.querySelector(
+          '[data-account-content] .slsp-patron-bar',
+        ),
+      ).not.toBeNull();
+      expect(
+        fixture.nativeElement.querySelector(
+          '[data-mutation-overlay] [role="status"]',
+        ),
+      ).not.toBeNull();
+      expect(
+        fixture.nativeElement.querySelector('[data-sync-status]'),
+      ).toBeNull();
 
-    const status = fixture.nativeElement.querySelector('[data-sync-status]');
-
-    expect(status.textContent).toContain('EduIdSync.Working');
-    expect(status.closest('mat-tab-group')).toBeNull();
-  });
+      if (outcome === 'error') {
+        pending.error(new Error('test'));
+      } else {
+        pending.complete();
+      }
+      fixture.detectChanges();
+      expect(
+        fixture.nativeElement.querySelector('[data-mutation-overlay]'),
+      ).toBeNull();
+      expect(
+        fixture.nativeElement
+          .querySelector('[data-account-content]')
+          .hasAttribute('inert'),
+      ).toBeFalse();
+    });
+  }
   it('makes all mutation tabs inert during a shared mutation and restores them afterward', () => {
     const fixture = TestBed.createComponent(UsermenuComponent);
     const pending = new Subject<void>();
@@ -259,16 +296,12 @@ describe('UsermenuComponent', () => {
       .subscribe();
     fixture.detectChanges();
     expect(
-      fixture.nativeElement
-        .querySelector('mat-tab-group')
-        .hasAttribute('inert'),
-    ).toBeTrue();
+      fixture.nativeElement.querySelector('mat-tab-group').closest('[inert]'),
+    ).not.toBeNull();
     pending.complete();
     fixture.detectChanges();
     expect(
-      fixture.nativeElement
-        .querySelector('mat-tab-group')
-        .hasAttribute('inert'),
-    ).toBeFalse();
+      fixture.nativeElement.querySelector('mat-tab-group').closest('[inert]'),
+    ).toBeNull();
   });
 });

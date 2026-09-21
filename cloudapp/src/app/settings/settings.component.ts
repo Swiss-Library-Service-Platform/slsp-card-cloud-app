@@ -10,7 +10,6 @@ import { PatronStateService } from '../services/patron-state.service';
 })
 export class SettingsComponent {
   public readonly patron$: Observable<CardPatron | null>;
-  public mutationBusy = false;
 
   private readonly state = inject(PatronStateService);
 
@@ -20,9 +19,5 @@ export class SettingsComponent {
         patronState.status === 'ready' ? patronState.patron : null,
       ),
     );
-  }
-
-  public setMutationBusy(busy: boolean): void {
-    this.mutationBusy = busy;
   }
 }

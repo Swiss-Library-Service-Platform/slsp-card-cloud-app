@@ -8,14 +8,6 @@
     </p>
   </app-expandable-section-header>
 
-  <app-invoice-postal-address
-    [patron]="patron"
-    [disabled]="disabled"
-    (busyChange)="busyChange.emit($event)"
-  ></app-invoice-postal-address>
-  <app-invoice-email-address
-    [patron]="patron"
-    [disabled]="disabled"
-    (busyChange)="busyChange.emit($event)"
-  ></app-invoice-email-address>
+  <app-invoice-postal-address [patron]="patron"></app-invoice-postal-address>
+  <app-invoice-email-address [patron]="patron"></app-invoice-email-address>
 </section>

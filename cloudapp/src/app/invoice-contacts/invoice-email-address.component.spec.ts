@@ -207,10 +207,6 @@ describe('InvoiceEmailAddressComponent', () => {
     fixture.componentInstance.form.markAsDirty();
     fixture.detectChanges();
     expect(cancel().disabled).toBeFalse();
-
-    fixture.componentRef.setInput('disabled', true);
-    fixture.detectChanges();
-    expect(cancel().disabled).toBeTrue();
   });
 
   it('retains dirty e-mail input after an API failure', () => {

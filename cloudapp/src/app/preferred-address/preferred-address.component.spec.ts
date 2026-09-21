@@ -127,7 +127,7 @@ describe('PreferredAddressComponent', () => {
     expect(emptyState.querySelector('mat-icon')).toBeNull();
   });
 
-  it('emits the shared busy state and replaces patron state from the response', () => {
+  it('replaces patron state from the response', () => {
     const updated = {
       ...patron,
       postalAddresses: [
@@ -135,9 +135,7 @@ describe('PreferredAddressComponent', () => {
         { ...alternative, preferred: true },
       ],
     };
-    const busy: boolean[] = [];
 
-    fixture.componentInstance.busyChange.subscribe((value) => busy.push(value));
     api.setPreferredAddress.and.returnValue(of(updated));
 
     fixture.componentInstance.changePreferredAddress(alternative);
@@ -147,6 +145,6 @@ describe('PreferredAddressComponent', () => {
       'alternative-reference',
     );
     expect(state.replacePatron).toHaveBeenCalledOnceWith(updated, context);
-    expect(busy).toEqual([true, false]);
+    expect(fixture.componentInstance.loading).toBeFalse();
   });
 });

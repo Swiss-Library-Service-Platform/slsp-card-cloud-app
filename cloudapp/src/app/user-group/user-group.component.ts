@@ -33,7 +33,6 @@ import {
 })
 export class UserGroupComponent implements OnChanges {
   @Input({ required: true }) public patron!: CardPatron;
-  @Input() public disabled = false;
   public groups: readonly EligibleUserGroup[] = [];
   public selectedCode: string | null = null;
   public loading = false;
@@ -83,7 +82,6 @@ export class UserGroupComponent implements OnChanges {
 
   public get canSave(): boolean {
     return (
-      !this.disabled &&
       !this.activity.busy &&
       !this.loading &&
       !this.saving &&

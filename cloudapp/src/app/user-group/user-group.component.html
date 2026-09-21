@@ -47,7 +47,7 @@
         <mat-label>{{ 'UserGroup.Eligible' | translate }}</mat-label>
         <mat-select
           [(ngModel)]="selectedCode"
-          [disabled]="disabled || activity.busy || saving"
+          [disabled]="activity.busy || saving"
         >
           <mat-option
             *ngFor="let group of groups; trackBy: trackGroup"
@@ -68,7 +68,7 @@
             mat-button
             type="button"
             (click)="selectedCode = groups[0].code"
-            [disabled]="disabled || activity.busy || saving"
+            [disabled]="activity.busy || saving"
           >
             {{ 'UserGroup.Select' | translate }}
           </button>
@@ -88,7 +88,7 @@
       type="button"
       data-action="retry-groups"
       (click)="loadGroups()"
-      [disabled]="disabled || activity.busy"
+      [disabled]="activity.busy"
     >
       <mat-icon aria-hidden="true">refresh</mat-icon>
       {{ 'UserGroup.Retry' | translate }}

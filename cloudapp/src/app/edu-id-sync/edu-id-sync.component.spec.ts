@@ -63,6 +63,35 @@ describe('EduIdSyncComponent', () => {
     });
     component = TestBed.runInInjectionContext(() => new EduIdSyncComponent());
   });
+  it('keeps an old banner when synchronization confirmation is cancelled', () => {
+    component.sync();
+    confirmation.next(false);
+    expect(api.syncEduId).not.toHaveBeenCalled();
+    expect(TestBed.inject(AlertService).clear).not.toHaveBeenCalled();
+  });
+
+  it('holds shared busy through a failed recovery refresh and retains recovery', () => {
+    api.syncEduId.and.returnValue(
+      throwError(() => failure('SYNC_REFRESH_FAILED', 502)),
+    );
+    component.sync();
+    confirmation.next(true);
+
+    const pending = new Subject<CardPatron>();
+
+    api.getPatron.and.returnValue(pending);
+
+    const sync = TestBed.inject(EduIdSyncService);
+    const activity = TestBed.inject(MutationActivityService);
+
+    sync.refresh();
+    expect(activity.busy).toBeTrue();
+    pending.error(failure('UNEXPECTED_FAILURE', 500));
+    expect(activity.busy).toBeFalse();
+    expect(sync.needsRefresh).toBeTrue();
+    expect(sync.loading).toBeFalse();
+  });
+
   it('limits visibility to numeric edu-ID identifiers', () => {
     expect(component.supported).toBeTrue();
     state.currentMutationContext.and.returnValue({

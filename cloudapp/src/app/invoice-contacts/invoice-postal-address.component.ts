@@ -1,12 +1,4 @@
-import {
-  Component,
-  DestroyRef,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output,
-  inject,
-} from '@angular/core';
+import { Component, DestroyRef, Input, OnChanges, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
@@ -44,8 +36,6 @@ type InvoiceSource = 'preferred' | 'custom';
 })
 export class InvoicePostalAddressComponent implements OnChanges {
   @Input({ required: true }) public patron!: CardPatron;
-  @Input() public disabled = false;
-  @Output() public readonly busyChange = new EventEmitter<boolean>();
 
   public readonly form = new FormGroup({
     source: new FormControl<InvoiceSource>('preferred', { nonNullable: true }),
@@ -119,7 +109,7 @@ export class InvoicePostalAddressComponent implements OnChanges {
   }
 
   public save(): void {
-    if (this.disabled || this.loading) {
+    if (this.loading) {
       return;
     }
 
@@ -270,7 +260,7 @@ export class InvoicePostalAddressComponent implements OnChanges {
   }
 
   private applyControlState(): void {
-    if (this.disabled || this.loading) {
+    if (this.loading) {
       this.form.disable({ emitEvent: false });
 
       return;
@@ -305,6 +295,5 @@ export class InvoicePostalAddressComponent implements OnChanges {
   private setBusy(value: boolean): void {
     this.loading = value;
     this.applyControlState();
-    this.busyChange.emit(value);
   }
 }

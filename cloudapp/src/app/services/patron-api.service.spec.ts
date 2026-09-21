@@ -7,6 +7,7 @@ import {
   SetInvoicePostalAddressRequest,
 } from '../models/card-api.model';
 import { BackendHttpService } from './backend-http.service';
+import { MutationActivityService } from './mutation-activity.service';
 import { PatronApiService } from './patron-api.service';
 
 describe('PatronApiService', () => {
@@ -242,6 +243,11 @@ describe('PatronApiService', () => {
   });
 
   const operations = [
+    [
+      'setUserGroup',
+      (): Observable<CardPatron> => service.setUserGroup('p', '04'),
+    ],
+    ['syncEduId', (): Observable<CardPatron> => service.syncEduId('p')],
     ['getPatron', (): Observable<CardPatron> => service.getPatron('p')],
     [
       'addLibraryCardNumber',
@@ -300,6 +306,31 @@ describe('PatronApiService', () => {
   ] as const;
 
   operations.forEach(([methodName, invoke]) => {
+    if (methodName !== 'getPatron') {
+      for (const outcome of ['success', 'error']) {
+        it(`${methodName} exposes busy until ${outcome}`, () => {
+          const pending = new Subject<CardPatron>();
+
+          backend.post.and.returnValue(pending);
+          backend.put.and.returnValue(pending);
+          backend.delete.and.returnValue(pending);
+
+          const activity = TestBed.inject(MutationActivityService);
+
+          invoke().subscribe({ error: () => undefined });
+          expect(activity.busy).toBeTrue();
+
+          if (outcome === 'error') {
+            pending.error(new Error('test'));
+          } else {
+            pending.next(patron);
+            pending.complete();
+          }
+          expect(activity.busy).toBeFalse();
+        });
+      }
+    }
+
     it(`${methodName} forwards the exact backend error`, (done) => {
       const error = new Error(`${methodName} sentinel`);
 
