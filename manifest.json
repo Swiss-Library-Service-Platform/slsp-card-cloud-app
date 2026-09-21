@@ -15,8 +15,8 @@
    "contentSecurity": {
       "connectSrc": [
          "http://localhost:8080",
-         "https://card-test.swisscovery.network/",
-         "https://card.swisscovery.network/",
+         "https://cardproxy-test.swisscovery.network/",
+         "https://cardproxy.swisscovery.network/",
          "https://api-eu.hosted.exlibrisgroup.com/"
       ]
    }

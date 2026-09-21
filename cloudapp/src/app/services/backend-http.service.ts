@@ -24,8 +24,8 @@ interface BackendEnvironment {
 @Injectable({ providedIn: 'root' })
 export class BackendHttpService {
   private static readonly LOCAL_URL = 'http://localhost:8080';
-  private static readonly SANDBOX_URL = 'https://card-test.swisscovery.network';
-  private static readonly PROD_URL = 'https://card.swisscovery.network';
+  private static readonly SANDBOX_URL = 'https://cardproxy-test.swisscovery.network';
+  private static readonly PROD_URL = 'https://cardproxy.swisscovery.network';
   private static readonly TOKEN_TTL_MS = 30_000;
   private static readonly PATH_ORIGIN = 'https://card-backend.invalid';
 

@@ -78,12 +78,15 @@ describe('BackendHttpService', () => {
     ['https://localhost:4200', 'http://localhost:8080'],
     [
       'https://eu01-psb.alma.exlibrisgroup.com',
-      'https://card-test.swisscovery.network',
+      'https://cardproxy-test.swisscovery.network',
     ],
-    ['https://eu01.alma.exlibrisgroup.com', 'https://card.swisscovery.network'],
+    [
+      'https://eu01.alma.exlibrisgroup.com',
+      'https://cardproxy.swisscovery.network',
+    ],
     [
       'HTTPS://EU01-PSB.ALMA.EXLIBRISGROUP.COM',
-      'https://card-test.swisscovery.network',
+      'https://cardproxy-test.swisscovery.network',
     ],
   ].forEach(([almaUrl, expected]) => {
     it(`maps ${almaUrl} to ${expected}`, () => {
@@ -134,7 +137,7 @@ describe('BackendHttpService', () => {
     service.get<void>('/api/v1/allowed').subscribe();
 
     const firstRequest = http.expectOne(
-      'https://card.swisscovery.network/api/v1/allowed',
+      'https://cardproxy.swisscovery.network/api/v1/allowed',
     );
 
     expect(firstRequest.request.headers.get('Authorization')).toBe(
@@ -146,7 +149,7 @@ describe('BackendHttpService', () => {
     service.get<void>('/api/v1/allowed').subscribe();
 
     const secondRequest = http.expectOne(
-      'https://card.swisscovery.network/api/v1/allowed',
+      'https://cardproxy.swisscovery.network/api/v1/allowed',
     );
 
     expect(secondRequest.request.headers.get('Authorization')).toBe(
@@ -179,7 +182,7 @@ describe('BackendHttpService', () => {
     service.get<void>('/api/v1/allowed').subscribe();
 
     const request = http.expectOne(
-      'https://card.swisscovery.network/api/v1/allowed',
+      'https://cardproxy.swisscovery.network/api/v1/allowed',
     );
 
     expect(request.request.headers.get('Authorization')).toBe(
@@ -200,7 +203,7 @@ describe('BackendHttpService', () => {
       });
 
     const request = http.expectOne(
-      'https://card.swisscovery.network/api/v1/patrons/123?view=complete',
+      'https://cardproxy.swisscovery.network/api/v1/patrons/123?view=complete',
     );
 
     expect(request.request.headers.get('Authorization')).toBe(
@@ -219,7 +222,7 @@ describe('BackendHttpService', () => {
       .subscribe();
 
     const post = http.expectOne(
-      'https://card.swisscovery.network/api/v1/patrons/123/numbers',
+      'https://cardproxy.swisscovery.network/api/v1/patrons/123/numbers',
     );
 
     expect(post.request.method).toBe('POST');
@@ -231,7 +234,7 @@ describe('BackendHttpService', () => {
       .subscribe();
 
     const put = http.expectOne(
-      'https://card.swisscovery.network/api/v1/patrons/123/settings',
+      'https://cardproxy.swisscovery.network/api/v1/patrons/123/settings',
     );
 
     expect(put.request.method).toBe('PUT');
@@ -243,7 +246,7 @@ describe('BackendHttpService', () => {
       .subscribe();
 
     const deletion = http.expectOne(
-      'https://card.swisscovery.network/api/v1/patrons/123/numbers/selector',
+      'https://cardproxy.swisscovery.network/api/v1/patrons/123/numbers/selector',
     );
 
     expect(deletion.request.method).toBe('DELETE');
@@ -265,7 +268,7 @@ describe('BackendHttpService', () => {
     expect(sandbox).toBeTrue();
     expect(events.getInitData).toHaveBeenCalledTimes(1);
     http
-      .expectOne('https://card-test.swisscovery.network/api/v1/allowed')
+      .expectOne('https://cardproxy-test.swisscovery.network/api/v1/allowed')
       .flush(null);
   });
 
@@ -307,7 +310,7 @@ describe('BackendHttpService', () => {
       service.get<void>('/api/v1/allowed').subscribe();
 
       const request = http.expectOne(
-        'https://card.swisscovery.network/api/v1/allowed',
+        'https://cardproxy.swisscovery.network/api/v1/allowed',
       );
 
       expect(request.request.headers.get('Authorization')).toBe(
@@ -336,7 +339,7 @@ describe('BackendHttpService', () => {
 
     service.get<void>('/api/v1/allowed').subscribe();
     http
-      .expectOne('https://card.swisscovery.network/api/v1/allowed')
+      .expectOne('https://cardproxy.swisscovery.network/api/v1/allowed')
       .flush(null);
     expect(events.getAuthToken).toHaveBeenCalledTimes(2);
   });
@@ -362,7 +365,7 @@ describe('BackendHttpService', () => {
 
     service.get<void>('/api/v1/allowed').subscribe();
     http
-      .expectOne('https://card-test.swisscovery.network/api/v1/allowed')
+      .expectOne('https://cardproxy-test.swisscovery.network/api/v1/allowed')
       .flush(null);
     expect(events.getInitData).toHaveBeenCalledTimes(2);
   });
@@ -388,7 +391,7 @@ describe('BackendHttpService', () => {
 
     service.get<void>('/api/v1/allowed').subscribe();
     http
-      .expectOne('https://card.swisscovery.network/api/v1/allowed')
+      .expectOne('https://cardproxy.swisscovery.network/api/v1/allowed')
       .flush(null);
     expect(events.getInitData).toHaveBeenCalledTimes(2);
   });
@@ -456,11 +459,11 @@ describe('BackendHttpService', () => {
     service.get<void>('/api/v1/patrons/primary%2Fid').subscribe();
 
     const request = http.expectOne(
-      'https://card.swisscovery.network/api/v1/patrons/primary%2Fid',
+      'https://cardproxy.swisscovery.network/api/v1/patrons/primary%2Fid',
     );
 
     expect(request.request.url).toBe(
-      'https://card.swisscovery.network/api/v1/patrons/primary%2Fid',
+      'https://cardproxy.swisscovery.network/api/v1/patrons/primary%2Fid',
     );
     request.flush(null);
   });
