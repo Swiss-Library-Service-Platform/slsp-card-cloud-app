@@ -14,7 +14,11 @@ import {
 } from 'rxjs';
 
 import { PERSISTENT_ALERT_OPTIONS } from '../alert-options';
-import { isEditablePatronId } from '../patron-eligibility';
+import {
+  getPatronAccountType,
+  isEditablePatronId,
+  PatronAccountType,
+} from '../patron-eligibility';
 import { AuthorizationResult } from '../services/authorization.service';
 import { BackendHttpService } from '../services/backend-http.service';
 import { CardErrorService } from '../services/card-error.service';
@@ -113,6 +117,10 @@ export class MainComponent implements OnInit {
 
   public entityPrimaryIdentifier(entity: Entity): string | null {
     return extractPatronId(entity);
+  }
+
+  public entityAccountType(entity: Entity): PatronAccountType {
+    return getPatronAccountType(this.entityPrimaryIdentifier(entity));
   }
 
   public entityEditable(entity: Entity): boolean {

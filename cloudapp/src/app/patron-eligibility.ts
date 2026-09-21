@@ -11,17 +11,32 @@ export const EDITABLE_PATRON_ID_PREFIXES = [
   'VAT_FREE_NPO_',
 ] as const;
 
-export function isEditablePatronId(primaryId: string | null): boolean {
+export type PatronAccountType = 'eduId' | 'institutional' | 'unsupported';
+
+export function getPatronAccountType(
+  primaryId: string | null,
+): PatronAccountType {
   if (!primaryId) {
-    return false;
+    return 'unsupported';
   }
 
-  const normalizedId = primaryId.toLowerCase();
-
-  return (
+  if (
     EDITABLE_PATRON_ID_SUFFIXES.some((suffix) =>
-      normalizedId.endsWith(suffix),
-    ) ||
+      primaryId.toLowerCase().endsWith(suffix),
+    )
+  ) {
+    return 'eduId';
+  }
+
+  if (
     EDITABLE_PATRON_ID_PREFIXES.some((prefix) => primaryId.startsWith(prefix))
-  );
+  ) {
+    return 'institutional';
+  }
+
+  return 'unsupported';
+}
+
+export function isEditablePatronId(primaryId: string | null): boolean {
+  return getPatronAccountType(primaryId) !== 'unsupported';
 }

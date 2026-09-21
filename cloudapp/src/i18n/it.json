@@ -23,6 +23,10 @@
     "SelectUser": "Seleziona un utente:"
   },
   "Main": {
+    "AccountType": {
+      "eduId": "edu-ID",
+      "institutional": "Istituzionale"
+    },
     "Cards": "Tessere",
     "Account": "Account",
     "Blocks": "Blocchi",

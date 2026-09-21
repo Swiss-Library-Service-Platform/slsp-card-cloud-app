@@ -114,6 +114,11 @@ describe('MainComponent', () => {
       Main: {
         UserNotFound: ' was not found in the Network Zone.',
         TemporarilyUnavailable: 'Service temporarily unavailable',
+        AccountType: {
+          eduId: 'edu-ID',
+          institutional: 'Institutional',
+          unsupported: 'Unsupported account type',
+        },
         Sandbox: 'Sandbox',
         SandboxDescription: 'Test environment',
       },
@@ -214,6 +219,65 @@ describe('MainComponent', () => {
     ineligibleAction.click();
 
     expect(state.select).not.toHaveBeenCalled();
+  });
+
+  [
+    {
+      link: '/users/patron%40eduid.ch',
+      label: 'edu-ID',
+      id: 'patron@eduid.ch',
+      enabled: true,
+    },
+    {
+      link: '/users/ORG_12345',
+      label: 'Institutional',
+      id: 'ORG_12345',
+      enabled: true,
+    },
+    {
+      link: '/users/staff-user',
+      label: 'Unsupported account type',
+      id: 'staff-user',
+      enabled: false,
+    },
+    {
+      link: '/users/invalid?expand=full',
+      label: 'Unsupported account type',
+      id: null,
+      enabled: false,
+    },
+  ].forEach(({ link, label, id, enabled }) => {
+    it(`shows account metadata for ${link} without changing eligibility`, () => {
+      entities$.next([{ ...selected, link }]);
+
+      const fixture = TestBed.createComponent(MainComponent);
+
+      fixture.detectChanges();
+
+      const row: HTMLButtonElement =
+        fixture.nativeElement.querySelector('.entity-action');
+      const labelElement = row.querySelector(
+        '.entity-heading .entity-account-type',
+      );
+      const identifier = row.querySelector('.entity-primary-identifier');
+
+      if (enabled) {
+        expect(labelElement?.textContent?.trim()).toBe(label);
+      } else {
+        expect(labelElement).toBeNull();
+        expect(row.textContent).not.toContain('Unsupported account type');
+      }
+      expect(identifier?.textContent?.trim() ?? null).toBe(id);
+      expect(identifier?.getAttribute('title') ?? null).toBe(id);
+      expect(
+        fixture.nativeElement.querySelectorAll('.entity-list-hint').length,
+      ).toBe(0);
+      expect(row.disabled).toBe(!enabled);
+      expect(row.querySelector('.entity-navigation-icon') !== null).toBe(
+        enabled,
+      );
+      expect(row.querySelector('[tabindex]')).toBeNull();
+    });
   });
 
   it('uses a non-visible accessible label for the user list', () => {

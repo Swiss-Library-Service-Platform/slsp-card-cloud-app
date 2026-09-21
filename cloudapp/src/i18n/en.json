@@ -23,6 +23,10 @@
     "SelectUser": "Select a user:"
   },
   "Main": {
+    "AccountType": {
+      "eduId": "edu-ID",
+      "institutional": "Institutional"
+    },
     "Cards": "Cards",
     "Account": "Account",
     "Blocks": "Blocks",

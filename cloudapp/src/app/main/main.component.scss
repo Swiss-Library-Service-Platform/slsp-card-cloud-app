@@ -61,6 +61,7 @@
 }
 
 .entity-name {
+  min-width: 0;
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -69,7 +70,27 @@
   font-weight: var(--slsp-font-weight-medium);
 }
 
+.entity-heading {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: var(--slsp-space-2);
+}
+
+.entity-account-type {
+  flex: 0 0 auto;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.045);
+  color: var(--slsp-text-secondary);
+  font-size: 0.6875rem;
+  font-weight: var(--slsp-font-weight-regular);
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
 .entity-primary-identifier {
+  min-width: 0;
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;

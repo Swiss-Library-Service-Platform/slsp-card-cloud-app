@@ -4,10 +4,13 @@ import { extractPatronId } from './services/patron-state.service';
 import {
   EDITABLE_PATRON_ID_PREFIXES,
   isEditablePatronId,
+  getPatronAccountType,
 } from './patron-eligibility';
 
 describe('patron eligibility', () => {
   it('accepts production and test edu-ID accounts case-insensitively', () => {
+    expect(getPatronAccountType('patron@eduid.ch')).toBe('eduId');
+    expect(getPatronAccountType('patron@TEST.EDUID.CH')).toBe('eduId');
     expect(isEditablePatronId('patron@eduid.ch')).toBeTrue();
     expect(isEditablePatronId('patron@test.eduid.ch')).toBeTrue();
     expect(isEditablePatronId('patron@EDUID.CH')).toBeTrue();
@@ -16,10 +19,14 @@ describe('patron eligibility', () => {
 
   EDITABLE_PATRON_ID_PREFIXES.forEach((prefix) => {
     it(`accepts an account beginning with ${prefix}`, () => {
+      expect(getPatronAccountType(`${prefix}12345`)).toBe('institutional');
       expect(isEditablePatronId(`${prefix}12345`)).toBeTrue();
     });
 
     it(`rejects a differently cased ${prefix} prefix`, () => {
+      expect(getPatronAccountType(`${prefix.toLowerCase()}12345`)).toBe(
+        'unsupported',
+      );
       expect(isEditablePatronId(`${prefix.toLowerCase()}12345`)).toBeFalse();
     });
   });
@@ -33,6 +40,7 @@ describe('patron eligibility', () => {
     'prefix_ORG_12345',
   ].forEach((primaryId) => {
     it(`rejects ineligible primary ID ${String(primaryId)}`, () => {
+      expect(getPatronAccountType(primaryId)).toBe('unsupported');
       expect(isEditablePatronId(primaryId)).toBeFalse();
     });
   });

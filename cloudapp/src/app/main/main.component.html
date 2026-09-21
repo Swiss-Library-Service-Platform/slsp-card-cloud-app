@@ -95,13 +95,25 @@
         >
           <span class="entity-row">
             <span class="entity-content">
-              <span class="entity-name">{{ entity.description }}</span>
+              <span class="entity-heading">
+                <span class="entity-name" [attr.title]="entity.description">{{
+                  entity.description
+                }}</span>
+                <span
+                  *ngIf="entityEditable(entity)"
+                  class="entity-account-type"
+                >
+                  {{
+                    'Main.AccountType.' + entityAccountType(entity) | translate
+                  }}
+                </span>
+              </span>
               <span
                 *ngIf="entityPrimaryIdentifier(entity) as primaryIdentifier"
                 class="entity-primary-identifier"
+                [attr.title]="primaryIdentifier"
+                >{{ primaryIdentifier }}</span
               >
-                {{ primaryIdentifier }}
-              </span>
             </span>
             <mat-icon
               *ngIf="entityEditable(entity)"
