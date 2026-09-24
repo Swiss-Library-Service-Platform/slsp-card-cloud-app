@@ -33,6 +33,7 @@
     "Help": "Aiuto"
   },
   "LibraryCardNumber": {
+    "BlockedBarcode": "Questo codice a barre è stato bloccato perché potrebbe essere assegnato anche a un altro utente.",
     "Add": "Aggiungere",
     "Alias": "Alias",
     "AddLibraryCardNumber": "Aggiungere numero di tessera della biblioteca",

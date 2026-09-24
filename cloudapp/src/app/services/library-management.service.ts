@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { CloudAppEventsService, Entity, AlertService, CloudAppRestService } from '@exlibris/exl-cloudapp-angular-lib';
 import { User } from '../model/user.model';
+import { Librarycardnumber } from '../model/librarycardnumber.model';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -230,6 +231,7 @@ export class LibraryManagementService {
    * @memberof LibraryManagementService
    */
   async addUserLibraryCardNumber(libraryCardNumber: string): Promise<Boolean> {
+    if (Librarycardnumber.isBlockedLibraryCardNumber(libraryCardNumber)) return false;
     let primaryId = this.initData['user']['primaryId'],
       instCode = this.initData['instCode'];
     // ADD NUMBER TO USER OBJECT

@@ -7,6 +7,20 @@
  */
 export class Librarycardnumber {
 
+    // SUPPORT-43463: inclusive ranges supplied by Raphaël; deployment requires approval.
+    private static readonly blockedBarcodeRanges = [
+        { start: 1207001, end: 1209000 },
+        { start: 1210001, end: 1212329 }
+    ];
+
+    static isBlockedLibraryCardNumber(libraryCardNumber: string): boolean {
+        if (!libraryCardNumber) return false;
+        const match = this.sanitizeLibraryCardNumber(libraryCardNumber).match(/^e(\d+)$/);
+        if (!match) return false;
+        const number = Number(match[1]);
+        return this.blockedBarcodeRanges.some(range => number >= range.start && number <= range.end);
+    }
+
     static allowedRegex = [
         // RERO Freiburg
         /^200\d{7}$/i,
@@ -145,6 +159,7 @@ export class Librarycardnumber {
      */
     static isValidLibraryCardNumber(librarycardnumber: string) {
         if (!librarycardnumber) return false;
+        if (this.isBlockedLibraryCardNumber(librarycardnumber)) return false;
 
         // Matriculation number (must be checked before regex patterns)
         if (librarycardnumber.match(/^\d{2}-?\d{3}-?\d{3}$/)) {
