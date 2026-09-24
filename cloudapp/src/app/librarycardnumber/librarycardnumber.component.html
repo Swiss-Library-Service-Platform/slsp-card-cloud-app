@@ -76,7 +76,12 @@
         <mat-form-field appearance="fill">
           <mat-label>{{'Main.LibraryCardNumber' | translate}}</mat-label>
           <input matInput formControlName="newLibraryCardNumber">
-          <mat-error *ngIf="!numberForm.valid"> {{ 'LibraryCardNumber.FomatError' | translate }} </mat-error>
+          <mat-error *ngIf="numberForm.controls.newLibraryCardNumber.hasError('blockedBarcode')">
+            {{ 'LibraryCardNumber.BlockedBarcode' | translate }}
+          </mat-error>
+          <mat-error *ngIf="!numberForm.valid && !numberForm.controls.newLibraryCardNumber.hasError('blockedBarcode')">
+            {{ 'LibraryCardNumber.FomatError' | translate }}
+          </mat-error>
         </mat-form-field>
         <button #submitBtn type="submit" mat-flat-button [disabled]="!numberForm.valid" class="slsp-purple-button"
           color="secondary">

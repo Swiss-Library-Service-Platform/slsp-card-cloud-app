@@ -33,6 +33,7 @@
     "Help": "Help"
   },
   "LibraryCardNumber": {
+    "BlockedBarcode": "This barcode has been blocked because it may also be assigned to another user.",
     "Add": "Add",
     "Alias": "Alias",
     "AddLibraryCardNumber": "Add Library Card Number",
