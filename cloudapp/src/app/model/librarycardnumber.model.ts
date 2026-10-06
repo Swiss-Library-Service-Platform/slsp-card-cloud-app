@@ -10,7 +10,7 @@ export class Librarycardnumber {
     // SUPPORT-43463: inclusive ranges supplied by Raphaël; deployment requires approval.
     private static readonly blockedBarcodeRanges = [
         { start: 1207001, end: 1209000 },
-        { start: 1210001, end: 1212329 }
+        { start: 1210001, end: 1212358 }
     ];
 
     static isBlockedLibraryCardNumber(libraryCardNumber: string): boolean {
