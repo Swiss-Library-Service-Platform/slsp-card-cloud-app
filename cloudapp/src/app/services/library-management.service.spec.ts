@@ -12,7 +12,7 @@ describe('LibraryCardServiceService', () => {
     expect(service).toBeTruthy();
   });
 
-  ['E1207001', 'E1209000', 'E1210001', 'E1212329', 'e-1207001', 'e-1210001'].forEach(value => {
+  ['E1207001', 'E1209000', 'E1210001', 'E1212329', 'E1212330', 'E1212358', 'e-1212358', 'e-1207001', 'e-1210001'].forEach(value => {
     it(`rejects ${value} before changing the user or calling the API`, async () => {
       service.user = new User({ user_identifier: [] });
       const add = spyOn(service.user, 'addLibraryCardNumber').and.callThrough();
