@@ -5,14 +5,14 @@ describe('Librarycardnumer', () => {
     expect(new Librarycardnumber()).toBeTruthy();
   });
 
-  ['E1207001', 'E1208000', 'E1209000', 'E1210001', 'E1211000', 'E1212329', 'E1212330', 'E1212358', 'e1207001', 'E-1209000', 'e-1210001', 'e-1212329', 'e-1212358'].forEach(value => {
+  ['E1207001', 'E1208000', 'E1209000', 'E1210001', 'E1211000', 'E1212329', 'E1212330', 'E1212358', 'E1212359', 'E1212499', 'E1212500', 'e1207001', 'E-1209000', 'e-1210001', 'e-1212329', 'e-1212358', 'e-1212359', 'e-1212500'].forEach(value => {
     it(`blocks ${value} (SUPPORT-43463)`, () => {
       expect(Librarycardnumber.isBlockedLibraryCardNumber(value)).toBe(true);
       expect(Librarycardnumber.isValidLibraryCardNumber(value)).toBe(false);
     });
   });
 
-  ['E1206001', 'E1207000', 'E1209001', 'E1209500', 'E1210000', 'E1212359', 'E-1207000', 'e-1209001', 'e-1210000', 'e-1212359', 'SLSP123456789', 'A1207001'].forEach(value => {
+  ['E1206001', 'E1207000', 'E1209001', 'E1209500', 'E1210000', 'E1212501', 'E-1207000', 'e-1209001', 'e-1210000', 'e-1212501', 'SLSP123456789', 'A1207001'].forEach(value => {
     it(`continues accepting ${value}`, () => {
       expect(Librarycardnumber.isBlockedLibraryCardNumber(value)).toBe(false);
       expect(Librarycardnumber.isValidLibraryCardNumber(value)).toBe(true);
