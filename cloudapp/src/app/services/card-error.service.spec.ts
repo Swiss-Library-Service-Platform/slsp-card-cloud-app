@@ -68,6 +68,48 @@ describe('CardErrorService', () => {
     service = TestBed.inject(CardErrorService);
   });
 
+  it('explains blocked barcodes distinctly from malformed numbers', () => {
+    TestBed.inject(TranslateService).setTranslation(
+      'en',
+      {
+        Errors: {
+          BlockedLibraryCardNumber:
+            'This barcode has been blocked because it may also be assigned to another user.',
+        },
+      },
+      true,
+    );
+
+    expect(
+      service.presentation(
+        new HttpErrorResponse({
+          status: 400,
+          error: {
+            type: 'BLOCKED_LIBRARY_CARD_NUMBER',
+            errorId: 'support-123',
+            messages: [],
+          },
+        }),
+      ),
+    ).toEqual({
+      kind: 'warning',
+      message:
+        'This barcode has been blocked because it may also be assigned to another user.',
+    });
+    expect(
+      service.message(
+        new HttpErrorResponse({
+          status: 400,
+          error: {
+            type: 'INVALID_LIBRARY_CARD_FORMAT',
+            errorId: 'support-123',
+            messages: [],
+          },
+        }),
+      ),
+    ).toBe('The card number format is invalid.');
+  });
+
   it('renders supplied Alma messages as literal text on separate lines with a short heading', () => {
     TestBed.inject(TranslateService).setTranslation(
       'en',

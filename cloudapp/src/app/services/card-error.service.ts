@@ -25,6 +25,7 @@ const ERROR_KEYS: Record<CardErrorType, string> = {
   INVALID_PATRON_ID: 'Errors.InvalidPatronId',
   PATRON_NOT_FOUND: 'Errors.PatronNotFound',
   INVALID_LIBRARY_CARD_FORMAT: 'Errors.InvalidLibraryCardFormat',
+  BLOCKED_LIBRARY_CARD_NUMBER: 'Errors.BlockedLibraryCardNumber',
   DUPLICATE_LIBRARY_CARD_NUMBER: 'Errors.DuplicateLibraryCardNumber',
   UNSUPPORTED_BLOCK: 'Errors.UnsupportedBlock',
   BLOCK_COMMENT_REQUIRED: 'Errors.BlockCommentRequired',
@@ -53,6 +54,7 @@ const ERROR_KINDS: Record<CardErrorType, 'access' | 'warning' | 'error'> = {
   INVALID_PATRON_ID: 'warning',
   PATRON_NOT_FOUND: 'warning',
   INVALID_LIBRARY_CARD_FORMAT: 'warning',
+  BLOCKED_LIBRARY_CARD_NUMBER: 'warning',
   DUPLICATE_LIBRARY_CARD_NUMBER: 'warning',
   UNSUPPORTED_BLOCK: 'warning',
   BLOCK_COMMENT_REQUIRED: 'warning',
@@ -242,6 +244,7 @@ function errorStatus(type: CardErrorType): number {
       return 403;
     case 'INVALID_PATRON_ID':
     case 'INVALID_LIBRARY_CARD_FORMAT':
+    case 'BLOCKED_LIBRARY_CARD_NUMBER':
     case 'UNSUPPORTED_BLOCK':
     case 'BLOCK_COMMENT_REQUIRED':
     case 'INVALID_INVOICE_POSTAL_ADDRESS':

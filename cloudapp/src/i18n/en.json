@@ -47,6 +47,7 @@
     "InvalidPatronId": "The selected patron cannot be loaded.",
     "PatronNotFound": "{{entityDescription}} was not found in the Network Zone.",
     "InvalidLibraryCardFormat": "The library card number format is invalid.",
+    "BlockedLibraryCardNumber": "This barcode has been blocked because it may also be assigned to another user.",
     "DuplicateLibraryCardNumber": "This library card number is already in use.",
     "UnsupportedBlock": "This block type is not supported.",
     "BlockCommentRequired": "A comment is required for this block.",

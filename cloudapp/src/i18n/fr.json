@@ -47,6 +47,7 @@
     "InvalidPatronId": "Le compte sélectionné ne peut pas être chargé.",
     "PatronNotFound": "{{entityDescription}} n'a pas été trouvé dans la zone réseau.",
     "InvalidLibraryCardFormat": "Le format du numéro de carte n'est pas valide.",
+    "BlockedLibraryCardNumber": "Ce code-barres a été bloqué car il pourrait également être attribué à un autre utilisateur.",
     "DuplicateLibraryCardNumber": "Ce numéro de carte est déjà utilisé.",
     "UnsupportedBlock": "Ce type de blocage n'est pas pris en charge.",
     "BlockCommentRequired": "Un commentaire est requis pour ce blocage.",

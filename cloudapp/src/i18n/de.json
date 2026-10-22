@@ -47,6 +47,7 @@
     "InvalidPatronId": "Der ausgewählte Benutzer kann nicht geladen werden.",
     "PatronNotFound": "{{entityDescription}} wurde nicht in der Network Zone gefunden.",
     "InvalidLibraryCardFormat": "Das Format der Bibliothekskarten-Nummer ist ungültig.",
+    "BlockedLibraryCardNumber": "Dieser Barcode wurde gesperrt, da er möglicherweise auch einer anderen Person zugeordnet ist.",
     "DuplicateLibraryCardNumber": "Diese Bibliothekskarten-Nummer wird bereits verwendet.",
     "UnsupportedBlock": "Dieser Sperrentyp wird nicht unterstützt.",
     "BlockCommentRequired": "Für diese Sperre ist ein Kommentar erforderlich.",

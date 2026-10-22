@@ -47,6 +47,7 @@
     "InvalidPatronId": "Non è possibile caricare l'utente selezionato.",
     "PatronNotFound": "{{entityDescription}} non è stato trovato nella Network Zone.",
     "InvalidLibraryCardFormat": "Il formato del numero di tessera non è valido.",
+    "BlockedLibraryCardNumber": "Questo codice a barre è stato bloccato perché potrebbe essere assegnato anche a un altro utente.",
     "DuplicateLibraryCardNumber": "Questo numero di tessera è già in uso.",
     "UnsupportedBlock": "Questo tipo di blocco non è supportato.",
     "BlockCommentRequired": "È necessario un commento per questo blocco.",
