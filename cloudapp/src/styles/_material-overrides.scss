@@ -76,6 +76,11 @@
     }
   }
 
+  // Align card-number errors with the outline rather than the input text.
+  app-librarycardnumber .mat-mdc-form-field-error-wrapper {
+    padding-inline: 0;
+  }
+
   .mat-mdc-unelevated-button.mat-primary {
     --mdc-filled-button-container-color: var(--slsp-accent);
     --mdc-filled-button-label-text-color: white;
