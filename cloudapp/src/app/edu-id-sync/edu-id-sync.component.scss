@@ -1,0 +1,12 @@
+:host {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+}
+
+button[mat-icon-button] {
+  width: 36px;
+  height: 36px;
+  padding: 6px;
+  color: var(--slsp-text-secondary);
+}

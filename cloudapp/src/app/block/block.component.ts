@@ -1,103 +1,123 @@
-import { Observable, Subscription } from 'rxjs';
-import { finalize, tap } from 'rxjs/operators';
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
-import {
-  CloudAppRestService, CloudAppEventsService, Request, HttpMethod,
-  Entity, RestErrorResponse, AlertService
-} from '@exlibris/exl-cloudapp-angular-lib';
-import { MatRadioChange } from '@angular/material/radio';
-import { Router, ActivatedRoute } from '@angular/router';
-import { Location } from '@angular/common';
-import { LibraryManagementService } from '../services/library-management.service';
-import { User } from '../model/user.model';
-import { ElementRef, ViewChild } from '@angular/core';
-import { ɵangular_packages_platform_browser_dynamic_platform_browser_dynamic_a } from '@angular/platform-browser-dynamic';
+import { hasDisplayedBlocks } from './block-utils';
+import { InlineMutationError } from '../services/inline-mutation-error';
+import { DestroyRef, Component, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslateService } from '@ngx-translate/core';
+import { Observable, finalize, map, tap } from 'rxjs';
+
+import {
+  AddableBlockCode,
+  BlockView,
+  CardPatron,
+} from '../models/card-api.model';
+import { MutationFeedbackService } from '../services/mutation-feedback.service';
+import { PatronApiService } from '../services/patron-api.service';
+import { PatronStateService } from '../services/patron-state.service';
 
 @Component({
   selector: 'app-block',
   templateUrl: './block.component.html',
-  styleUrls: ['block.component.scss']
+  styleUrls: ['block.component.scss'],
 })
-export class BlockComponent implements OnInit, OnDestroy {
+export class BlockComponent {
+  public readonly patron$: Observable<CardPatron | null>;
+  public commentDouble = '';
+  public commentGlobal = '';
+  public commentWrongEmail = '';
+  public commentWrongPostal = '';
+  public loading = false;
+  public readonly hasBlocks = hasDisplayedBlocks;
+  public readonly globalBlockError = new InlineMutationError([
+    'BLOCK_COMMENT_REQUIRED',
+  ]);
 
-  @Input() primary_id: string;
+  private readonly api = inject(PatronApiService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly feedback = inject(MutationFeedbackService);
+  private readonly state = inject(PatronStateService);
+  private readonly translate = inject(TranslateService);
 
-  constructor(
-    private _libraryManagementService: LibraryManagementService,
-    private eventsService: CloudAppEventsService,
-    private alert: AlertService,
-    private _location: Location,
-    private translate: TranslateService
-  ) { }
-  currentFullName: String;
-  currentUser: User = null;
-  currentUserBlocks: Map<String, any> = null;
-  subscription;
-  collapsedDouble: Boolean = true;
-  collapsedWrongPostal: Boolean = true;
-  collapsedWrongEmail: Boolean = true;
-  collapseGlobal: Boolean = true;
-  collapsedNew: Boolean = true;
-  commentDouble: String = '';
-  commentWrongPostal: String = '';
-  commentWrongEmail: String = '';
-  commentGlobal: String = '';
-  loading: Boolean;
-
-  ngOnInit(): void {
-    this.subscription = this._libraryManagementService.getUserObject().subscribe(
-      res => {
-        this.currentFullName = res.getFullName();
-        this.currentUser = res;
-        this.currentUserBlocks = this._libraryManagementService.user.getUserBlocks();
-      },
-      err => {
-        console.error(`An error occurred: ${err.message}`);
-      }
+  public constructor() {
+    this.patron$ = this.state.patronState$.pipe(
+      map((patronState) =>
+        patronState.status === 'ready' ? patronState.patron : null,
+      ),
     );
   }
 
-  async addUserBlock(blockType: String, comment: String): Promise<void> {
-    if (blockType == '09' && !comment) {
-      this.alert.error("Comment must not be empty on global block!", { autoClose: false });
+  public add(code: AddableBlockCode, comment: string): void {
+    const trimmedComment = comment.trim();
+    const mutationContext = this.state.currentMutationContext();
+
+    if (
+      this.loading ||
+      !mutationContext ||
+      (code === '09' && trimmedComment === '')
+    ) {
       return;
     }
+
+    const inlineError = code === '09' ? this.globalBlockError : undefined;
+
+    inlineError?.clear();
     this.loading = true;
-    let isAdded = await this._libraryManagementService.addUserblock(blockType, comment);
-    if (!isAdded) {
-      let errMessage = await this.translate.get('Blocks.AddError').toPromise();
-      this.alert.error(errMessage, { autoClose: false });
-    } else {
-      let succMessage = await this.translate.get('Blocks.AddSuccess').toPromise();
-      this.alert.success(succMessage, { autoClose: false });
-    }
-    this.loading = false;
+    this.api
+      .addBlock(mutationContext.patronId, code, trimmedComment)
+      .pipe(
+        tap((patron) => {
+          this.state.replacePatron(patron, mutationContext);
+        }),
+        this.feedback.handle('Blocks.AddSuccess', inlineError),
+        finalize(() => {
+          this.loading = false;
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe();
   }
 
-  async removeUserBlock(blockType: String): Promise<void> {
+  public getDateString(date: string | null): string {
+    if (!date) {
+      return '';
+    }
+
+    const parsedDate = new Date(date);
+
+    if (Number.isNaN(parsedDate.getTime())) {
+      return '';
+    }
+
+    return new Intl.DateTimeFormat(this.translate.currentLang || 'en', {
+      year: 'numeric',
+      month: 'short',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'UTC',
+      timeZoneName: 'short',
+    }).format(parsedDate);
+  }
+
+  public remove(block: BlockView): void {
+    const mutationContext = this.state.currentMutationContext();
+
+    if (this.loading || !mutationContext) {
+      return;
+    }
+
     this.loading = true;
-    const isRemoved = await this._libraryManagementService.removeUserblock(blockType);
-    if (!isRemoved) {
-      let errMessage = await this.translate.get('Blocks.RemoveError').toPromise();
-      this.alert.error(errMessage, { autoClose: false });
-    } else {
-      let succMessage = await this.translate.get('Blocks.RemoveSuccess').toPromise();
-      this.alert.success(succMessage, { autoClose: false });
-    }
-    this.loading = false;
+    this.api
+      .removeBlock(mutationContext.patronId, block.elementReference)
+      .pipe(
+        tap((patron) => {
+          this.state.replacePatron(patron, mutationContext);
+        }),
+        this.feedback.handle('Blocks.RemoveSuccess'),
+        finalize(() => {
+          this.loading = false;
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe();
   }
-
-  ngOnDestroy(): void {
-    this.subscription.unsubscribe();
-  }
-
-  navigateBack(): void {
-    this._location.back();
-  }
-
-  getDateString(date: string): String {
-    return new Date(date).toUTCString();
-  }
-
 }

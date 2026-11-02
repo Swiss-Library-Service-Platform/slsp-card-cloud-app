@@ -3,6 +3,7 @@
 # some local stuff
 .vscode/
 .ng/
+/docs/
 
 # environment variables
 /cloudapp/environment.ts

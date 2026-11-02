@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "noImplicitOverride": false,
+    "noPropertyAccessFromIndexSignature": false,
+    "noImplicitReturns": false,
+    "noFallthroughCasesInSwitch": false,
+    "resolveJsonModule": true
+  },
+  "angularCompilerOptions": {
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true
+  }
+}

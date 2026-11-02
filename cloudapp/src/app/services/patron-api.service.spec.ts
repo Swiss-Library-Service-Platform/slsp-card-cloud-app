@@ -1,0 +1,352 @@
+import { TestBed } from '@angular/core/testing';
+import { Observable, Subject, of, throwError } from 'rxjs';
+
+import {
+  CardPatron,
+  SetInvoiceEmailAddressRequest,
+  SetInvoicePostalAddressRequest,
+} from '../models/card-api.model';
+import { BackendHttpService } from './backend-http.service';
+import { MutationActivityService } from './mutation-activity.service';
+import { PatronApiService } from './patron-api.service';
+
+describe('PatronApiService', () => {
+  let service: PatronApiService;
+  let backend: jasmine.SpyObj<BackendHttpService>;
+  const patron: CardPatron = {
+    currentUserGroupCode: null,
+    currentUserGroupDescription: null,
+    fullName: 'Test Patron',
+    external: false,
+    libraryCardNumbers: [],
+    matriculationNumber: null,
+    dashedMatriculationNumber: null,
+    blocks: {},
+    postalAddresses: [],
+    preferredEmailAddress: null,
+    invoicePostalAddress: null,
+    invoiceEmailAddress: null,
+  };
+
+  beforeEach(() => {
+    backend = jasmine.createSpyObj<BackendHttpService>('BackendHttpService', [
+      'get',
+      'post',
+      'put',
+      'delete',
+    ]);
+    backend.get.and.returnValue(of(patron));
+    backend.post.and.returnValue(of(patron));
+    backend.put.and.returnValue(of(patron));
+    backend.delete.and.returnValue(of(patron));
+
+    TestBed.configureTestingModule({
+      providers: [
+        PatronApiService,
+        { provide: BackendHttpService, useValue: backend },
+      ],
+    });
+
+    service = TestBed.inject(PatronApiService);
+  });
+
+  it('gets a patron with an encoded patron path segment', (done) => {
+    service.getPatron('a/b').subscribe((result) => {
+      expect(result).toBe(patron);
+      expect(backend.get).toHaveBeenCalledOnceWith('/api/v1/patrons/a%2Fb');
+      done();
+    });
+  });
+
+  ['.', '..'].forEach((unsafeId) => {
+    it(`rejects the traversal patron id ${unsafeId} before endpoint interpolation`, () => {
+      expect(() => service.getPatron(unsafeId)).toThrowError(
+        'Unsafe patron identifier',
+      );
+      expect(backend.get).not.toHaveBeenCalled();
+    });
+  });
+
+  it('adds a library card number with its typed request body', (done) => {
+    service.addLibraryCardNumber('p/q', 'ABC').subscribe((result) => {
+      expect(result).toBe(patron);
+      expect(backend.post).toHaveBeenCalledOnceWith(
+        '/api/v1/patrons/p%2Fq/library-card-numbers',
+        { value: 'ABC' },
+      );
+      done();
+    });
+  });
+
+  it('removes a library card number with encoded path segments', (done) => {
+    service
+      .removeLibraryCardNumber('p/q', 'reference/value')
+      .subscribe((result) => {
+        expect(result).toBe(patron);
+        expect(backend.delete).toHaveBeenCalledOnceWith(
+          '/api/v1/patrons/p%2Fq/library-card-numbers/reference%2Fvalue',
+        );
+        done();
+      });
+  });
+
+  it('adds a block with its typed request body', (done) => {
+    service.addBlock('p/q', '09', 'reason').subscribe((result) => {
+      expect(result).toBe(patron);
+      expect(backend.post).toHaveBeenCalledOnceWith(
+        '/api/v1/patrons/p%2Fq/blocks',
+        { code: '09', comment: 'reason' },
+      );
+      done();
+    });
+  });
+
+  it('removes a block with encoded path segments', (done) => {
+    service.removeBlock('p/q', 'reference/value').subscribe((result) => {
+      expect(result).toBe(patron);
+      expect(backend.delete).toHaveBeenCalledOnceWith(
+        '/api/v1/patrons/p%2Fq/blocks/reference%2Fvalue',
+      );
+      done();
+    });
+  });
+
+  it('sets a preferred address with an encoded patron path segment', (done) => {
+    service.setPreferredAddress('p/q', 'reference').subscribe((result) => {
+      expect(result).toBe(patron);
+      expect(backend.put).toHaveBeenCalledOnceWith(
+        '/api/v1/patrons/p%2Fq/preferred-address',
+        { elementReference: 'reference' },
+      );
+      done();
+    });
+  });
+
+  it('sets an invoice postal address with its typed request body', (done) => {
+    const request: SetInvoicePostalAddressRequest = {
+      elementReference: null,
+      line1: 'Example AG',
+      line2: null,
+      line3: null,
+      line4: null,
+      postalCode: '8000',
+      city: 'Zürich',
+      countryCode: 'CHE',
+    };
+
+    service.setInvoicePostalAddress('p/q', request).subscribe((result) => {
+      expect(result).toBe(patron);
+      expect(backend.put).toHaveBeenCalledOnceWith(
+        '/api/v1/patrons/p%2Fq/invoice-postal-address',
+        request,
+      );
+      done();
+    });
+  });
+
+  it('removes an invoice postal address with encoded path segments', (done) => {
+    service
+      .removeInvoicePostalAddress('p/q', 'reference/value')
+      .subscribe((result) => {
+        expect(result).toBe(patron);
+        expect(backend.delete).toHaveBeenCalledOnceWith(
+          '/api/v1/patrons/p%2Fq/invoice-postal-address/reference%2Fvalue',
+        );
+        done();
+      });
+  });
+
+  it('sets an invoice email address with its typed request body', (done) => {
+    const request: SetInvoiceEmailAddressRequest = {
+      elementReference: 'email-reference',
+      emailAddress: 'invoice@example.org',
+    };
+
+    service.setInvoiceEmailAddress('p/q', request).subscribe((result) => {
+      expect(result).toBe(patron);
+      expect(backend.put).toHaveBeenCalledOnceWith(
+        '/api/v1/patrons/p%2Fq/invoice-email-address',
+        request,
+      );
+      done();
+    });
+  });
+
+  it('removes an invoice email address with encoded path segments', (done) => {
+    service
+      .removeInvoiceEmailAddress('p/q', 'reference/value')
+      .subscribe((result) => {
+        expect(result).toBe(patron);
+        expect(backend.delete).toHaveBeenCalledOnceWith(
+          '/api/v1/patrons/p%2Fq/invoice-email-address/reference%2Fvalue',
+        );
+        done();
+      });
+  });
+
+  it('loads eligible groups and preserves their codes and ordering', () => {
+    const groups = {
+      eligibleGroups: [
+        { code: '01', displayName: 'Student', description: 'Eligible' },
+      ],
+    };
+
+    backend.get.and.returnValue(of(groups));
+    service
+      .getEligibleUserGroups('p/q')
+      .subscribe((result) => expect(result).toEqual(groups));
+    expect(backend.get).toHaveBeenCalledOnceWith(
+      '/api/v1/patrons/p%2Fq/eligible-user-groups',
+    );
+  });
+
+  it('sets the group and sends an empty body for synchronous sync', () => {
+    service
+      .setUserGroup('p/q', '01')
+      .subscribe((result) => expect(result).toBe(patron));
+    expect(backend.put).toHaveBeenCalledOnceWith(
+      '/api/v1/patrons/p%2Fq/user-group',
+      { groupCode: '01' },
+    );
+    service.syncEduId('p/q').subscribe((result) => expect(result).toBe(patron));
+    expect(backend.post).toHaveBeenCalledOnceWith(
+      '/api/v1/patrons/p%2Fq/edu-id-sync',
+      {},
+    );
+  });
+
+  it('prevents competing mutations while sync is pending and releases after completion', () => {
+    const pending = new Subject<CardPatron>();
+
+    backend.post.and.returnValue(pending);
+    service.syncEduId('p').subscribe();
+    service.setPreferredAddress('p', 'address').subscribe();
+    expect(backend.put).not.toHaveBeenCalled();
+    pending.complete();
+    service.setPreferredAddress('p', 'address').subscribe();
+    expect(backend.put).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps the mutation guard until server completion after the initiating view unsubscribes', () => {
+    const pending = new Subject<CardPatron>();
+
+    backend.post.and.returnValue(pending);
+
+    const subscription = service.syncEduId('p').subscribe();
+
+    subscription.unsubscribe();
+    service.setPreferredAddress('other', 'address').subscribe();
+    expect(backend.put).not.toHaveBeenCalled();
+    pending.complete();
+    service.setPreferredAddress('other', 'address').subscribe();
+    expect(backend.put).toHaveBeenCalledTimes(1);
+  });
+
+  const operations = [
+    [
+      'setUserGroup',
+      (): Observable<CardPatron> => service.setUserGroup('p', '04'),
+    ],
+    ['syncEduId', (): Observable<CardPatron> => service.syncEduId('p')],
+    ['getPatron', (): Observable<CardPatron> => service.getPatron('p')],
+    [
+      'addLibraryCardNumber',
+      (): Observable<CardPatron> => service.addLibraryCardNumber('p', 'ABC'),
+    ],
+    [
+      'removeLibraryCardNumber',
+      (): Observable<CardPatron> =>
+        service.removeLibraryCardNumber('p', 'reference'),
+    ],
+    [
+      'addBlock',
+      (): Observable<CardPatron> => service.addBlock('p', '09', 'reason'),
+    ],
+    [
+      'removeBlock',
+      (): Observable<CardPatron> => service.removeBlock('p', 'reference'),
+    ],
+    [
+      'setPreferredAddress',
+      (): Observable<CardPatron> =>
+        service.setPreferredAddress('p', 'reference'),
+    ],
+    [
+      'setInvoicePostalAddress',
+      (): Observable<CardPatron> =>
+        service.setInvoicePostalAddress('p', {
+          elementReference: null,
+          line1: 'Example AG',
+          line2: null,
+          line3: null,
+          line4: null,
+          postalCode: '8000',
+          city: 'Zürich',
+          countryCode: 'CHE',
+        }),
+    ],
+    [
+      'removeInvoicePostalAddress',
+      (): Observable<CardPatron> =>
+        service.removeInvoicePostalAddress('p', 'reference'),
+    ],
+    [
+      'setInvoiceEmailAddress',
+      (): Observable<CardPatron> =>
+        service.setInvoiceEmailAddress('p', {
+          elementReference: null,
+          emailAddress: 'invoice@example.org',
+        }),
+    ],
+    [
+      'removeInvoiceEmailAddress',
+      (): Observable<CardPatron> =>
+        service.removeInvoiceEmailAddress('p', 'reference'),
+    ],
+  ] as const;
+
+  operations.forEach(([methodName, invoke]) => {
+    if (methodName !== 'getPatron') {
+      for (const outcome of ['success', 'error']) {
+        it(`${methodName} exposes busy until ${outcome}`, () => {
+          const pending = new Subject<CardPatron>();
+
+          backend.post.and.returnValue(pending);
+          backend.put.and.returnValue(pending);
+          backend.delete.and.returnValue(pending);
+
+          const activity = TestBed.inject(MutationActivityService);
+
+          invoke().subscribe({ error: () => undefined });
+          expect(activity.busy).toBeTrue();
+
+          if (outcome === 'error') {
+            pending.error(new Error('test'));
+          } else {
+            pending.next(patron);
+            pending.complete();
+          }
+          expect(activity.busy).toBeFalse();
+        });
+      }
+    }
+
+    it(`${methodName} forwards the exact backend error`, (done) => {
+      const error = new Error(`${methodName} sentinel`);
+
+      backend.get.and.returnValue(throwError(() => error));
+      backend.post.and.returnValue(throwError(() => error));
+      backend.put.and.returnValue(throwError(() => error));
+      backend.delete.and.returnValue(throwError(() => error));
+
+      invoke().subscribe({
+        next: () => done.fail('expected the subscriber error channel'),
+        error: (result: unknown) => {
+          expect(result).toBe(error);
+          done();
+        },
+        complete: () => done.fail('expected the subscriber error channel'),
+      });
+    });
+  });
+});

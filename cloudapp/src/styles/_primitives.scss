@@ -1,0 +1,292 @@
+@mixin slsp-ui-primitives {
+  .slsp-environment-banner {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: var(--slsp-space-2);
+    min-height: 2.25rem;
+    padding: 0.5rem var(--slsp-space-3);
+    border-left: 3px solid var(--slsp-amber);
+    border-radius: 3px;
+    background: var(--slsp-amber-light);
+    color: var(--slsp-text-secondary);
+    font-size: var(--slsp-font-size-body);
+    line-height: var(--slsp-line-height-body);
+
+    mat-icon {
+      width: 1rem;
+      height: 1rem;
+      flex: 0 0 auto;
+      color: var(--slsp-amber);
+      font-size: 1rem;
+    }
+  }
+
+  .slsp-environment-banner__label {
+    font-weight: var(--slsp-font-weight-medium);
+  }
+
+  .slsp-patron-bar {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: var(--slsp-space-3);
+    padding: var(--slsp-space-3) var(--slsp-space-1);
+  }
+
+  .slsp-patron-bar__back {
+    width: 2.5rem;
+    height: 2.5rem;
+    color: var(--slsp-accent);
+
+    mat-icon {
+      margin: 0;
+    }
+  }
+
+  .slsp-patron-bar__identity {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--slsp-space-2);
+
+    > mat-icon {
+      flex: 0 0 auto;
+      color: var(--slsp-accent);
+    }
+  }
+
+  .slsp-patron-bar__name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--slsp-text);
+    font-weight: var(--slsp-font-weight-medium);
+    text-align: right;
+  }
+
+  .slsp-screen {
+    padding: var(--slsp-space-3) 1px var(--slsp-space-1);
+  }
+
+  .slsp-section {
+    overflow: hidden;
+    margin-bottom: var(--slsp-space-3);
+    border: 1px solid var(--slsp-border);
+    border-radius: var(--slsp-radius);
+    background: white;
+  }
+
+  .slsp-section__header {
+    box-sizing: border-box;
+    display: flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--slsp-space-3);
+    padding: 6px 12px;
+    border-bottom: 1px solid var(--slsp-border-light);
+    background: var(--slsp-accent-subtle);
+  }
+
+  .slsp-section__heading {
+    min-width: 0;
+  }
+
+  .slsp-section__header .slsp-section__title {
+    margin: 0;
+    color: var(--slsp-text);
+    font-size: var(--slsp-font-size-title);
+    font-weight: var(--slsp-font-weight-medium);
+    letter-spacing: normal;
+    line-height: var(--slsp-line-height-compact);
+  }
+
+  .slsp-data-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .slsp-data-row {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--slsp-space-3);
+    padding: var(--slsp-space-3) var(--slsp-space-3);
+    border-bottom: 1px solid var(--slsp-border-light);
+
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+
+  .slsp-data-row__content {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: var(--slsp-space-1);
+  }
+
+  .slsp-data-row__label {
+    color: var(--slsp-text-secondary);
+    font-size: var(--slsp-font-size-body);
+    font-weight: var(--slsp-font-weight-medium);
+  }
+
+  .slsp-data-row__value {
+    overflow-wrap: anywhere;
+    color: var(--slsp-text);
+    font-size: var(--slsp-font-size-title);
+    font-weight: var(--slsp-font-weight-medium);
+  }
+
+  .slsp-data-row__meta {
+    color: var(--slsp-text-secondary);
+    font-size: var(--slsp-font-size-support);
+  }
+
+  .slsp-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--slsp-space-2);
+    padding: 8px 12px;
+    border-top: 1px solid var(--slsp-border-light);
+    background: white;
+  }
+
+  .slsp-status {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: var(--slsp-space-1);
+    padding: 0.15rem 0.45rem;
+    border-radius: 999px;
+    background: var(--slsp-accent-subtle);
+    color: var(--slsp-accent);
+    font-size: var(--slsp-font-size-body);
+    font-weight: var(--slsp-font-weight-medium);
+
+    mat-icon {
+      width: 0.8rem;
+      height: 0.8rem;
+      font-size: 0.8rem;
+    }
+  }
+
+  .slsp-status--danger {
+    background: var(--slsp-danger-light);
+    color: var(--slsp-danger);
+  }
+
+  .slsp-placeholder {
+    border-style: dashed;
+    background: white;
+
+    .slsp-section__header {
+      background: transparent;
+    }
+  }
+
+  // Override Material paragraph margins as well as setting the panel padding.
+  .slsp-section .slsp-section__information {
+    margin: 0;
+    padding: var(--slsp-space-3) var(--slsp-space-3);
+    background: white;
+    color: var(--slsp-text-secondary);
+    font-size: var(--slsp-font-size-body);
+    line-height: var(--slsp-line-height-body);
+  }
+
+  .slsp-empty-state {
+    display: flex;
+    align-items: center;
+    padding: var(--slsp-space-3);
+    color: var(--slsp-text-secondary);
+    font-size: var(--slsp-font-size-body);
+    font-style: normal;
+    font-weight: var(--slsp-font-weight-regular);
+    line-height: var(--slsp-line-height-body);
+  }
+
+  .slsp-inline-form {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--slsp-space-3);
+    padding: var(--slsp-space-3);
+    background: white;
+
+    mat-form-field {
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+
+    button {
+      flex: 0 0 auto;
+    }
+  }
+
+  .slsp-inline-form--separated {
+    border-top: 1px solid var(--slsp-border-light);
+  }
+
+  .slsp-support-reference {
+    display: block;
+    margin-top: 6px;
+    color: var(--slsp-text-secondary);
+    font-size: var(--slsp-font-size-support);
+    font-weight: var(--slsp-font-weight-regular);
+    line-height: var(--slsp-line-height-body);
+    overflow-wrap: anywhere;
+    user-select: text;
+  }
+
+  .slsp-inline-error {
+    margin: 0;
+    color: var(--slsp-danger);
+    font-size: var(--slsp-font-size-support);
+    line-height: var(--slsp-line-height-body);
+    overflow-wrap: anywhere;
+  }
+
+  .slsp-inline-error--padded {
+    padding: 0 var(--slsp-space-3) var(--slsp-space-3);
+  }
+
+  .slsp-visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    border: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  @media (max-width: 380px) {
+    .slsp-data-row {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .slsp-data-row > button {
+      align-self: flex-end;
+    }
+
+    .slsp-inline-form {
+      flex-direction: column;
+
+      mat-form-field,
+      button {
+        width: 100%;
+      }
+    }
+  }
+}

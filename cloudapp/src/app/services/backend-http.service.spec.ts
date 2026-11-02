@@ -1,0 +1,467 @@
+import { HttpErrorResponse } from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
+import {
+  CloudAppEventsService,
+  InitData,
+} from '@exlibris/exl-cloudapp-angular-lib';
+import { EMPTY, Observable, Subject, of, throwError } from 'rxjs';
+
+import { BackendHttpService } from './backend-http.service';
+
+interface TestResponse {
+  readonly result: string;
+}
+
+interface TestRequest {
+  readonly value: string;
+}
+
+interface BackendCall {
+  readonly name: string;
+  readonly invoke: (
+    service: BackendHttpService,
+    path: string,
+  ) => Observable<unknown>;
+}
+
+describe('BackendHttpService', () => {
+  let service: BackendHttpService;
+  let http: HttpTestingController;
+  let events: jasmine.SpyObj<CloudAppEventsService>;
+  const initData = (almaUrl: string): InitData => ({
+    user: {
+      firstName: 'Test',
+      lastName: 'Operator',
+      primaryId: 'operator-1',
+      currentlyAtLibCode: 'TEST',
+      currentlyAtCircDesk: 'DEFAULT',
+      currentlyAtDept: '',
+      isAdmin: false,
+    },
+    lang: 'en',
+    instCode: '41SLSP_NETWORK',
+    urls: { alma: almaUrl },
+    color: '#ffffff',
+  });
+
+  beforeEach(() => {
+    events = jasmine.createSpyObj<CloudAppEventsService>(
+      'CloudAppEventsService',
+      ['getInitData', 'getAuthToken'],
+    );
+    events.getInitData.and.returnValue(
+      of(initData('https://eu01.alma.exlibrisgroup.com')),
+    );
+    events.getAuthToken.and.returnValue(of('signed-token'));
+
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+      providers: [
+        BackendHttpService,
+        { provide: CloudAppEventsService, useValue: events },
+      ],
+    });
+
+    service = TestBed.inject(BackendHttpService);
+    http = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => {
+    http.verify();
+  });
+
+  [
+    ['https://localhost:4200', 'http://localhost:8080'],
+    [
+      'https://eu01-psb.alma.exlibrisgroup.com',
+      'https://cardproxy-test.swisscovery.network',
+    ],
+    [
+      'https://eu01.alma.exlibrisgroup.com',
+      'https://cardproxy.swisscovery.network',
+    ],
+    [
+      'HTTPS://EU01-PSB.ALMA.EXLIBRISGROUP.COM',
+      'https://cardproxy-test.swisscovery.network',
+    ],
+  ].forEach(([almaUrl, expected]) => {
+    it(`maps ${almaUrl} to ${expected}`, () => {
+      events.getInitData.and.returnValue(of(initData(almaUrl)));
+
+      service.get<void>('/api/v1/allowed').subscribe();
+
+      const request = http.expectOne(`${expected}/api/v1/allowed`);
+
+      expect(request.request.url).toBe(`${expected}/api/v1/allowed`);
+      request.flush(null);
+    });
+  });
+
+  it('shares one SDK token request between concurrent backend requests', () => {
+    const token$ = new Subject<string>();
+
+    events.getAuthToken.and.returnValue(token$);
+
+    service.get<void>('/api/v1/allowed').subscribe();
+    service.get<void>('/api/v1/patrons/123').subscribe();
+
+    expect(events.getAuthToken).toHaveBeenCalledTimes(1);
+    expect(http.match(() => true)).toEqual([]);
+
+    token$.next('shared-token');
+    token$.complete();
+
+    const requests = http.match(() => true);
+
+    expect(requests.length).toBe(2);
+    expect(
+      requests.every(
+        (request) =>
+          request.request.headers.get('Authorization') ===
+          'Bearer shared-token',
+      ),
+    ).toBeTrue();
+    requests.forEach((request) => request.flush(null));
+  });
+
+  it('fetches a new token after the 30 second cache lifetime', () => {
+    let now = 1_000;
+
+    spyOn(performance, 'now').and.callFake(() => now);
+    events.getAuthToken.and.returnValues(of('first-token'), of('second-token'));
+
+    service.get<void>('/api/v1/allowed').subscribe();
+
+    const firstRequest = http.expectOne(
+      'https://cardproxy.swisscovery.network/api/v1/allowed',
+    );
+
+    expect(firstRequest.request.headers.get('Authorization')).toBe(
+      'Bearer first-token',
+    );
+    firstRequest.flush(null);
+
+    now += 30_000;
+    service.get<void>('/api/v1/allowed').subscribe();
+
+    const secondRequest = http.expectOne(
+      'https://cardproxy.swisscovery.network/api/v1/allowed',
+    );
+
+    expect(secondRequest.request.headers.get('Authorization')).toBe(
+      'Bearer second-token',
+    );
+    secondRequest.flush(null);
+
+    expect(events.getAuthToken).toHaveBeenCalledTimes(2);
+  });
+
+  it('clears a failed in-flight token request so the next call can retry', () => {
+    const tokenError = new Error('SDK token failure');
+
+    events.getAuthToken.and.returnValues(
+      throwError(() => tokenError),
+      of('recovered-token'),
+    );
+
+    let receivedError: unknown;
+
+    service.get<void>('/api/v1/allowed').subscribe({
+      error: (error: unknown) => {
+        receivedError = error;
+      },
+    });
+
+    expect(receivedError).toBe(tokenError);
+    expect(http.match(() => true)).toEqual([]);
+
+    service.get<void>('/api/v1/allowed').subscribe();
+
+    const request = http.expectOne(
+      'https://cardproxy.swisscovery.network/api/v1/allowed',
+    );
+
+    expect(request.request.headers.get('Authorization')).toBe(
+      'Bearer recovered-token',
+    );
+    request.flush(null);
+    expect(events.getAuthToken).toHaveBeenCalledTimes(2);
+  });
+
+  it('sends authorization with only the caller-supplied query parameters', () => {
+    service
+      .get<TestResponse>(
+        '/api/v1/patrons/123',
+        new HttpParams().set('view', 'complete'),
+      )
+      .subscribe((response) => {
+        expect(response).toEqual({ result: 'ok' });
+      });
+
+    const request = http.expectOne(
+      'https://cardproxy.swisscovery.network/api/v1/patrons/123?view=complete',
+    );
+
+    expect(request.request.headers.get('Authorization')).toBe(
+      'Bearer signed-token',
+    );
+    expect(request.request.params.keys()).toEqual(['view']);
+    expect(request.request.params.get('view')).toBe('complete');
+    request.flush({ result: 'ok' });
+  });
+
+  it('forwards typed request bodies for mutations', () => {
+    const body: TestRequest = { value: 'SLSP-123456789' };
+
+    service
+      .post<TestResponse, TestRequest>('/api/v1/patrons/123/numbers', body)
+      .subscribe();
+
+    const post = http.expectOne(
+      'https://cardproxy.swisscovery.network/api/v1/patrons/123/numbers',
+    );
+
+    expect(post.request.method).toBe('POST');
+    expect(post.request.body).toEqual(body);
+    post.flush({ result: 'created' });
+
+    service
+      .put<TestResponse, TestRequest>('/api/v1/patrons/123/settings', body)
+      .subscribe();
+
+    const put = http.expectOne(
+      'https://cardproxy.swisscovery.network/api/v1/patrons/123/settings',
+    );
+
+    expect(put.request.method).toBe('PUT');
+    expect(put.request.body).toEqual(body);
+    put.flush({ result: 'updated' });
+
+    service
+      .delete<TestResponse>('/api/v1/patrons/123/numbers/selector')
+      .subscribe();
+
+    const deletion = http.expectOne(
+      'https://cardproxy.swisscovery.network/api/v1/patrons/123/numbers/selector',
+    );
+
+    expect(deletion.request.method).toBe('DELETE');
+    deletion.flush({ result: 'deleted' });
+  });
+
+  it('shares one case-insensitive environment lookup with sandbox status', () => {
+    events.getInitData.and.returnValue(
+      of(initData('HTTPS://EU01-PSB.ALMA.EXLIBRISGROUP.COM')),
+    );
+
+    let sandbox: boolean | undefined;
+
+    service.isSandbox$().subscribe((value) => {
+      sandbox = value;
+    });
+    service.get<void>('/api/v1/allowed').subscribe();
+
+    expect(sandbox).toBeTrue();
+    expect(events.getInitData).toHaveBeenCalledTimes(1);
+    http
+      .expectOne('https://cardproxy-test.swisscovery.network/api/v1/allowed')
+      .flush(null);
+  });
+
+  ['https://localhost:4200', 'HTTPS://LOCALHOST:4200'].forEach((almaUrl) => {
+    it(`reports the local environment ${almaUrl} as sandbox`, () => {
+      events.getInitData.and.returnValue(of(initData(almaUrl)));
+
+      let sandbox: boolean | undefined;
+
+      service.isSandbox$().subscribe((value) => {
+        sandbox = value;
+      });
+
+      expect(sandbox).toBeTrue();
+      expect(events.getInitData).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  [
+    ['empty', ''],
+    ['whitespace-only', '   \t'],
+  ].forEach(([description, token]) => {
+    it(`rejects a ${description} SDK token and retries without caching it`, () => {
+      events.getAuthToken.and.returnValues(of(token), of('recovered-token'));
+
+      let receivedError: unknown;
+
+      service.get<void>('/api/v1/allowed').subscribe({
+        error: (error: unknown) => {
+          receivedError = error;
+        },
+      });
+
+      expect(receivedError).toEqual(new HttpErrorResponse({ status: 401 }));
+      expect(http.match(() => true)).toEqual([]);
+
+      service.get<void>('/api/v1/allowed').subscribe();
+
+      const request = http.expectOne(
+        'https://cardproxy.swisscovery.network/api/v1/allowed',
+      );
+
+      expect(request.request.headers.get('Authorization')).toBe(
+        'Bearer recovered-token',
+      );
+      request.flush(null);
+      expect(events.getAuthToken).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  it('turns an empty SDK token observable into an error and retries', () => {
+    events.getAuthToken.and.returnValues(EMPTY, of('recovered-token'));
+
+    let receivedError: unknown;
+
+    service.get<void>('/api/v1/allowed').subscribe({
+      error: (error: unknown) => {
+        receivedError = error;
+      },
+    });
+
+    expect(receivedError).toEqual(new HttpErrorResponse({ status: 401 }));
+    expect(http.match(() => true)).toEqual([]);
+
+    service.get<void>('/api/v1/allowed').subscribe();
+    http
+      .expectOne('https://cardproxy.swisscovery.network/api/v1/allowed')
+      .flush(null);
+    expect(events.getAuthToken).toHaveBeenCalledTimes(2);
+  });
+
+  it('turns empty init data into an error and recreates the environment lookup', () => {
+    events.getInitData.and.returnValues(
+      EMPTY,
+      of(initData('https://eu01-psb.alma.exlibrisgroup.com')),
+    );
+
+    let receivedError: unknown;
+
+    service.get<void>('/api/v1/allowed').subscribe({
+      error: (error: unknown) => {
+        receivedError = error;
+      },
+    });
+
+    expect(receivedError).toEqual(
+      new Error('Card backend environment data was empty.'),
+    );
+    expect(http.match(() => true)).toEqual([]);
+
+    service.get<void>('/api/v1/allowed').subscribe();
+    http
+      .expectOne('https://cardproxy-test.swisscovery.network/api/v1/allowed')
+      .flush(null);
+    expect(events.getInitData).toHaveBeenCalledTimes(2);
+  });
+
+  it('recreates the environment lookup after an SDK error', () => {
+    const initError = new Error('SDK init-data failure');
+
+    events.getInitData.and.returnValues(
+      throwError(() => initError),
+      of(initData('https://eu01.alma.exlibrisgroup.com')),
+    );
+
+    let receivedError: unknown;
+
+    service.get<void>('/api/v1/allowed').subscribe({
+      error: (error: unknown) => {
+        receivedError = error;
+      },
+    });
+
+    expect(receivedError).toBe(initError);
+    expect(http.match(() => true)).toEqual([]);
+
+    service.get<void>('/api/v1/allowed').subscribe();
+    http
+      .expectOne('https://cardproxy.swisscovery.network/api/v1/allowed')
+      .flush(null);
+    expect(events.getInitData).toHaveBeenCalledTimes(2);
+  });
+
+  const invalidPathCalls: readonly BackendCall[] = [
+    {
+      name: 'GET',
+      invoke: (backend, path) => backend.get<unknown>(path),
+    },
+    {
+      name: 'POST',
+      invoke: (backend, path) =>
+        backend.post<unknown, TestRequest>(path, { value: 'value' }),
+    },
+    {
+      name: 'PUT',
+      invoke: (backend, path) =>
+        backend.put<unknown, TestRequest>(path, { value: 'value' }),
+    },
+    {
+      name: 'DELETE',
+      invoke: (backend, path) => backend.delete<unknown>(path),
+    },
+  ];
+
+  [
+    'api/v1/allowed',
+    '/api/v1',
+    '/api/v10/allowed',
+    '/other/api/v1/allowed',
+  ].forEach((path) => {
+    invalidPathCalls.forEach(({ name, invoke }) => {
+      it(`rejects ${name} ${path} before SDK or HTTP side effects`, () => {
+        expect(() => invoke(service, path)).toThrowError(
+          `Card backend path must begin with /api/v1/: ${path}`,
+        );
+        expect(events.getAuthToken).not.toHaveBeenCalled();
+        expect(events.getInitData).not.toHaveBeenCalled();
+        expect(http.match(() => true)).toEqual([]);
+      });
+    });
+  });
+
+  [
+    '/api/v1/../outside',
+    '/api/v1/patrons/./123',
+    '/api/v1/%2e%2e/outside',
+    '/api/v1/patrons/%2E/123',
+    '/api/v1/allowed?view=complete',
+    '/api/v1/allowed#details',
+  ].forEach((path) => {
+    invalidPathCalls.forEach(({ name, invoke }) => {
+      it(`rejects noncanonical ${name} ${path} before SDK or HTTP side effects`, () => {
+        expect(() => invoke(service, path)).toThrowError(
+          'Card backend path must be canonical within /api/v1/.',
+        );
+        expect(events.getAuthToken).not.toHaveBeenCalled();
+        expect(events.getInitData).not.toHaveBeenCalled();
+        expect(http.match(() => true)).toEqual([]);
+      });
+    });
+  });
+
+  it('preserves an encoded business path segment', () => {
+    service.get<void>('/api/v1/patrons/primary%2Fid').subscribe();
+
+    const request = http.expectOne(
+      'https://cardproxy.swisscovery.network/api/v1/patrons/primary%2Fid',
+    );
+
+    expect(request.request.url).toBe(
+      'https://cardproxy.swisscovery.network/api/v1/patrons/primary%2Fid',
+    );
+    request.flush(null);
+  });
+});

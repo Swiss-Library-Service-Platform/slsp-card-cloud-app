@@ -1,45 +1,111 @@
-<ng-container *ngIf="!isProdEnvironment">
-    <div class="info-test-env">
-        Test instance using Alma Sandbox environment
+<ng-container *ngIf="vm$ | async as vm; else loading">
+  <div
+    class="account-content"
+    data-account-content
+    [attr.inert]="(activity.busy$ | async) ? '' : null"
+    [attr.aria-busy]="activity.busy$ | async"
+  >
+    <div
+      *ngIf="vm.sandbox"
+      class="slsp-environment-banner"
+      data-environment-banner
+      role="status"
+    >
+      <mat-icon>warning</mat-icon>
+      <span class="slsp-environment-banner__label">
+        {{ 'Main.Sandbox' | translate }}
+      </span>
+      <span>{{ 'Main.SandboxDescription' | translate }}</span>
     </div>
-</ng-container>
 
-<div class="user-header" fxLayout="row">
-    <button mat-flat-button color="secondary" (click)="navigateBack()">
-        <mat-icon inline=true>arrow_back_ios</mat-icon>
-        {{ 'General.BackToMenu' | translate }}
-    </button>
-    <span>
-        <mat-icon size="20">account_circle</mat-icon>
-        <div class="user-header-text"> {{currentFullName}} </div>
-    </span>
-</div>
+    <header class="slsp-patron-bar">
+      <button
+        mat-icon-button
+        class="slsp-patron-bar__back"
+        type="button"
+        (click)="navigateBack()"
+        [attr.aria-label]="'General.ChangePatron' | translate"
+        [attr.title]="'General.ChangePatron' | translate"
+      >
+        <mat-icon>arrow_back</mat-icon>
+      </button>
 
-<mat-tab-group mat-stretch-tabs>
-    <mat-tab [label]="numbersTitle">
-        <app-librarycardnumber></app-librarycardnumber>
-    </mat-tab>
-    <mat-tab>
+      <div class="slsp-patron-bar__identity">
+        <mat-icon>account_circle</mat-icon>
+        <span class="slsp-patron-bar__name" [attr.title]="vm.patron.fullName">{{
+          vm.patron.fullName
+        }}</span>
+        <app-edu-id-sync></app-edu-id-sync>
+      </div>
+    </header>
+
+    <mat-tab-group mat-stretch-tabs class="slsp-primary-tabs">
+      <mat-tab>
         <ng-template mat-tab-label>
-            <mat-icon *ngIf="(currentUserBlocks | json) != ({} | json)" class="blocks-tab-icon">warning</mat-icon>
-            {{ blocksTitle}}
+          <span data-tab-label>{{ 'Main.Cards' | translate }}</span>
+        </ng-template>
+        <app-librarycardnumber></app-librarycardnumber>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span data-tab-label>{{ 'Main.Account' | translate }}</span>
+        </ng-template>
+        <app-settings></app-settings>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span data-tab-label>{{ 'Main.Blocks' | translate }}</span>
+          <span
+            *ngIf="vm.hasBlocks"
+            class="blocks-tab-indicator"
+            aria-hidden="true"
+          ></span>
+          <span *ngIf="vm.hasBlocks" class="slsp-visually-hidden">
+            {{ 'Main.ActiveBlocksIndicator' | translate }}
+          </span>
         </ng-template>
         <app-block></app-block>
-    </mat-tab>
-    <mat-tab [label]="settingsTitle">
-        <app-settings></app-settings>
-    </mat-tab>
-</mat-tab-group>
+      </mat-tab>
+    </mat-tab-group>
 
-<div class="please-note">
-    <span> {{ 'Main.PleaseNote' | translate }} </span>
-    {{ 'Main.TakesAFewMinutes' | translate }}
-    <!-- TODO: put it back 
-    <div>
-        <a href="https://google.de" target="_">
-            <mat-icon inline=true>help</mat-icon>
-            {{ 'Main.Help' | translate }}
-        </a>
+    <div class="patron-message-area">
+      <div *ngIf="sync.needsRefresh" class="patron-sync-status">
+        <button
+          mat-button
+          type="button"
+          data-sync-refresh
+          (click)="sync.refresh()"
+          [disabled]="sync.loading || activity.busy"
+        >
+          {{ 'EduIdSync.Refresh' | translate }}
+        </button>
+      </div>
+      <cloudapp-alert></cloudapp-alert>
     </div>
-    -->
-</div>
+
+    <div class="propagation-guidance">
+      <mat-icon aria-hidden="true">info_outline</mat-icon>
+      <span>{{ 'Main.TakesAFewMinutes' | translate }}</span>
+    </div>
+  </div>
+  <div
+    *ngIf="activity.busy$ | async"
+    class="loading-shade mutation-overlay"
+    data-mutation-overlay
+  >
+    <div role="status" class="mutation-overlay__status">
+      <mat-spinner diameter="50" aria-hidden="true"></mat-spinner>
+      <span class="slsp-visually-hidden">{{
+        'General.PleaseWait' | translate
+      }}</span>
+    </div>
+  </div>
+</ng-container>
+
+<ng-template #loading>
+  <div class="loading-shade">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+</ng-template>

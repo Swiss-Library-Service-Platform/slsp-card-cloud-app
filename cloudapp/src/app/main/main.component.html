@@ -1,70 +1,131 @@
-<ng-container *ngIf="!isProdEnvironment">
-  <div class="info-test-env">
-    Test instance using Alma Sandbox environment
+<ng-container *ngIf="vm$ | async as vm; else loading">
+  <div
+    *ngIf="vm.sandbox"
+    class="slsp-environment-banner"
+    data-environment-banner
+    role="status"
+  >
+    <mat-icon>warning</mat-icon>
+    <span class="slsp-environment-banner__label">
+      {{ 'Main.Sandbox' | translate }}
+    </span>
+    <span>{{ 'Main.SandboxDescription' | translate }}</span>
   </div>
-</ng-container>
 
-<ng-container *ngIf="isUserCheckDone && !isInstitutionAllowed">
-  <div class="institution-now-allowed">
+  <div *ngIf="vm.authorization.status === 'denied'" class="user-not-allowed">
     <h1>
-      <mat-icon inline=true>error</mat-icon>
-      {{ 'Welcome.AccessDenied' | translate }}
+      <mat-icon inline="true">error</mat-icon>
+      <ng-container [ngSwitch]="vm.authorization.reason">
+        <span *ngSwitchCase="'institution'">{{
+          'Welcome.InstitutionNotEnabled' | translate
+        }}</span>
+        <span *ngSwitchCase="'authentication'">{{
+          'Welcome.SessionVerificationFailed' | translate
+        }}</span>
+        <span *ngSwitchDefault>{{ 'Welcome.AccessDenied' | translate }}</span>
+      </ng-container>
     </h1>
-    <p>
-      {{ 'Welcome.InstitutionDenied1' | translate }}
-      <a href="https://slsp.ch/en/contact">
-        {{ 'Welcome.InstitutionDenied2' | translate }}
+    <p [innerHTML]="vm.authorizationMessage"></p>
+    <p *ngIf="vm.authorization.reason === 'institution'">
+      <a
+        href="https://slsp.atlassian.net/servicedesk/customer/portal/1"
+        target="_blank"
+        rel="noopener"
+      >
+        {{ 'Welcome.ContactSupport' | translate }}
       </a>
-      {{ 'Welcome.InstitutionDenied3' | translate }}
     </p>
-  </div>
-</ng-container>
-
-<ng-container *ngIf="isUserCheckDone && isInstitutionAllowed && !isUserHasRole">
-  <div class="user-not-allowed">
-    <h1>
-      <mat-icon inline=true>error</mat-icon>
-      {{ 'Welcome.AccessDenied' | translate }}
-    </h1>
-    <p> {{ 'Welcome.NoRole' | translate }} </p>
-    <ul>
-      <li> {{ 'Welcome.Fulfillment' | translate }} </li>
-      <li> {{ 'Welcome.UserManager' | translate }} </li>
-      <li> {{ 'Welcome.GeneralSystem' | translate }} </li>
+    <ul *ngIf="vm.authorization.reason === 'role'">
+      <li>{{ 'Welcome.Fulfillment' | translate }}</li>
+      <li>{{ 'Welcome.UserManager' | translate }}</li>
+      <li>{{ 'Welcome.GeneralSystem' | translate }}</li>
     </ul>
   </div>
-</ng-container>
 
-<ng-container *ngIf="isUserHasRole && isInstitutionAllowed">
-  <ng-container *ngIf="(entities$ | async)?.length > 0; then entities; else noentities"></ng-container>
+  <div *ngIf="vm.authorization.status === 'error'" class="user-not-allowed">
+    <h1>
+      <mat-icon inline="true">error</mat-icon>
+      {{ 'Welcome.AccessCheckFailed' | translate }}
+    </h1>
+    <p [innerHTML]="vm.authorizationMessage"></p>
+  </div>
 
-  <ng-template #noentities>
-    <div class="select-entities">
-      <h1>
-        {{ 'Welcome.Welcome' | translate }}
-      </h1>
-      <p> {{ 'Welcome.LetsGo' | translate }} </p>
+  <ng-container *ngIf="vm.authorization.status === 'allowed'">
+    <div *ngIf="vm.entities.length === 0" class="select-entities">
+      <h1>{{ 'Welcome.Welcome' | translate }}</h1>
+      <p>{{ 'Welcome.LetsGo' | translate }}</p>
       <ul>
-        <li> {{ 'Welcome.Instructions1' | translate }} </li>
-        <li> {{ 'Welcome.Instructions2' | translate }} </li>
-        <li> {{ 'Welcome.Instructions3' | translate }} </li>
+        <li>{{ 'Welcome.Instructions1' | translate }}</li>
+        <li>{{ 'Welcome.Instructions2' | translate }}</li>
+        <li>{{ 'Welcome.Instructions3' | translate }}</li>
       </ul>
     </div>
-  </ng-template>
 
-  <ng-template #entities>
-    <div class="select-entities" *ngIf="!selectedEntity">
-      <label id="entities-radio-group-label">{{ 'Welcome.SelectUser' | translate }}</label>
-      <mat-radio-group aria-labelledby="entities-radio-group-label" class="entities-radio-group"
-        [(ngModel)]="selectedEntity" (change)="entitySelected($event)">
-        <mat-radio-button *ngFor="let entity of entities$ | async" [value]="entity">
-          {{entity.description}}
-        </mat-radio-button>
-      </mat-radio-group>
+    <div
+      *ngIf="
+        vm.entities.length > 0 &&
+        (vm.patron.status === 'empty' ||
+          vm.patron.status === 'not-found' ||
+          vm.patron.status === 'error')
+      "
+      class="select-entities"
+    >
+      <mat-action-list
+        [attr.aria-label]="'Welcome.SelectUser' | translate"
+        class="entities-action-list"
+      >
+        <button
+          mat-list-item
+          *ngFor="let entity of vm.entities; trackBy: trackEntity"
+          class="entity-action"
+          type="button"
+          [disabled]="!entityEditable(entity)"
+          (click)="entitySelected(entity)"
+        >
+          <span class="entity-row">
+            <span class="entity-content">
+              <span class="entity-heading">
+                <span class="entity-name" [attr.title]="entity.description">{{
+                  entity.description
+                }}</span>
+                <span
+                  *ngIf="entityEditable(entity)"
+                  class="entity-account-type"
+                >
+                  {{
+                    'Main.AccountType.' + entityAccountType(entity) | translate
+                  }}
+                </span>
+              </span>
+              <span
+                *ngIf="entityPrimaryIdentifier(entity) as primaryIdentifier"
+                class="entity-primary-identifier"
+                [attr.title]="primaryIdentifier"
+                >{{ primaryIdentifier }}</span
+              >
+            </span>
+            <mat-icon
+              *ngIf="entityEditable(entity)"
+              class="entity-navigation-icon"
+              aria-hidden="true"
+            >
+              chevron_right
+            </mat-icon>
+          </span>
+        </button>
+      </mat-action-list>
     </div>
-  </ng-template>
+  </ng-container>
+
+  <cloudapp-alert></cloudapp-alert>
+
+  <div class="loading-shade" *ngIf="vm.patron.status === 'loading'">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
 </ng-container>
 
-<div class="loading-shade" *ngIf="loading">
-  <mat-spinner diameter="50"></mat-spinner>
-</div>
+<ng-template #loading>
+  <div class="loading-shade">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+</ng-template>

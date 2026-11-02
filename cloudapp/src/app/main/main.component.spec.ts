@@ -1,0 +1,596 @@
+import { Component } from '@angular/core';
+import { ComponentFixture } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ActivatedRoute, Router } from '@angular/router';
+import {
+  AlertService,
+  Entity,
+  EntityType,
+  MaterialModule,
+} from '@exlibris/exl-cloudapp-angular-lib';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
+
+import { AuthorizationResult } from '../services/authorization.service';
+import { BackendHttpService } from '../services/backend-http.service';
+import {
+  PatronState,
+  PatronStateService,
+} from '../services/patron-state.service';
+import { MainComponent } from './main.component';
+
+@Component({ selector: 'cloudapp-alert', template: '' })
+class AlertStubComponent {}
+
+describe('MainComponent', () => {
+  let state: jasmine.SpyObj<PatronStateService>;
+  let patronState$: BehaviorSubject<PatronState>;
+  let authorization$: BehaviorSubject<AuthorizationResult>;
+  let entities$: BehaviorSubject<readonly Entity[]>;
+  let sandbox$: BehaviorSubject<boolean>;
+  let router: jasmine.SpyObj<Router>;
+  let alert: jasmine.SpyObj<AlertService>;
+  let autoSelect$: Subject<void>;
+  const selected: Entity = {
+    id: 'entity-metadata',
+    type: EntityType.USER,
+    link: '/users/patron%40eduid.ch',
+    description: 'Selected user',
+  };
+  const ineligible: Entity = {
+    id: 'staff-metadata',
+    type: EntityType.USER,
+    link: '/users/staff-user',
+    description: 'Staff user',
+  };
+
+  beforeEach(() => {
+    patronState$ = new BehaviorSubject<PatronState>({ status: 'empty' });
+    authorization$ = new BehaviorSubject<AuthorizationResult>({
+      status: 'allowed',
+    });
+    entities$ = new BehaviorSubject<readonly Entity[]>([selected]);
+    sandbox$ = new BehaviorSubject(true);
+    autoSelect$ = new Subject<void>();
+    state = jasmine.createSpyObj<PatronStateService>(
+      'PatronStateService',
+      ['autoSelect$', 'select', 'clear'],
+      {
+        authorization$,
+        userEntities$: entities$,
+        patronState$,
+      },
+    );
+    state.autoSelect$.and.returnValue(autoSelect$);
+    state.clear.and.callFake(() => patronState$.next({ status: 'empty' }));
+    router = jasmine.createSpyObj<Router>('Router', ['navigate']);
+    alert = jasmine.createSpyObj<AlertService>('AlertService', [
+      'warn',
+      'error',
+    ]);
+
+    TestBed.configureTestingModule({
+      declarations: [AlertStubComponent, MainComponent],
+      imports: [
+        BrowserAnimationsModule,
+        MaterialModule,
+        TranslateModule.forRoot(),
+      ],
+      providers: [
+        { provide: PatronStateService, useValue: state },
+        { provide: Router, useValue: router },
+        {
+          provide: ActivatedRoute,
+          useValue: { snapshot: { params: { isAutoSelect: 'true' } } },
+        },
+        {
+          provide: BackendHttpService,
+          useValue: { isSandbox$: (): Observable<boolean> => sandbox$ },
+        },
+        { provide: AlertService, useValue: alert },
+      ],
+    });
+
+    const translate = TestBed.inject(TranslateService);
+
+    translate.setTranslation('en', {
+      Welcome: {
+        Welcome: 'Welcome to SLSP Card!',
+        LetsGo: "Let's get started",
+        Instructions1: 'Search for a user',
+        Instructions2: 'Open the app',
+        Instructions3: 'Select the user',
+        AccessDenied: 'Access denied',
+        InstitutionNotEnabled: 'Institution not enabled',
+        SessionVerificationFailed: 'Session could not be verified',
+        AccessCheckFailed: 'Access could not be checked',
+        ContactSupport: 'Contact SLSP Support',
+        Fulfillment: 'Fulfillment Services Manager',
+        UserManager: 'User Manager',
+        GeneralSystem: 'General System Administrator',
+        SelectUser: 'Select a user:',
+      },
+      Main: {
+        UserNotFound: ' was not found in the Network Zone.',
+        TemporarilyUnavailable: 'Service temporarily unavailable',
+        AccountType: {
+          eduId: 'edu-ID',
+          institutional: 'Institutional',
+          unsupported: 'Unsupported account type',
+        },
+        Sandbox: 'Sandbox',
+        SandboxDescription: 'Test environment',
+      },
+      Errors: {
+        AuthenticationFailed: 'Authentication failed.',
+        AccessDenied: 'Access denied.',
+        InstitutionNotEnabled: 'Institution not enabled. Contact SLSP Support.',
+        OperatorRoleRequired: 'Required role missing',
+        InvalidPatronId: 'The selected patron cannot be loaded.',
+        PatronNotFound:
+          '{{entityDescription}} was not found in the Network Zone.',
+        InvalidLibraryCardNumber: 'This library card number is not valid.',
+        DuplicateLibraryCardNumber: 'The card number is already in use.',
+        UnsupportedBlock: 'The block is unsupported.',
+        BlockCommentRequired: 'A block comment is required.',
+        StaleElementReference: 'The element reference is stale.',
+        InvalidSettingsNote: 'The shared settings are invalid.',
+        AlmaRequestRejected:
+          'Alma could not process the request. Reload the patron and try again. If the problem persists, contact support.',
+        AlmaFailure:
+          'Alma returned an unexpected response. Reload the patron and try again. If the problem persists, contact support.',
+        AlmaUnavailable:
+          'Alma is temporarily unavailable. Reload the patron before trying again. If the problem persists, contact support.',
+        UnexpectedFailure: 'An unexpected error occurred.',
+        SelectedPatron: 'The selected patron',
+        SupportId: 'Support ID: {{errorId}}',
+      },
+    });
+    translate.use('en');
+  });
+
+  it('starts exact route-driven auto-selection', () => {
+    const component = TestBed.createComponent(MainComponent).componentInstance;
+
+    component.ngOnInit();
+
+    expect(state.autoSelect$).toHaveBeenCalledOnceWith('true');
+  });
+
+  it('selects the USER metadata when its action row is clicked', () => {
+    const fixture = TestBed.createComponent(MainComponent);
+
+    fixture.detectChanges();
+
+    expect(
+      fixture.nativeElement.querySelector('cloudapp-alert'),
+    ).not.toBeNull();
+
+    const userAction: HTMLButtonElement | null =
+      fixture.nativeElement.querySelector('button.entity-action');
+
+    expect(userAction).not.toBeNull();
+    expect(userAction?.querySelector('.entity-name')?.textContent).toContain(
+      'Selected user',
+    );
+    expect(
+      userAction?.querySelector('.entity-primary-identifier')?.textContent,
+    ).toContain('patron@eduid.ch');
+
+    const navigationIcon = userAction?.querySelector('.entity-navigation-icon');
+
+    expect(navigationIcon?.textContent).toContain('chevron_right');
+    expect(navigationIcon?.getAttribute('aria-hidden')).toBe('true');
+    userAction?.click();
+
+    expect(state.select).toHaveBeenCalledOnceWith(selected);
+  });
+
+  it('keeps ineligible accounts visible but disables their action row', () => {
+    entities$.next([selected, ineligible]);
+
+    const fixture = TestBed.createComponent(MainComponent);
+
+    fixture.detectChanges();
+
+    const actions = Array.from<HTMLButtonElement>(
+      fixture.nativeElement.querySelectorAll('button.entity-action'),
+    );
+    const eligibleAction = actions[0];
+    const ineligibleAction = actions[1];
+
+    expect(eligibleAction.disabled).toBeFalse();
+    expect(
+      eligibleAction.querySelector('.entity-navigation-icon'),
+    ).not.toBeNull();
+    expect(ineligibleAction.textContent).toContain('Staff user');
+    expect(ineligibleAction.disabled).toBeTrue();
+    expect(
+      ineligibleAction.querySelector('.entity-navigation-icon'),
+    ).toBeNull();
+    expect(getComputedStyle(ineligibleAction).backgroundColor).toBe(
+      'rgb(255, 255, 255)',
+    );
+    expect(
+      getComputedStyle(
+        ineligibleAction.querySelector('.entity-name') as HTMLElement,
+      ).color,
+    ).toBe('rgba(0, 0, 0, 0.6)');
+
+    ineligibleAction.click();
+
+    expect(state.select).not.toHaveBeenCalled();
+  });
+
+  [
+    {
+      link: '/users/patron%40eduid.ch',
+      label: 'edu-ID',
+      id: 'patron@eduid.ch',
+      enabled: true,
+    },
+    {
+      link: '/users/ORG_12345',
+      label: 'Institutional',
+      id: 'ORG_12345',
+      enabled: true,
+    },
+    {
+      link: '/users/staff-user',
+      label: 'Unsupported account type',
+      id: 'staff-user',
+      enabled: false,
+    },
+    {
+      link: '/users/invalid?expand=full',
+      label: 'Unsupported account type',
+      id: null,
+      enabled: false,
+    },
+  ].forEach(({ link, label, id, enabled }) => {
+    it(`shows account metadata for ${link} without changing eligibility`, () => {
+      entities$.next([{ ...selected, link }]);
+
+      const fixture = TestBed.createComponent(MainComponent);
+
+      fixture.detectChanges();
+
+      const row: HTMLButtonElement =
+        fixture.nativeElement.querySelector('.entity-action');
+      const labelElement = row.querySelector(
+        '.entity-heading .entity-account-type',
+      );
+      const identifier = row.querySelector('.entity-primary-identifier');
+
+      if (enabled) {
+        expect(labelElement?.textContent?.trim()).toBe(label);
+      } else {
+        expect(labelElement).toBeNull();
+        expect(row.textContent).not.toContain('Unsupported account type');
+      }
+      expect(identifier?.textContent?.trim() ?? null).toBe(id);
+      expect(identifier?.getAttribute('title') ?? null).toBe(id);
+      expect(
+        fixture.nativeElement.querySelectorAll('.entity-list-hint').length,
+      ).toBe(0);
+      expect(row.disabled).toBe(!enabled);
+      expect(row.querySelector('.entity-navigation-icon') !== null).toBe(
+        enabled,
+      );
+      expect(row.querySelector('[tabindex]')).toBeNull();
+    });
+  });
+
+  it('uses a non-visible accessible label for the user list', () => {
+    const fixture = TestBed.createComponent(MainComponent);
+
+    fixture.detectChanges();
+
+    const actionList: HTMLElement =
+      fixture.nativeElement.querySelector('mat-action-list');
+
+    expect(actionList.getAttribute('aria-label')).toBe('Select a user:');
+    expect(
+      fixture.nativeElement.querySelector('.entities-list-label'),
+    ).toBeNull();
+    expect(actionList.textContent).not.toContain('Select a user:');
+  });
+
+  it('navigates after the selected Card patron becomes ready', async () => {
+    const fixture = TestBed.createComponent(MainComponent);
+    const component = fixture.componentInstance;
+
+    component.ngOnInit();
+    patronState$.next({
+      status: 'ready',
+      entity: selected,
+      patron: {
+        currentUserGroupCode: null,
+        currentUserGroupDescription: null,
+        fullName: 'User One',
+        external: false,
+        libraryCardNumbers: [],
+        matriculationNumber: null,
+        dashedMatriculationNumber: null,
+        blocks: {},
+        postalAddresses: [],
+        preferredEmailAddress: null,
+        invoicePostalAddress: null,
+        invoiceEmailAddress: null,
+      },
+    });
+    await fixture.whenStable();
+
+    expect(router.navigate).toHaveBeenCalledOnceWith(['usermenu']);
+  });
+
+  ['not-found', 'error'].forEach((status) => {
+    it(`alerts once and clears selection after a terminal ${status} state`, async () => {
+      const fixture = TestBed.createComponent(MainComponent);
+
+      fixture.detectChanges();
+
+      const terminalState: PatronState =
+        status === 'not-found'
+          ? {
+              status: 'not-found',
+              entity: selected,
+              error: {
+                type: 'PATRON_NOT_FOUND',
+                errorId: '',
+                messages: [],
+              },
+            }
+          : {
+              status: 'error',
+              entity: selected,
+              error: {
+                type: 'ALMA_UNAVAILABLE',
+                errorId: '',
+                messages: [],
+              },
+            };
+
+      patronState$.next(terminalState);
+      await fixture.whenStable();
+      fixture.detectChanges();
+
+      expect(state.clear).toHaveBeenCalledTimes(1);
+      expect(patronState$.value).toEqual({ status: 'empty' });
+      expect(alert.warn.calls.count() + alert.error.calls.count()).toBe(1);
+      expect(
+        fixture.nativeElement.querySelector('mat-action-list'),
+      ).not.toBeNull();
+      expect(fixture.nativeElement.querySelector('mat-radio-group')).toBeNull();
+      expect(
+        fixture.nativeElement
+          .querySelector('mat-action-list')
+          .getAttribute('aria-label'),
+      ).toBe('Select a user:');
+    });
+  });
+
+  it('uses the selected entity and support id for patron-not-found without rendering backend context', async () => {
+    const fixture = TestBed.createComponent(MainComponent);
+
+    fixture.detectChanges();
+    patronState$.next({
+      status: 'not-found',
+      entity: selected,
+      error: {
+        type: 'PATRON_NOT_FOUND',
+        errorId: 'support-404',
+        messages: [],
+      },
+    });
+    await fixture.whenStable();
+
+    expect(alert.warn).toHaveBeenCalledOnceWith(
+      'Selected user was not found in the Network Zone. <small class="slsp-support-reference">Support ID: support-404</small>',
+      { autoClose: false },
+    );
+    expect(alert.warn.calls.mostRecent().args[0]).not.toContain(
+      'private backend patron',
+    );
+  });
+
+  it('presents business conflicts as localized warnings without a support id', async () => {
+    const fixture = TestBed.createComponent(MainComponent);
+
+    fixture.detectChanges();
+    patronState$.next({
+      status: 'error',
+      entity: selected,
+      error: {
+        type: 'STALE_ELEMENT_REFERENCE',
+        errorId: 'support-409',
+        messages: [],
+      },
+    });
+    await fixture.whenStable();
+
+    expect(alert.warn).toHaveBeenCalledOnceWith(
+      'The element reference is stale.',
+      { autoClose: false },
+    );
+    expect(alert.error).not.toHaveBeenCalled();
+  });
+
+  it('uses Alma unavailable copy and support id for transport failures', async () => {
+    const fixture = TestBed.createComponent(MainComponent);
+
+    fixture.detectChanges();
+    patronState$.next({
+      status: 'error',
+      entity: selected,
+      error: {
+        type: 'ALMA_UNAVAILABLE',
+        errorId: 'support-503',
+        messages: [],
+      },
+    });
+    await fixture.whenStable();
+
+    expect(alert.error).toHaveBeenCalledOnceWith(
+      'Alma is temporarily unavailable. Reload the patron before trying again. If the problem persists, contact support. <small class="slsp-support-reference">Support ID: support-503</small>',
+      { autoClose: false },
+    );
+  });
+
+  it('renders authentication failures once, with their support ID', async () => {
+    const fixture = TestBed.createComponent(MainComponent);
+
+    fixture.detectChanges();
+    patronState$.next({
+      status: 'error',
+      entity: selected,
+      error: {
+        type: 'AUTHENTICATION_FAILED',
+        errorId: 'support-401',
+        messages: [],
+      },
+    });
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(
+      fixture.nativeElement.querySelector('.user-not-allowed'),
+    ).not.toBeNull();
+    expect(alert.error).not.toHaveBeenCalled();
+    expect(fixture.nativeElement.textContent).toContain(
+      'Support ID: support-401',
+    );
+    expect(fixture.nativeElement.textContent).not.toContain(
+      'Institution not enabled',
+    );
+    expect(fixture.nativeElement.querySelector('ul')).toBeNull();
+    expect(state.clear).not.toHaveBeenCalled();
+  });
+
+  it('shows institution guidance without blaming roles or the session', () => {
+    const fixture = TestBed.createComponent(MainComponent);
+    authorization$.next({
+      status: 'denied',
+      reason: 'institution',
+      error: {
+        type: 'INSTITUTION_NOT_ENABLED',
+        errorId: 'institution-403',
+        messages: [],
+      },
+    });
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('h1').textContent).toContain(
+      'Institution not enabled',
+    );
+    expect(fixture.nativeElement.querySelector('ul')).toBeNull();
+    expect(fixture.nativeElement.querySelector('a').href).toContain(
+      'slsp.atlassian.net',
+    );
+    expect(fixture.nativeElement.textContent).not.toContain(
+      'Required role missing',
+    );
+    expect(fixture.nativeElement.textContent).toContain('institution-403');
+  });
+
+  it('does not describe a failed access check as a denied permission', () => {
+    const fixture = TestBed.createComponent(MainComponent);
+    authorization$.next({
+      status: 'error',
+      error: {
+        type: 'ALMA_UNAVAILABLE',
+        errorId: 'upstream-503',
+        messages: [],
+      },
+    });
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('h1').textContent).toContain(
+      'Access could not be checked',
+    );
+    expect(fixture.nativeElement.querySelector('ul')).toBeNull();
+    expect(fixture.nativeElement.textContent).not.toContain(
+      'Institution not enabled',
+    );
+  });
+
+  it('keeps generic access denial separate from a missing role', () => {
+    const fixture = TestBed.createComponent(MainComponent);
+    authorization$.next({
+      status: 'denied',
+      reason: 'authorization',
+      error: {
+        type: 'ACCESS_DENIED',
+        errorId: 'generic-403',
+        messages: [],
+      },
+    });
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('ul')).toBeNull();
+    expect(fixture.nativeElement.textContent).toContain('Access denied.');
+  });
+
+  it('owns and disposes the bounded auto-select effect with the component lifecycle', () => {
+    const fixture = TestBed.createComponent(MainComponent);
+
+    fixture.detectChanges();
+    expect(autoSelect$.observers.length).toBe(1);
+
+    fixture.destroy();
+    expect(autoSelect$.observers.length).toBe(0);
+  });
+
+  it('renders authorization guidance, sandbox state, loading, and translated selection controls', () => {
+    const fixture: ComponentFixture<MainComponent> =
+      TestBed.createComponent(MainComponent);
+
+    authorization$.next({
+      status: 'denied',
+      reason: 'role',
+      error: {
+        type: 'OPERATOR_ROLE_REQUIRED',
+        errorId: 'support-403',
+        messages: [],
+      },
+    });
+    fixture.detectChanges();
+    expect(
+      fixture.nativeElement.querySelector('.user-not-allowed'),
+    ).not.toBeNull();
+    expect(fixture.nativeElement.textContent).toContain(
+      'Required role missing',
+    );
+    expect(fixture.nativeElement.textContent).toContain(
+      'Required role missing Support ID: support-403',
+    );
+    expect(
+      fixture.nativeElement.querySelector('.slsp-support-reference')
+        ?.textContent,
+    ).toBe('Support ID: support-403');
+    expect(fixture.nativeElement.textContent).not.toContain(
+      'private backend detail',
+    );
+    expect(
+      fixture.nativeElement.querySelector('[data-environment-banner]'),
+    ).not.toBeNull();
+    expect(fixture.nativeElement.textContent).toContain('Sandbox');
+    expect(fixture.nativeElement.textContent).toContain('Test environment');
+
+    authorization$.next({ status: 'allowed' });
+    patronState$.next({ status: 'loading', entity: selected });
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('mat-spinner')).not.toBeNull();
+
+    patronState$.next({ status: 'empty' });
+    fixture.detectChanges();
+    expect(
+      fixture.nativeElement.querySelector('mat-action-list'),
+    ).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('mat-radio-group')).toBeNull();
+    expect(fixture.nativeElement.textContent).toContain('Selected user');
+    expect(
+      fixture.nativeElement
+        .querySelector('mat-action-list')
+        .getAttribute('aria-label'),
+    ).toBe('Select a user:');
+  });
+});

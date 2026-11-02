@@ -1,31 +1,96 @@
-mat-card {
-    cursor: pointer;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
+.account-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
 }
 
-.mat-tab-group {
-    flex-grow: 1;
+.loading-shade.mutation-overlay {
+  position: fixed;
 }
 
-.please-note {
-    padding-bottom: 1rem;
-    text-align: center;
-
-    span {
-        font-weight: bold;
-    }
-
-    div {
-        margin-top: 1rem;
-    }
-
-    .mat-icon {
-        vertical-align: bottom;
-        margin-right: 4px;
-    }
+.mutation-overlay__status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
 }
 
-.blocks-tab-icon {
-    margin-right: 8px;
+:host {
+  display: flex;
+  min-width: 0;
+  height: 100%;
+  flex-direction: column;
+}
+
+.slsp-primary-tabs {
+  flex: 1 0 140px;
+  // Keep the 40px tab bar and roughly 100px of form content visible.
+  min-height: 140px;
+}
+
+.slsp-environment-banner,
+.slsp-patron-bar {
+  flex: 0 0 auto;
+}
+
+.blocks-tab-indicator {
+  box-sizing: border-box;
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  margin-left: 2px;
+  border-radius: 50%;
+  border: 1px solid white;
+  background: var(--slsp-danger);
+}
+
+.patron-message-area {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.patron-sync-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  color: var(--slsp-text-secondary);
+  font-size: var(--slsp-font-size-body);
+}
+
+.propagation-guidance {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 8px 0;
+  color: var(--slsp-text-secondary);
+  font-size: var(--slsp-font-size-support);
+  line-height: var(--slsp-line-height-body);
+  mat-icon {
+    flex: 0 0 auto;
+    // Center against the first text line, including when the note wraps.
+    margin-top: calc(
+      (var(--slsp-font-size-support) * var(--slsp-line-height-body) - 16px) / 2
+    );
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+    line-height: 16px;
+  }
+}
+
+// In very short panes, scroll the shell instead of squeezing alerts/recovery away.
+@media (max-height: 400px) {
+  :host {
+    overflow-y: auto;
+  }
+
+  .patron-message-area {
+    flex-shrink: 0;
+  }
 }

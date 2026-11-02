@@ -1,0 +1,163 @@
+import {
+  AddBlockRequest,
+  AddLibraryCardNumberRequest,
+  CardApiError,
+  CardErrorType,
+  CardPatron,
+  InvoiceEmailAddressView,
+  InvoicePostalAddressView,
+  SetInvoiceEmailAddressRequest,
+  SetInvoicePostalAddressRequest,
+  SetPreferredAddressRequest,
+} from './card-api.model';
+
+describe('Card API models', () => {
+  const patron: CardPatron = {
+    currentUserGroupCode: null,
+    currentUserGroupDescription: null,
+    fullName: 'Test Patron',
+    external: true,
+    libraryCardNumbers: [
+      {
+        value: 'abc',
+        alias: false,
+        removable: true,
+        elementReference: '0.opaque-card-fingerprint',
+      },
+      {
+        value: 'imported',
+        alias: false,
+        removable: false,
+        elementReference: null,
+      },
+    ],
+    matriculationNumber: '12345678',
+    dashedMatriculationNumber: '12-345-678',
+    blocks: {
+      '03.1': {
+        code: '03.1',
+        createdDate: null,
+        expiryDate: null,
+        note: '',
+        elementReference: '0.opaque-block-fingerprint',
+      },
+    },
+    postalAddresses: [
+      {
+        elementReference: null,
+        types: [],
+        line1: null,
+        postalCode: null,
+        city: null,
+        country: null,
+        preferred: false,
+      },
+    ],
+    preferredEmailAddress: null,
+    invoicePostalAddress: null,
+    invoiceEmailAddress: null,
+  };
+  const errorTypes: Readonly<Record<CardErrorType, true>> = {
+    INVALID_USER_GROUP: true,
+    USER_GROUP_NOT_ELIGIBLE: true,
+    EDU_ID_SYNC_NOT_SUPPORTED: true,
+    SYNC_OUTCOME_UNKNOWN: true,
+    SYNC_REFRESH_FAILED: true,
+    SYNC_PATRON_UNAVAILABLE: true,
+    AUTHENTICATION_FAILED: true,
+    ACCESS_DENIED: true,
+    INSTITUTION_NOT_ENABLED: true,
+    OPERATOR_ROLE_REQUIRED: true,
+    INVALID_PATRON_ID: true,
+    PATRON_NOT_FOUND: true,
+    INVALID_LIBRARY_CARD_NUMBER: true,
+    DUPLICATE_LIBRARY_CARD_NUMBER: true,
+    UNSUPPORTED_BLOCK: true,
+    BLOCK_COMMENT_REQUIRED: true,
+    STALE_ELEMENT_REFERENCE: true,
+    INVALID_SETTINGS_NOTE: true,
+    INVALID_INVOICE_POSTAL_ADDRESS: true,
+    INVALID_INVOICE_EMAIL_ADDRESS: true,
+    ALMA_REQUEST_REJECTED: true,
+    ALMA_FAILURE: true,
+    REGISTRATION_PLATFORM_FAILURE: true,
+    REGISTRATION_PLATFORM_UNAVAILABLE: true,
+    UPSTREAM_FAILURE: true,
+    DEPENDENCY_UNAVAILABLE: true,
+    ALMA_UNAVAILABLE: true,
+    UNEXPECTED_FAILURE: true,
+  };
+
+  it('represents only the backend Card patron contract', () => {
+    expect(patron.fullName).toBe('Test Patron');
+    expect(patron.libraryCardNumbers[1].elementReference).toBeNull();
+    expect(patron.postalAddresses[0].elementReference).toBeNull();
+    expect('contact_info' in patron).toBeFalse();
+  });
+
+  it('represents backend errors, client fallbacks and safe error fields', () => {
+    const error: CardApiError = {
+      type: 'STALE_ELEMENT_REFERENCE',
+      errorId: 'error-id',
+      messages: [],
+    };
+
+    expect(Reflect.ownKeys(errorTypes)).toHaveSize(28);
+    expect(error).toEqual({
+      type: 'STALE_ELEMENT_REFERENCE',
+      errorId: 'error-id',
+      messages: [],
+    });
+  });
+
+  it('represents the three backend mutation request bodies', () => {
+    const addCard: AddLibraryCardNumberRequest = { value: 'SLSP-123456789' };
+    const addBlock: AddBlockRequest = { code: '09', comment: 'comment' };
+    const preferredAddress: SetPreferredAddressRequest = {
+      elementReference: '0.opaque-address-fingerprint',
+    };
+
+    expect([addCard, addBlock, preferredAddress]).toEqual([
+      { value: 'SLSP-123456789' },
+      { code: '09', comment: 'comment' },
+      { elementReference: '0.opaque-address-fingerprint' },
+    ]);
+  });
+
+  it('represents nullable invoice contacts and freshness-aware requests', () => {
+    const postal: InvoicePostalAddressView = {
+      elementReference: 'postal-reference',
+      line1: null,
+      line2: null,
+      line3: null,
+      line4: null,
+      postalCode: null,
+      city: null,
+      countryCode: null,
+    };
+    const email: InvoiceEmailAddressView = {
+      elementReference: 'email-reference',
+      emailAddress: null,
+    };
+    const createPostal: SetInvoicePostalAddressRequest = {
+      elementReference: null,
+      line1: 'Example AG',
+      line2: null,
+      line3: null,
+      line4: null,
+      postalCode: '8000',
+      city: 'Zürich',
+      countryCode: 'CHE',
+    };
+    const replaceEmail: SetInvoiceEmailAddressRequest = {
+      elementReference: email.elementReference,
+      emailAddress: 'invoice@example.org',
+    };
+
+    expect(postal.elementReference).toBe('postal-reference');
+    expect(email.emailAddress).toBeNull();
+    expect(createPostal.elementReference).toBeNull();
+    expect(replaceEmail.elementReference).toBe('email-reference');
+    expect(patron.preferredEmailAddress).toBeNull();
+  });
+});

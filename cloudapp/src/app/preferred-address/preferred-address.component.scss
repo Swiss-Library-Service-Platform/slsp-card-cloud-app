@@ -1,0 +1,23 @@
+.address-row {
+  align-items: stretch;
+  flex-direction: column;
+}
+
+.address-row__action {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+
+  button {
+    white-space: normal;
+    height: auto;
+    min-height: 36px;
+  }
+}
+
+.address-row__address {
+  overflow-wrap: anywhere;
+  color: var(--slsp-text-secondary);
+  font-size: var(--slsp-font-size-body);
+  line-height: var(--slsp-line-height-body);
+}

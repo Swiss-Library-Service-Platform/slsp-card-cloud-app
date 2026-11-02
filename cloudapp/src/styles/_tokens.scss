@@ -1,0 +1,49 @@
+@mixin slsp-design-tokens {
+  :root {
+    --slsp-brand-purple: #4e4a99;
+    --slsp-amber: #f3a000;
+    --slsp-amber-light: #fff7e7;
+    --slsp-success: #2e7d32;
+    --slsp-success-light: #f4faf4;
+    --slsp-danger: #963031;
+    --slsp-danger-light: #fff4f4;
+    --slsp-text: rgba(0, 0, 0, 0.82);
+    --slsp-text-secondary: rgba(0, 0, 0, 0.6);
+    --slsp-font-size-title: 1rem;
+    --slsp-font-size-body: 1rem;
+    --slsp-font-size-support: 0.875rem;
+    --slsp-font-weight-regular: 400;
+    --slsp-font-weight-medium: 500;
+    --slsp-line-height-body: 1.5;
+    --slsp-line-height-compact: 1.35;
+    --slsp-border: rgba(0, 0, 0, 0.14);
+    --slsp-border-light: rgba(0, 0, 0, 0.08);
+    --slsp-space-1: 0.25rem;
+    --slsp-space-2: 8px;
+    --slsp-space-3: 12px;
+    --slsp-radius: 6px;
+  }
+
+  // Keep app accents and Material controls on the SLSP palette in every host theme.
+  :root body[class*='cloudapp-theme'] {
+    --sys-primary: var(--slsp-brand-purple);
+    --sys-on-primary: white;
+    --sys-primary-container: color-mix(
+      in srgb,
+      var(--slsp-brand-purple) 12%,
+      white
+    );
+    --sys-on-primary-container: var(--slsp-brand-purple);
+    --slsp-accent: var(--slsp-brand-purple);
+    --slsp-accent-subtle: color-mix(
+      in srgb,
+      var(--slsp-brand-purple) 5%,
+      white
+    );
+    --slsp-accent-overlay: color-mix(
+      in srgb,
+      var(--slsp-brand-purple) 8%,
+      transparent
+    );
+  }
+}

@@ -1,99 +1,176 @@
-import { Observable } from 'rxjs';
-import { finalize, map, switchMap, tap } from 'rxjs/operators';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { DestroyRef, Component, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AlertService, Entity } from '@exlibris/exl-cloudapp-angular-lib';
 import {
-  CloudAppRestService, CloudAppEventsService, Request, HttpMethod,
-  Entity, RestErrorResponse, AlertService, EntityType
-} from '@exlibris/exl-cloudapp-angular-lib';
-import { MatRadioChange } from '@angular/material/radio';
-import { Router, ActivatedRoute, Params } from '@angular/router';
-import { LibraryManagementService } from '../services/library-management.service';
+  Observable,
+  asapScheduler,
+  combineLatest,
+  distinctUntilChanged,
+  filter,
+  map,
+  observeOn,
+  shareReplay,
+} from 'rxjs';
+
+import { PERSISTENT_ALERT_OPTIONS } from '../alert-options';
+import {
+  getPatronAccountType,
+  isEditablePatronId,
+  PatronAccountType,
+} from '../patron-eligibility';
+import { AuthorizationResult } from '../services/authorization.service';
+import { BackendHttpService } from '../services/backend-http.service';
+import { CardErrorService } from '../services/card-error.service';
+import {
+  extractPatronId,
+  PatronState,
+  PatronStateService,
+} from '../services/patron-state.service';
+
+interface MainViewModel {
+  readonly authorization: AuthorizationResult;
+  readonly authorizationMessage: string | null;
+  readonly entities: readonly Entity[];
+  readonly patron: PatronState;
+  readonly sandbox: boolean;
+}
 
 @Component({
   selector: 'app-main',
   templateUrl: './main.component.html',
-  styleUrls: ['./main.component.scss']
+  styleUrls: ['./main.component.scss'],
 })
-export class MainComponent implements OnInit, OnDestroy {
-  loading = false;
-  selectedEntity: Entity;
-  apiResult: any;
-  isAutoSelect: string;
-  isUserHasRole: boolean = false;
-  isUserCheckDone: boolean = false;
-  isInstitutionAllowed: boolean = false;
-  isProdEnvironment: boolean = true;
+export class MainComponent implements OnInit {
+  public readonly vm$: Observable<MainViewModel>;
 
-  entities$: Observable<Entity[]> = this.eventsService.entities$
-    .pipe(
-      tap(() => this.clear()),
-      map(entities => {
-        return entities.filter(e => e.type == EntityType.USER);
+  private readonly alert = inject(AlertService);
+  private readonly backend = inject(BackendHttpService);
+  private readonly cardErrors = inject(CardErrorService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly state = inject(PatronStateService);
+
+  public constructor() {
+    this.vm$ = combineLatest([
+      this.state.authorization$,
+      this.state.userEntities$,
+      this.state.patronState$,
+      this.backend.isSandbox$(),
+    ]).pipe(
+      map(([authorization, entities, patron, sandbox]) => {
+        const presentation =
+          patron.status === 'error'
+            ? this.cardErrors.presentation(
+                patron.error,
+                patron.entity.description,
+              )
+            : null;
+        const effectiveAuthorization: AuthorizationResult =
+          patron.status === 'error' && presentation?.kind === 'access'
+            ? {
+                status: 'denied',
+                reason: presentation.reason,
+                error: patron.error,
+              }
+            : authorization;
+
+        return {
+          authorization: effectiveAuthorization,
+          authorizationMessage:
+            effectiveAuthorization.status === 'allowed'
+              ? null
+              : this.cardErrors.message(effectiveAuthorization.error),
+          entities,
+          patron,
+          sandbox,
+        };
       }),
-    )
+      shareReplay({ bufferSize: 1, refCount: true }),
+    );
+  }
 
+  public ngOnInit(): void {
+    this.state
+      .autoSelect$(this.route.snapshot.params['isAutoSelect'])
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe();
+    this.state.patronState$
+      .pipe(
+        filter(
+          (patronState) =>
+            patronState.status === 'ready' ||
+            patronState.status === 'not-found' ||
+            patronState.status === 'error',
+        ),
+        distinctUntilChanged(),
+        observeOn(asapScheduler),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((patronState) => this.handlePatronState(patronState));
+  }
 
-  constructor(
-    private _libraryManagementService: LibraryManagementService,
-    private eventsService: CloudAppEventsService,
-    private route: ActivatedRoute,
-    private router: Router
-  ) { }
+  public entitySelected(entity: Entity): void {
+    this.state.select(entity);
+  }
 
-  async ngOnInit() {
-    this.loading = true;
-    let initData = await this.eventsService.getInitData().toPromise();
-    let regExp = new RegExp('^https(.*)psb(.*)com/?$|.*localhost.*'), // contains "PSB" (Premium Sandbox) or "localhost"
-      currentUrl = initData["urls"]["alma"];
-    console.log(currentUrl);
-    this.isProdEnvironment = !regExp.test(currentUrl);
-    await this._libraryManagementService.init(initData, this.isProdEnvironment);
-    // check if current institution is allowed to use this cloud app
-    this.isInstitutionAllowed = await this._libraryManagementService.getIsCurrentInstitutionAllowed();
-    // check if current user has a role
-    if (this.isInstitutionAllowed) {
-      this.isUserHasRole = await this._libraryManagementService.getIsCurrentUserAllowed();
+  public entityPrimaryIdentifier(entity: Entity): string | null {
+    return extractPatronId(entity);
+  }
+
+  public entityAccountType(entity: Entity): PatronAccountType {
+    return getPatronAccountType(this.entityPrimaryIdentifier(entity));
+  }
+
+  public entityEditable(entity: Entity): boolean {
+    return isEditablePatronId(this.entityPrimaryIdentifier(entity));
+  }
+
+  public trackEntity(_index: number, entity: Entity): string {
+    return `${entity.type}:${entity.id}:${entity.link}`;
+  }
+
+  private handlePatronState(patronState: PatronState): void {
+    if (patronState.status === 'ready') {
+      void this.router.navigate(['usermenu']);
+
+      return;
     }
-    this.isUserCheckDone = true;
-    // auto select the user if only one user is visible
-    if (this.isUserHasRole) {
-      if (this.route.snapshot.params.isAutoSelect == 'true') {
-        this.entities$.subscribe(async (availableEntities) => {
-          if (availableEntities.length == 1) {
-            await this.setUser(availableEntities[0]);
-          }
-          this.loading = false;
-        });
-      } else {
-        this.loading = false;
-      }
-    } else {
-      this.loading = false;
+
+    if (patronState.status === 'not-found') {
+      const notFoundPresentation = this.cardErrors.presentation(
+        patronState.error,
+        patronState.entity.description,
+      );
+
+      this.alert.warn(notFoundPresentation.message, PERSISTENT_ALERT_OPTIONS);
+      this.state.clear();
+
+      return;
     }
 
-  }
-
-  ngOnDestroy(): void {
-  }
-
-  async entitySelected(event: MatRadioChange) {
-    const value = event.value as Entity;
-    this.loading = true;
-    await this.setUser(value);
-    this.loading = false
-  }
-
-  clear() {
-    this.apiResult = null;
-    this.selectedEntity = null;
-  }
-
-  async setUser(entity: Entity) {
-    const userFound = await this._libraryManagementService.getUserFromEntity(entity);
-    if (userFound) {
-      this.router.navigate(['usermenu'])
-    } else {
-      this.clear();
+    if (patronState.status !== 'error') {
+      return;
     }
+
+    const presentation = this.cardErrors.presentation(
+      patronState.error,
+      patronState.entity.description,
+    );
+
+    if (presentation.kind === 'warning') {
+      this.alert.warn(presentation.message, PERSISTENT_ALERT_OPTIONS);
+      this.state.clear();
+
+      return;
+    }
+
+    if (presentation.kind === 'access') {
+      return;
+    }
+
+    this.alert.error(presentation.message, PERSISTENT_ALERT_OPTIONS);
+    this.state.clear();
   }
 }

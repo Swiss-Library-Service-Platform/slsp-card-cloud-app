@@ -1,25 +1,307 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { Router } from '@angular/router';
+import {
+  Entity,
+  EntityType,
+  MaterialModule,
+} from '@exlibris/exl-cloudapp-angular-lib';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 
+import { MutationActivityService } from '../services/mutation-activity.service';
+import { Subject } from 'rxjs';
+import { BackendHttpService } from '../services/backend-http.service';
+import {
+  PatronState,
+  PatronStateService,
+} from '../services/patron-state.service';
+import { EduIdSyncService } from '../edu-id-sync/edu-id-sync.service';
 import { UsermenuComponent } from './usermenu.component';
 
 describe('UsermenuComponent', () => {
-  let component: UsermenuComponent;
-  let fixture: ComponentFixture<UsermenuComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ UsermenuComponent ]
-    })
-    .compileComponents();
-  });
+  let state: jasmine.SpyObj<PatronStateService>;
+  let patronState$: BehaviorSubject<PatronState>;
+  let router: jasmine.SpyObj<Router>;
+  const selected: Entity = {
+    id: 'one',
+    type: EntityType.USER,
+    link: '/users/one',
+    description: 'Selected user',
+  };
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(UsermenuComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    patronState$ = new BehaviorSubject<PatronState>({
+      status: 'ready',
+      entity: selected,
+      patron: {
+        currentUserGroupCode: null,
+        currentUserGroupDescription: null,
+        fullName: 'Test Patron',
+        external: false,
+        libraryCardNumbers: [],
+        matriculationNumber: null,
+        dashedMatriculationNumber: null,
+        blocks: {
+          '02': {
+            code: '02',
+            createdDate: null,
+            expiryDate: null,
+            note: null,
+            elementReference: 'block-reference',
+          },
+        },
+        postalAddresses: [],
+        preferredEmailAddress: null,
+        invoicePostalAddress: null,
+        invoiceEmailAddress: null,
+      },
+    });
+    state = jasmine.createSpyObj<PatronStateService>(
+      'PatronStateService',
+      ['clear'],
+      { patronState$ },
+    );
+    router = jasmine.createSpyObj<Router>('Router', ['navigate']);
+
+    TestBed.configureTestingModule({
+      declarations: [UsermenuComponent],
+      imports: [
+        BrowserAnimationsModule,
+        MaterialModule,
+        TranslateModule.forRoot(),
+      ],
+      providers: [
+        { provide: PatronStateService, useValue: state },
+        { provide: Router, useValue: router },
+        {
+          provide: EduIdSyncService,
+          useValue: {
+            loading: false,
+            needsRefresh: false,
+            refresh: jasmine.createSpy('refresh'),
+          },
+        },
+        {
+          provide: BackendHttpService,
+          useValue: { isSandbox$: (): Observable<boolean> => of(true) },
+        },
+      ],
+      schemas: [NO_ERRORS_SCHEMA],
+    });
+
+    const translate = TestBed.inject(TranslateService);
+
+    translate.setTranslation('en', {
+      General: { ChangePatron: 'Change patron' },
+      Main: {
+        Cards: 'Cards',
+        Account: 'Account',
+        Blocks: 'Blocks',
+        ActiveBlocksIndicator: 'Active blocks',
+        Sandbox: 'Sandbox',
+        SandboxDescription: 'Test environment',
+        TakesAFewMinutes: 'Changes take a few minutes.',
+      },
+    });
+    translate.use('en');
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('exposes the ready Card DTO as a declarative menu view model', (done) => {
+    const component =
+      TestBed.createComponent(UsermenuComponent).componentInstance;
+
+    component.vm$.subscribe((vm) => {
+      expect(vm?.patron.fullName).toBe('Test Patron');
+      expect(vm?.hasBlocks).toBeTrue();
+      expect(vm?.sandbox).toBeTrue();
+      done();
+    });
+  });
+
+  it('clears Card state before returning to the selection route', () => {
+    const component =
+      TestBed.createComponent(UsermenuComponent).componentInstance;
+
+    component.navigateBack();
+
+    expect(state.clear).toHaveBeenCalledTimes(1);
+    expect(router.navigate).toHaveBeenCalledOnceWith(['root/false']);
+  });
+
+  it('renders a loading fallback for route handoff and direct-entry states', () => {
+    patronState$.next({ status: 'loading', entity: selected });
+
+    const fixture = TestBed.createComponent(UsermenuComponent);
+
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('mat-spinner')).not.toBeNull();
+    expect(fixture.nativeElement.textContent).not.toContain('Test Patron');
+  });
+
+  it('renders the redesigned shell and the Cards, Account, Blocks tab order', () => {
+    const fixture = TestBed.createComponent(UsermenuComponent);
+
+    fixture.detectChanges();
+
+    expect(
+      fixture.nativeElement.querySelector('[data-environment-banner]'),
+    ).not.toBeNull();
+    expect(
+      fixture.nativeElement.querySelector('.slsp-patron-bar__name').textContent,
+    ).toContain('Test Patron');
+    expect(fixture.nativeElement.textContent).not.toContain('one');
+    expect(
+      fixture.nativeElement.querySelector('.blocks-tab-indicator'),
+    ).not.toBeNull();
+    expect(
+      fixture.nativeElement.querySelector('.slsp-visually-hidden').textContent,
+    ).toContain('Active blocks');
+    expect(
+      fixture.nativeElement.querySelector('cloudapp-alert'),
+    ).not.toBeNull();
+    expect(
+      fixture.nativeElement.querySelector(
+        '.patron-message-area > cloudapp-alert',
+      ),
+    ).not.toBeNull();
+    expect(
+      fixture.nativeElement.querySelector('.propagation-guidance'),
+    ).not.toBeNull();
+    expect(
+      fixture.nativeElement.querySelector('.mat-mdc-tab-group-stretch-tabs'),
+    ).not.toBeNull();
+
+    const tabLabels = Array.from(
+      fixture.nativeElement.querySelectorAll('[data-tab-label]'),
+      (label: Element) => label.textContent?.trim(),
+    );
+    const backButton = fixture.nativeElement.querySelector(
+      '.slsp-patron-bar__back',
+    );
+
+    expect(backButton.getAttribute('aria-label')).toBe('Change patron');
+    expect(backButton.textContent.trim()).toBe('arrow_back');
+    expect(tabLabels).toEqual(['Cards', 'Account', 'Blocks']);
+    expect(
+      fixture.nativeElement.querySelector('.mdc-tab__text-label mat-icon'),
+    ).toBeNull();
+  });
+
+  it('keeps the shell rows fixed while tab content owns the remaining height', () => {
+    const fixture = TestBed.createComponent(UsermenuComponent);
+
+    fixture.detectChanges();
+
+    const patronBar = fixture.nativeElement.querySelector('.slsp-patron-bar');
+    const environmentBanner = fixture.nativeElement.querySelector(
+      '.slsp-environment-banner',
+    );
+    const tabGroup = fixture.nativeElement.querySelector('.slsp-primary-tabs');
+
+    expect(getComputedStyle(patronBar).flexShrink).toBe('0');
+    expect(getComputedStyle(environmentBanner).flexShrink).toBe('0');
+    expect(getComputedStyle(tabGroup).flexBasis).toBe('140px');
+    expect(getComputedStyle(tabGroup).minHeight).toBe('140px');
+  });
+
+  it('places synchronization in the patron header and recovery outside the tabs', () => {
+    const fixture = TestBed.createComponent(UsermenuComponent);
+
+    fixture.detectChanges();
+    expect(
+      fixture.nativeElement.querySelector('.slsp-patron-bar app-edu-id-sync'),
+    ).toBeTruthy();
+
+    const sync = TestBed.inject(EduIdSyncService);
+
+    Object.defineProperty(sync, 'needsRefresh', {
+      value: true,
+      writable: true,
+    });
+    fixture.detectChanges();
+
+    const refresh = fixture.nativeElement.querySelector(
+      '[data-sync-refresh]',
+    ) as HTMLButtonElement;
+
+    expect(refresh.closest('mat-tab-group')).toBeNull();
+    refresh.click();
+    expect(sync.refresh).toHaveBeenCalled();
+    sync.loading = true;
+    fixture.detectChanges();
+    expect(
+      fixture.nativeElement.querySelector('[data-sync-status]'),
+    ).toBeNull();
+    expect(refresh.disabled).toBeTrue();
+  });
+
+  for (const outcome of ['success', 'error']) {
+    it(`shows one blocking overlay until mutation ${outcome}`, () => {
+      const fixture = TestBed.createComponent(UsermenuComponent);
+      const pending = new Subject<void>();
+
+      fixture.detectChanges();
+      TestBed.inject(MutationActivityService)
+        .run(() => pending)
+        .subscribe({ error: () => undefined });
+      fixture.detectChanges();
+      expect(
+        fixture.nativeElement.querySelectorAll('[data-mutation-overlay]'),
+      ).toHaveSize(1);
+      expect(
+        fixture.nativeElement
+          .querySelector('[data-account-content]')
+          .hasAttribute('inert'),
+      ).toBeTrue();
+      expect(
+        fixture.nativeElement.querySelector(
+          '[data-account-content] .slsp-patron-bar',
+        ),
+      ).not.toBeNull();
+      expect(
+        fixture.nativeElement.querySelector(
+          '[data-mutation-overlay] [role="status"]',
+        ),
+      ).not.toBeNull();
+      expect(
+        fixture.nativeElement.querySelector('[data-sync-status]'),
+      ).toBeNull();
+
+      if (outcome === 'error') {
+        pending.error(new Error('test'));
+      } else {
+        pending.complete();
+      }
+      fixture.detectChanges();
+      expect(
+        fixture.nativeElement.querySelector('[data-mutation-overlay]'),
+      ).toBeNull();
+      expect(
+        fixture.nativeElement
+          .querySelector('[data-account-content]')
+          .hasAttribute('inert'),
+      ).toBeFalse();
+    });
+  }
+  it('makes all mutation tabs inert during a shared mutation and restores them afterward', () => {
+    const fixture = TestBed.createComponent(UsermenuComponent);
+    const pending = new Subject<void>();
+
+    fixture.detectChanges();
+    TestBed.inject(MutationActivityService)
+      .run(() => pending)
+      .subscribe();
+    fixture.detectChanges();
+    expect(
+      fixture.nativeElement.querySelector('mat-tab-group').closest('[inert]'),
+    ).not.toBeNull();
+    pending.complete();
+    fixture.detectChanges();
+    expect(
+      fixture.nativeElement.querySelector('mat-tab-group').closest('[inert]'),
+    ).toBeNull();
   });
 });
