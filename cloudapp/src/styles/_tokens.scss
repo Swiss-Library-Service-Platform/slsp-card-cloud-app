@@ -24,13 +24,25 @@
     --slsp-radius: 6px;
   }
 
-  // Resolve theme variables on the body where the SDK defines them.
-  body[class*='cloudapp-theme'] {
-    --slsp-accent: var(--sys-primary);
-    --slsp-accent-subtle: color-mix(in srgb, var(--sys-primary) 5%, white);
+  // Keep app accents and Material controls on the SLSP palette in every host theme.
+  :root body[class*='cloudapp-theme'] {
+    --sys-primary: var(--slsp-brand-purple);
+    --sys-on-primary: white;
+    --sys-primary-container: color-mix(
+      in srgb,
+      var(--slsp-brand-purple) 12%,
+      white
+    );
+    --sys-on-primary-container: var(--slsp-brand-purple);
+    --slsp-accent: var(--slsp-brand-purple);
+    --slsp-accent-subtle: color-mix(
+      in srgb,
+      var(--slsp-brand-purple) 5%,
+      white
+    );
     --slsp-accent-overlay: color-mix(
       in srgb,
-      var(--sys-primary) 8%,
+      var(--slsp-brand-purple) 8%,
       transparent
     );
   }
