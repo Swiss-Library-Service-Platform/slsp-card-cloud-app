@@ -7,7 +7,8 @@ import {
   PERSISTENT_ALERT_OPTIONS,
   SUCCESS_ALERT_OPTIONS,
 } from '../alert-options';
-import { CardErrorService } from './card-error.service';
+import { InlineMutationError } from './inline-mutation-error';
+import { CardErrorService, normalizeCardError } from './card-error.service';
 
 @Injectable({ providedIn: 'root' })
 export class MutationFeedbackService {
@@ -17,6 +18,7 @@ export class MutationFeedbackService {
 
   public handle(
     successTranslationKey: string,
+    inlineError?: InlineMutationError,
   ): <T>(source: Observable<T>) => Observable<T> {
     return <T>(source: Observable<T>): Observable<T> =>
       source.pipe(
@@ -27,7 +29,12 @@ export class MutationFeedbackService {
           );
         }),
         catchError((error: unknown) => {
-          const presentation = this.cardErrors.presentation(error);
+          const apiError = normalizeCardError(error);
+          const presentation = this.cardErrors.presentation(apiError);
+
+          if (inlineError?.accept(apiError.type, presentation.message)) {
+            return EMPTY;
+          }
 
           if (presentation.kind === 'warning') {
             this.alert.warn(presentation.message, PERSISTENT_ALERT_OPTIONS);

@@ -1,3 +1,5 @@
+import { hasDisplayedBlocks } from './block-utils';
+import { InlineMutationError } from '../services/inline-mutation-error';
 import { DestroyRef, Component, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslateService } from '@ngx-translate/core';
@@ -24,6 +26,10 @@ export class BlockComponent {
   public commentWrongEmail = '';
   public commentWrongPostal = '';
   public loading = false;
+  public readonly hasBlocks = hasDisplayedBlocks;
+  public readonly globalBlockError = new InlineMutationError([
+    'BLOCK_COMMENT_REQUIRED',
+  ]);
 
   private readonly api = inject(PatronApiService);
   private readonly destroyRef = inject(DestroyRef);
@@ -51,6 +57,9 @@ export class BlockComponent {
       return;
     }
 
+    const inlineError = code === '09' ? this.globalBlockError : undefined;
+
+    inlineError?.clear();
     this.loading = true;
     this.api
       .addBlock(mutationContext.patronId, code, trimmedComment)
@@ -58,7 +67,7 @@ export class BlockComponent {
         tap((patron) => {
           this.state.replacePatron(patron, mutationContext);
         }),
-        this.feedback.handle('Blocks.AddSuccess'),
+        this.feedback.handle('Blocks.AddSuccess', inlineError),
         finalize(() => {
           this.loading = false;
         }),
@@ -87,16 +96,6 @@ export class BlockComponent {
       timeZone: 'UTC',
       timeZoneName: 'short',
     }).format(parsedDate);
-  }
-
-  public hasBlocks(blocks: CardPatron['blocks']): boolean {
-    return !!(
-      blocks['02'] ||
-      blocks['03'] ||
-      blocks['03.1'] ||
-      blocks['09'] ||
-      blocks['08']
-    );
   }
 
   public remove(block: BlockView): void {

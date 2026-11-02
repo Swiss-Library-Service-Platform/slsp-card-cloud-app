@@ -329,4 +329,23 @@ describe('BlockComponent', () => {
     expect(state.replacePatron).not.toHaveBeenCalled();
     expect(component.loading).toBeFalse();
   });
+  it('keeps a missing-comment response with the affected block', () => {
+    api.addBlock.and.returnValue(
+      throwError(
+        () =>
+          new HttpErrorResponse({
+            status: 400,
+            error: {
+              type: 'BLOCK_COMMENT_REQUIRED',
+              errorId: 'hidden',
+              messages: [],
+            },
+          }),
+      ),
+    );
+    component.add('09', 'Library');
+    expect(component.globalBlockError.message).not.toBe('');
+    expect(alert.warn).not.toHaveBeenCalled();
+    expect(alert.error).not.toHaveBeenCalled();
+  });
 });

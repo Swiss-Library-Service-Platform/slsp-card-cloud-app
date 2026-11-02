@@ -1,3 +1,4 @@
+import { InlineMutationError } from '../services/inline-mutation-error';
 import { DestroyRef, Component, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -35,6 +36,10 @@ export class LibraryCardNumberComponent {
   public readonly numberForm: FormGroup<LibraryCardNumberForm>;
   public readonly patron$: Observable<CardPatron | null>;
   public loading = false;
+  public readonly inputError = new InlineMutationError([
+    'INVALID_LIBRARY_CARD_NUMBER',
+    'DUPLICATE_LIBRARY_CARD_NUMBER',
+  ]);
 
   private readonly api = inject(PatronApiService);
   private readonly destroyRef = inject(DestroyRef);
@@ -50,6 +55,9 @@ export class LibraryCardNumberComponent {
         validators: [nonBlankValidator],
       }),
     });
+    this.numberForm.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.inputError.clear());
     this.patron$ = this.state.patronState$.pipe(
       map((patronState) =>
         patronState.status === 'ready' ? patronState.patron : null,
@@ -65,6 +73,7 @@ export class LibraryCardNumberComponent {
       return;
     }
 
+    this.inputError.clear();
     this.loading = true;
     this.api
       .addLibraryCardNumber(mutationContext.patronId, value)
@@ -72,9 +81,8 @@ export class LibraryCardNumberComponent {
         tap((patron) => {
           this.state.replacePatron(patron, mutationContext);
           formDirective.resetForm();
-          this.numberForm.reset();
         }),
-        this.feedback.handle('LibraryCardNumber.AddSuccess'),
+        this.feedback.handle('LibraryCardNumber.AddSuccess', this.inputError),
         finalize(() => {
           this.loading = false;
         }),

@@ -292,10 +292,16 @@ describe('InvoicePostalAddressComponent', () => {
     fixture.componentInstance.save();
 
     expect(fixture.componentInstance.form.controls.city.value).toBe('Changed');
-    expect(alert.warn).toHaveBeenCalled();
+    expect(alert.warn).not.toHaveBeenCalled();
+    expect(fixture.componentInstance.inputError.message).not.toBe('');
+    fixture.detectChanges();
+    expect(
+      fixture.nativeElement.querySelector('[role="alert"]'),
+    ).not.toBeNull();
 
     fixture.componentInstance.cancel();
     expect(fixture.componentInstance.form.controls.city.value).toBe('Bern');
+    expect(fixture.componentInstance.inputError.message).toBe('');
   });
 
   it('does not erase dirty postal input after an e-mail-only patron refresh', () => {

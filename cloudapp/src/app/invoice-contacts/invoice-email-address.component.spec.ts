@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AlertService } from '@exlibris/exl-cloudapp-angular-lib';
 import { TranslateService } from '@ngx-translate/core';
@@ -306,4 +307,35 @@ describe('InvoiceEmailAddressComponent', () => {
     fixture.componentRef.setInput('patron', value);
     fixture.detectChanges();
   }
+  it('shows a backend email rejection at the field and clears it on edit', () => {
+    create(customPatron);
+    api.setInvoiceEmailAddress.and.returnValue(
+      throwError(
+        () =>
+          new HttpErrorResponse({
+            status: 400,
+            error: {
+              type: 'INVALID_INVOICE_EMAIL_ADDRESS',
+              errorId: 'hidden',
+              messages: [],
+            },
+          }),
+      ),
+    );
+    fixture.componentInstance.form.controls.emailAddress.setValue(
+      'changed@example.org',
+    );
+    fixture.componentInstance.save();
+    fixture.detectChanges();
+    expect(
+      fixture.nativeElement.querySelector('mat-error')?.textContent,
+    ).toContain('Errors.InvalidInvoiceEmailAddress');
+    expect(TestBed.inject(AlertService).warn).not.toHaveBeenCalled();
+    expect(fixture.componentInstance.loading).toBeFalse();
+    fixture.componentInstance.form.controls.emailAddress.setValue(
+      'other@example.org',
+    );
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('mat-error')).toBeNull();
+  });
 });

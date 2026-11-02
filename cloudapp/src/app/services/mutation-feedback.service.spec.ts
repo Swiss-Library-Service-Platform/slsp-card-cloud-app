@@ -8,6 +8,7 @@ import {
   PERSISTENT_ALERT_OPTIONS,
   SUCCESS_ALERT_OPTIONS,
 } from '../alert-options';
+import { InlineMutationError } from './inline-mutation-error';
 import { MutationFeedbackService } from './mutation-feedback.service';
 
 describe('MutationFeedbackService', () => {
@@ -122,5 +123,46 @@ describe('MutationFeedbackService', () => {
       PERSISTENT_ALERT_OPTIONS,
     );
     expect(alert.warn).not.toHaveBeenCalled();
+  });
+  it('routes only explicitly mapped errors inline and leaves technical failures global', () => {
+    const local = new InlineMutationError(['INVALID_INVOICE_POSTAL_ADDRESS']);
+
+    throwError(
+      () =>
+        new HttpErrorResponse({
+          status: 400,
+          error: {
+            type: 'INVALID_INVOICE_POSTAL_ADDRESS',
+            errorId: 'hidden',
+            messages: [],
+          },
+        }),
+    )
+      .pipe(service.handle('Success', local))
+      .subscribe();
+    expect(local.message).toBe('Invalid invoice address.');
+    expect(alert.warn).not.toHaveBeenCalled();
+    expect(alert.error).not.toHaveBeenCalled();
+    local.clear();
+    expect(local.message).toBe('');
+    throwError(() => new Error('technical'))
+      .pipe(service.handle('Success', local))
+      .subscribe();
+    expect(local.message).toBe('');
+    expect(alert.error).toHaveBeenCalled();
+  });
+  it('routes an already normalized error using the same type as its presentation', () => {
+    const local = new InlineMutationError(['INVALID_INVOICE_POSTAL_ADDRESS']);
+
+    throwError(() => ({
+      type: 'INVALID_INVOICE_POSTAL_ADDRESS',
+      errorId: 'support-1',
+      messages: [],
+    }))
+      .pipe(service.handle('Success', local))
+      .subscribe();
+    expect(local.message).toBe('Invalid invoice address.');
+    expect(alert.warn).not.toHaveBeenCalled();
+    expect(alert.error).not.toHaveBeenCalled();
   });
 });

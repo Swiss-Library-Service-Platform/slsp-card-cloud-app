@@ -1,3 +1,5 @@
+import { AlertService } from '@exlibris/exl-cloudapp-angular-lib';
+import { By } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
@@ -351,5 +353,82 @@ describe('UserGroupComponent', () => {
     expect(component.groups.map((group) => group.code)).toEqual(['03']);
     expect(component.selectedCode).toBe('01');
     expect(component.canSave).toBeFalse();
+  });
+});
+
+describe('UserGroupComponent inline save feedback', () => {
+  it('shows eligibility rejection locally, reloads groups and clears on selection change', () => {
+    const api = jasmine.createSpyObj<PatronApiService>('api', [
+      'getEligibleUserGroups',
+      'setUserGroup',
+    ]);
+    const groups = {
+      eligibleGroups: [
+        { code: '01', displayName: 'One', description: '' },
+        { code: '03', displayName: 'Three', description: '' },
+      ],
+    };
+
+    api.getEligibleUserGroups.and.returnValue(of(groups));
+    api.setUserGroup.and.returnValue(
+      throwError(
+        () =>
+          new HttpErrorResponse({
+            status: 409,
+            error: {
+              type: 'USER_GROUP_NOT_ELIGIBLE',
+              errorId: 'hidden',
+              messages: [],
+            },
+          }),
+      ),
+    );
+
+    const context = { patronId: 'test' } as PatronMutationContext;
+    const state = {
+      currentMutationContext: (): PatronMutationContext => context,
+    };
+    const alert = jasmine.createSpyObj('alert', ['success', 'warn', 'error']);
+
+    TestBed.configureTestingModule({
+      imports: [AppModule],
+      providers: [
+        { provide: PatronApiService, useValue: api },
+        { provide: PatronStateService, useValue: state },
+        { provide: AlertService, useValue: alert },
+        {
+          provide: MatDialog,
+          useValue: {
+            open: (): { afterClosed: () => Observable<boolean> } => ({
+              afterClosed: (): Observable<boolean> => of(true),
+            }),
+          },
+        },
+      ],
+    });
+
+    const fixture = TestBed.createComponent(UserGroupComponent);
+
+    fixture.componentRef.setInput('patron', { currentUserGroupCode: '02' });
+    fixture.detectChanges();
+
+    const component = fixture.componentInstance;
+
+    component.selectedCode = '01';
+    component.save();
+    fixture.detectChanges();
+    expect(api.getEligibleUserGroups).toHaveBeenCalledTimes(2);
+    expect(
+      fixture.nativeElement.querySelector('.slsp-inline-error')?.textContent,
+    ).toContain('Errors.UserGroupNotEligible');
+    expect(alert.warn).not.toHaveBeenCalled();
+    expect(alert.error).not.toHaveBeenCalled();
+    fixture.debugElement
+      .query(By.css('mat-select'))
+      .triggerEventHandler('ngModelChange', '03');
+    fixture.detectChanges();
+    expect(
+      fixture.nativeElement.querySelector('.slsp-inline-error'),
+    ).toBeNull();
   });
 });

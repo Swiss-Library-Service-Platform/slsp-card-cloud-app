@@ -264,6 +264,7 @@ describe('LibraryCardNumberComponent', () => {
       ['resetForm'],
     );
 
+    formDirective.resetForm.and.callFake(() => component.numberForm.reset());
     api.addLibraryCardNumber.and.returnValue(of(updatedPatron));
     component.numberForm.setValue({ newLibraryCardNumber: '  NEW-CARD  ' });
 
@@ -355,7 +356,14 @@ describe('LibraryCardNumberComponent', () => {
 
       component.numberForm.setValue({ newLibraryCardNumber: '1234567G' });
       component.add(form);
-      expect(alert[kind]).toHaveBeenCalledTimes(1);
+
+      if (type === 'INVALID_LIBRARY_CARD_NUMBER') {
+        expect(component.inputError.message).not.toBe('');
+        expect(alert.warn).not.toHaveBeenCalled();
+      } else {
+        expect(alert[kind]).toHaveBeenCalledTimes(1);
+        expect(component.inputError.message).toBe('');
+      }
       expect(component.numberForm.value.newLibraryCardNumber).toBe('1234567G');
       expect(form.resetForm).not.toHaveBeenCalled();
       expect(state.replacePatron).not.toHaveBeenCalled();
@@ -385,10 +393,12 @@ describe('LibraryCardNumberComponent', () => {
       ]),
     );
 
-    expect(alert.warn).toHaveBeenCalledOnceWith(
+    expect(component.inputError.message).toBe(
       'This card number is already in use.',
-      { autoClose: false },
     );
+    expect(alert.warn).not.toHaveBeenCalled();
+    component.numberForm.controls.newLibraryCardNumber.setValue('OTHER');
+    expect(component.inputError.message).toBe('');
     expect(alert.error).not.toHaveBeenCalled();
     expect(state.replacePatron).not.toHaveBeenCalled();
     expect(component.loading).toBeFalse();

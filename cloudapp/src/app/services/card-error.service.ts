@@ -98,7 +98,7 @@ export class CardErrorService {
     error: unknown,
     entityDescription?: string,
   ): CardErrorPresentation {
-    const apiError = isCardApiError(error) ? error : normalizeCardError(error);
+    const apiError = normalizeCardError(error);
     const message = this.localizedMessage(apiError, entityDescription);
     const kind = ERROR_KINDS[apiError.type];
 
@@ -149,6 +149,10 @@ export class CardErrorService {
 }
 
 export function normalizeCardError(error: unknown): CardApiError {
+  if (isCardApiError(error)) {
+    return error;
+  }
+
   if (error instanceof HttpErrorResponse) {
     if (isHttpCardApiError(error.error, error.status)) {
       return error.error;

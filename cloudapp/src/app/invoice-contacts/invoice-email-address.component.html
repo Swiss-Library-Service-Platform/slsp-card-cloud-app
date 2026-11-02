@@ -54,10 +54,16 @@
           inputmode="email"
           autocomplete="off"
           formControlName="emailAddress"
+          [errorStateMatcher]="inputError"
           maxlength="64"
           aria-describedby="invoice-email-error"
         />
-        <mat-error id="invoice-email-error">{{
+        <mat-error
+          *ngIf="inputError.message"
+          id="invoice-email-error"
+          [innerHTML]="inputError.message"
+        ></mat-error>
+        <mat-error *ngIf="!inputError.message" id="invoice-email-error">{{
           'Settings.InvalidEmail' | translate
         }}</mat-error>
       </mat-form-field>

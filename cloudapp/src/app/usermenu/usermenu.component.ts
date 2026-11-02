@@ -1,3 +1,4 @@
+import { hasDisplayedBlocks } from '../block/block-utils';
 import { DestroyRef, Component, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
@@ -39,7 +40,7 @@ export class UsermenuComponent implements OnInit {
         patronState.status === 'ready'
           ? {
               patron: patronState.patron,
-              hasBlocks: hasDisplayedBlocks(patronState.patron),
+              hasBlocks: hasDisplayedBlocks(patronState.patron.blocks),
               sandbox,
             }
           : null,
@@ -68,14 +69,4 @@ export class UsermenuComponent implements OnInit {
     this.state.clear();
     void this.router.navigate(['root/false']);
   }
-}
-
-function hasDisplayedBlocks(patron: CardPatron): boolean {
-  return !!(
-    patron.blocks['02'] ||
-    patron.blocks['03'] ||
-    patron.blocks['03.1'] ||
-    patron.blocks['09'] ||
-    patron.blocks['08']
-  );
 }

@@ -162,8 +162,7 @@
     "Select": "Diese Gruppe auswählen",
     "Save": "Benutzergruppe speichern",
     "Confirm": "Benutzergruppe dieser Person ändern?",
-    "Success": "Benutzergruppe aktualisiert.",
-    "LoadError": "Verfügbare Benutzergruppen konnten nicht geladen werden"
+    "Success": "Benutzergruppe aktualisiert."
   },
   "EduIdSync": {
     "Action": "Mit edu-ID synchronisieren",

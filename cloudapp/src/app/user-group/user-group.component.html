@@ -29,9 +29,6 @@
       <div class="user-group__error" role="alert">
         <mat-icon aria-hidden="true">error_outline</mat-icon>
         <div class="user-group__error-content">
-          <p class="user-group__error-title">
-            {{ 'UserGroup.LoadError' | translate }}
-          </p>
           <p [innerHTML]="error"></p>
         </div>
       </div>
@@ -47,6 +44,7 @@
         <mat-label>{{ 'UserGroup.Eligible' | translate }}</mat-label>
         <mat-select
           [(ngModel)]="selectedCode"
+          (ngModelChange)="saveError.clear()"
           [disabled]="activity.busy || saving"
         >
           <mat-option
@@ -67,7 +65,7 @@
             *ngIf="selectedCode !== groups[0].code"
             mat-button
             type="button"
-            (click)="selectedCode = groups[0].code"
+            (click)="selectedCode = groups[0].code; saveError.clear()"
             [disabled]="activity.busy || saving"
           >
             {{ 'UserGroup.Select' | translate }}
@@ -81,10 +79,16 @@
         {{ description }}
       </p>
     </ng-container>
+    <p
+      *ngIf="saveError.message && !error"
+      class="slsp-inline-error"
+      role="alert"
+      [innerHTML]="saveError.message"
+    ></p>
   </div>
   <div *ngIf="error" class="slsp-actions">
     <button
-      mat-stroked-button
+      mat-button
       type="button"
       data-action="retry-groups"
       (click)="loadGroups()"

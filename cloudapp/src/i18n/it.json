@@ -162,8 +162,7 @@
     "Select": "Seleziona questo gruppo",
     "Save": "Salva gruppo",
     "Confirm": "Modificare il gruppo di questa persona?",
-    "Success": "Gruppo aggiornato.",
-    "LoadError": "Impossibile caricare i gruppi disponibili"
+    "Success": "Gruppo aggiornato."
   },
   "EduIdSync": {
     "Action": "Sincronizza da edu-ID",

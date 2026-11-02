@@ -1,3 +1,4 @@
+import { InlineMutationError } from '../services/inline-mutation-error';
 import { Component, DestroyRef, Input, OnChanges, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatDialog } from '@angular/material/dialog';
@@ -38,6 +39,10 @@ export class UserGroupComponent implements OnChanges {
   public loading = false;
   public saving = false;
   public error = '';
+  public readonly saveError = new InlineMutationError([
+    'INVALID_USER_GROUP',
+    'USER_GROUP_NOT_ELIGIBLE',
+  ]);
   public readonly activity = inject(MutationActivityService);
   private readonly api = inject(PatronApiService);
   private readonly errors = inject(CardErrorService);
@@ -94,6 +99,10 @@ export class UserGroupComponent implements OnChanges {
   public ngOnChanges(): void {
     const context = this.state.currentMutationContext();
     const changedSelection = context !== this.context;
+
+    if (changedSelection) {
+      this.saveError.clear();
+    }
 
     if (changedSelection || this.selectedCode === this.confirmedCode) {
       this.selectedCode = this.patron.currentUserGroupCode;
@@ -175,6 +184,7 @@ export class UserGroupComponent implements OnChanges {
           ) {
             return EMPTY;
           }
+          this.saveError.clear();
           this.saving = true;
 
           return this.api.setUserGroup(context.patronId, groupCode).pipe(
@@ -196,7 +206,7 @@ export class UserGroupComponent implements OnChanges {
 
               return throwError(() => error);
             }),
-            this.feedback.handle('UserGroup.Success'),
+            this.feedback.handle('UserGroup.Success', this.saveError),
             finalize(() => {
               this.saving = false;
             }),

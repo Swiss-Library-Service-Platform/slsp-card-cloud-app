@@ -1,3 +1,4 @@
+import { InlineMutationError } from '../services/inline-mutation-error';
 import { Component, DestroyRef, Input, OnChanges, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
@@ -70,6 +71,9 @@ export class InvoicePostalAddressComponent implements OnChanges {
   });
   public countryOptions: readonly InvoiceCountryOption[] = [];
   public loading = false;
+  public readonly inputError = new InlineMutationError([
+    'INVALID_INVOICE_POSTAL_ADDRESS',
+  ]);
 
   private confirmed = false;
   private confirmedInvoice: InvoicePostalAddressView | null = null;
@@ -83,6 +87,9 @@ export class InvoicePostalAddressComponent implements OnChanges {
   private readonly translate = inject(TranslateService);
 
   public constructor() {
+    this.form.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.inputError.clear());
     this.form.controls.source.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.applyControlState());
@@ -161,6 +168,7 @@ export class InvoicePostalAddressComponent implements OnChanges {
       this.api.setInvoicePostalAddress(mutationContext.patronId, request),
       mutationContext,
       'Settings.InvoicePostalSetSuccess',
+      this.inputError,
     );
   }
 
@@ -172,7 +180,9 @@ export class InvoicePostalAddressComponent implements OnChanges {
     operation: Observable<CardPatron>,
     mutationContext: PatronMutationContext,
     successKey: string,
+    inlineError?: InlineMutationError,
   ): void {
+    this.inputError.clear();
     this.setBusy(true);
     operation
       .pipe(
@@ -180,7 +190,7 @@ export class InvoicePostalAddressComponent implements OnChanges {
           this.acceptConfirmedPatron(patron, mutationContext.patronId);
           this.state.replacePatron(patron, mutationContext);
         }),
-        this.feedback.handle(successKey),
+        this.feedback.handle(successKey, inlineError),
         finalize(() => this.setBusy(false)),
         takeUntilDestroyed(this.destroyRef),
       )
@@ -217,6 +227,8 @@ export class InvoicePostalAddressComponent implements OnChanges {
   }
 
   private resetForm(): void {
+    this.inputError.clear();
+
     const source: InvoiceSource = this.confirmedInvoice
       ? 'custom'
       : this.confirmedPreferred
@@ -237,8 +249,6 @@ export class InvoicePostalAddressComponent implements OnChanges {
       { emitEvent: false },
     );
     this.applyControlState();
-    this.form.markAsPristine();
-    this.form.markAsUntouched();
   }
 
   private setCustomControlsEnabled(enabled: boolean): void {

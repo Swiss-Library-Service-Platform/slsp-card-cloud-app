@@ -162,8 +162,7 @@
     "Select": "Select this group",
     "Save": "Save user group",
     "Confirm": "Change this patron’s user group?",
-    "Success": "User group updated.",
-    "LoadError": "Unable to load eligible groups"
+    "Success": "User group updated."
   },
   "EduIdSync": {
     "Action": "Sync from edu-ID",

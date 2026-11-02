@@ -246,6 +246,18 @@
     user-select: text;
   }
 
+  .slsp-inline-error {
+    margin: 0;
+    color: var(--slsp-danger);
+    font-size: var(--slsp-font-size-support);
+    line-height: var(--slsp-line-height-body);
+    overflow-wrap: anywhere;
+  }
+
+  .slsp-inline-error--padded {
+    padding: 0 var(--slsp-space-3) var(--slsp-space-3);
+  }
+
   .slsp-visually-hidden {
     position: absolute;
     width: 1px;

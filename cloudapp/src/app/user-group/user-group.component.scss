@@ -57,18 +57,14 @@
   display: flex;
   align-items: flex-start;
   gap: var(--slsp-space-2);
-  padding: var(--slsp-space-3);
-  border: 1px solid var(--slsp-border-light);
-  border-left: 3px solid var(--slsp-danger);
-  border-radius: 3px;
-  background: var(--slsp-danger-light);
+  color: var(--slsp-text-secondary);
 
   > mat-icon {
     flex: 0 0 auto;
     width: 1.25rem;
     height: 1.25rem;
     margin-top: 2px;
-    color: var(--slsp-danger);
+    color: var(--slsp-text-secondary);
     font-size: 1.25rem;
   }
 }
@@ -79,9 +75,4 @@
   flex-direction: column;
   gap: var(--slsp-space-2);
   overflow-wrap: anywhere;
-}
-
-.user-group__error-title {
-  color: var(--slsp-danger);
-  font-weight: var(--slsp-font-weight-medium);
 }

@@ -287,11 +287,16 @@
               <mat-label>{{ 'Blocks.GlobalBlockNote' | translate }}</mat-label>
               <input
                 [(ngModel)]="commentGlobal"
+                [errorStateMatcher]="globalBlockError"
+                (ngModelChange)="globalBlockError.clear()"
                 matInput
                 required
-                aria-describedby="global-block-library-code-hint"
-              />
-            </mat-form-field>
+                aria-describedby="global-block-library-code-hint" />
+              <mat-error
+                *ngIf="globalBlockError.message"
+                [innerHTML]="globalBlockError.message"
+              ></mat-error
+            ></mat-form-field>
             <button
               mat-flat-button
               color="primary"

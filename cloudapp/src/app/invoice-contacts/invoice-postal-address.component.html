@@ -145,6 +145,12 @@
     </div>
   </div>
 
+  <p
+    *ngIf="inputError.message"
+    class="slsp-inline-error slsp-inline-error--padded"
+    role="alert"
+    [innerHTML]="inputError.message"
+  ></p>
   <div class="slsp-actions">
     <button
       mat-stroked-button

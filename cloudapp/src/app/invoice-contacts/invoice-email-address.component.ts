@@ -1,3 +1,4 @@
+import { InlineMutationError } from '../services/inline-mutation-error';
 import { Component, DestroyRef, Input, OnChanges, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
@@ -37,6 +38,9 @@ export class InvoiceEmailAddressComponent implements OnChanges {
     }),
   });
   public loading = false;
+  public readonly inputError = new InlineMutationError([
+    'INVALID_INVOICE_EMAIL_ADDRESS',
+  ]);
 
   private confirmed = false;
   private confirmedEmail: InvoiceEmailAddressView | null = null;
@@ -49,6 +53,9 @@ export class InvoiceEmailAddressComponent implements OnChanges {
   private readonly state = inject(PatronStateService);
 
   public constructor() {
+    this.form.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.inputError.clear());
     this.form.controls.source.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.applyControlState());
@@ -122,6 +129,7 @@ export class InvoiceEmailAddressComponent implements OnChanges {
       this.api.setInvoiceEmailAddress(mutationContext.patronId, request),
       mutationContext,
       'Settings.InvoiceEmailSetSuccess',
+      this.inputError,
     );
   }
 
@@ -129,7 +137,9 @@ export class InvoiceEmailAddressComponent implements OnChanges {
     operation: Observable<CardPatron>,
     mutationContext: PatronMutationContext,
     successKey: string,
+    inlineError?: InlineMutationError,
   ): void {
+    this.inputError.clear();
     this.setBusy(true);
     operation
       .pipe(
@@ -137,7 +147,7 @@ export class InvoiceEmailAddressComponent implements OnChanges {
           this.acceptConfirmedPatron(patron, mutationContext.patronId);
           this.state.replacePatron(patron, mutationContext);
         }),
-        this.feedback.handle(successKey),
+        this.feedback.handle(successKey, inlineError),
         finalize(() => this.setBusy(false)),
         takeUntilDestroyed(this.destroyRef),
       )
@@ -168,6 +178,8 @@ export class InvoiceEmailAddressComponent implements OnChanges {
   }
 
   private resetForm(): void {
+    this.inputError.clear();
+
     const source: InvoiceSource = this.confirmedEmail
       ? 'custom'
       : this.confirmedPreferred
@@ -182,8 +194,6 @@ export class InvoiceEmailAddressComponent implements OnChanges {
       { emitEvent: false },
     );
     this.applyControlState();
-    this.form.markAsPristine();
-    this.form.markAsUntouched();
   }
 
   private setCustomControlEnabled(enabled: boolean): void {
