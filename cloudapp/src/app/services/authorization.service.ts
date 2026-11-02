@@ -3,13 +3,17 @@ import { catchError, map, Observable, of } from 'rxjs';
 
 import { CardApiError } from '../models/card-api.model';
 import { BackendHttpService } from './backend-http.service';
-import { normalizeCardError } from './card-error.service';
+import {
+  AccessDenialReason,
+  accessDenialReason,
+  normalizeCardError,
+} from './card-error.service';
 
 export type AuthorizationResult =
   | { readonly status: 'allowed' }
   | {
       readonly status: 'denied';
-      readonly reason: 'authentication' | 'authorization';
+      readonly reason: AccessDenialReason;
       readonly error: CardApiError;
     }
   | { readonly status: 'error'; readonly error: CardApiError };
@@ -23,21 +27,10 @@ export class AuthorizationService {
       map((): AuthorizationResult => ({ status: 'allowed' })),
       catchError((error: unknown): Observable<AuthorizationResult> => {
         const apiError = normalizeCardError(error);
+        const reason = accessDenialReason(apiError.type);
 
-        if (apiError.type === 'AUTHENTICATION_FAILED') {
-          return of({
-            status: 'denied',
-            reason: 'authentication',
-            error: apiError,
-          });
-        }
-
-        if (apiError.type === 'ACCESS_DENIED') {
-          return of({
-            status: 'denied',
-            reason: 'authorization',
-            error: apiError,
-          });
+        if (reason) {
+          return of({ status: 'denied', reason, error: apiError });
         }
 
         return of({ status: 'error', error: apiError });

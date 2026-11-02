@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { HttpParams } from '@angular/common/http';
 import {
   HttpClientTestingModule,
@@ -302,9 +303,7 @@ describe('BackendHttpService', () => {
         },
       });
 
-      expect(receivedError).toEqual(
-        new Error('Card backend authentication token was empty.'),
-      );
+      expect(receivedError).toEqual(new HttpErrorResponse({ status: 401 }));
       expect(http.match(() => true)).toEqual([]);
 
       service.get<void>('/api/v1/allowed').subscribe();
@@ -332,9 +331,7 @@ describe('BackendHttpService', () => {
       },
     });
 
-    expect(receivedError).toEqual(
-      new Error('Card backend authentication token was empty.'),
-    );
+    expect(receivedError).toEqual(new HttpErrorResponse({ status: 401 }));
     expect(http.match(() => true)).toEqual([]);
 
     service.get<void>('/api/v1/allowed').subscribe();

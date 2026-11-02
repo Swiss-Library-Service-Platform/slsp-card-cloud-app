@@ -1,4 +1,8 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpParams,
+} from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { CloudAppEventsService } from '@exlibris/exl-cloudapp-angular-lib';
 import {
@@ -24,7 +28,8 @@ interface BackendEnvironment {
 @Injectable({ providedIn: 'root' })
 export class BackendHttpService {
   private static readonly LOCAL_URL = 'http://localhost:8080';
-  private static readonly SANDBOX_URL = 'https://cardproxy-test.swisscovery.network';
+  private static readonly SANDBOX_URL =
+    'https://cardproxy-test.swisscovery.network';
   private static readonly PROD_URL = 'https://cardproxy.swisscovery.network';
   private static readonly TOKEN_TTL_MS = 30_000;
   private static readonly PATH_ORIGIN = 'https://card-backend.invalid';
@@ -116,14 +121,12 @@ export class BackendHttpService {
         take(1),
         map((token) => {
           if (token.trim() === '') {
-            throw new Error('Card backend authentication token was empty.');
+            throw new HttpErrorResponse({ status: 401 });
           }
 
           return token;
         }),
-        throwIfEmpty(
-          () => new Error('Card backend authentication token was empty.'),
-        ),
+        throwIfEmpty(() => new HttpErrorResponse({ status: 401 })),
         tap((token) => {
           this.cachedToken = token;
           this.tokenExpiry =

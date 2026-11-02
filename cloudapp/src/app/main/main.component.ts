@@ -166,10 +166,11 @@ export class MainComponent implements OnInit {
       return;
     }
 
-    this.alert.error(presentation.message, PERSISTENT_ALERT_OPTIONS);
-
-    if (presentation.kind !== 'access') {
-      this.state.clear();
+    if (presentation.kind === 'access') {
+      return;
     }
+
+    this.alert.error(presentation.message, PERSISTENT_ALERT_OPTIONS);
+    this.state.clear();
   }
 }

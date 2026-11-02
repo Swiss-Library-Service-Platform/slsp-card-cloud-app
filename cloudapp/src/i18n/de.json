@@ -12,14 +12,14 @@
     "Instructions2": "Öffnen Sie diese Cloud App.",
     "Instructions3": "Wählen Sie den Nutzer aus.",
     "AccessDenied": "Zugang gesperrt",
-    "InstitutionDenied1": "Leider ist Ihre Institution nicht dazu berechtigt, diese App zu nutzen. Bitte ",
-    "InstitutionDenied2": "kontaktieren Sie SLSP ",
-    "InstitutionDenied3": "wenn Sie weitere Fragen haben.",
-    "NoRole": "Leider besitzen Sie nicht die benötigten Rechte, um diese App zu nutzen. Sie müssen mindestens eine der folgenden User-Rollen besitzen:",
     "Fulfillment": "Fulfillment Services Manager",
     "UserManager": "User Manager",
     "GeneralSystem": "General System Administrator",
-    "SelectUser": "Wählen Sie einen Nutzer aus:"
+    "SelectUser": "Wählen Sie einen Nutzer aus:",
+    "InstitutionNotEnabled": "Institution nicht freigeschaltet",
+    "SessionVerificationFailed": "Sitzung konnte nicht überprüft werden",
+    "AccessCheckFailed": "Zugriff konnte nicht überprüft werden",
+    "ContactSupport": "SLSP Support kontaktieren"
   },
   "Main": {
     "AccountType": {
@@ -67,7 +67,9 @@
     "SyncRefreshFailed": "Die Aktualisierung ist abgeschlossen, aber die aktuellen Kontodaten konnten nicht geladen werden. Laden Sie die Daten neu, ohne die Aktualisierung zu wiederholen.",
     "SyncPatronUnavailable": "Das Konto ist nach der Synchronisierung nicht mehr verfügbar. Wählen Sie das aktuelle Konto in Alma.",
     "CardCheckFailed": "Die Kartennummer konnte nicht geprüft werden. Versuchen Sie es in Kürze erneut.",
-    "GroupsLoadFailed": "Die verfügbaren Benutzergruppen konnten nicht geladen werden. Versuchen Sie es erneut."
+    "GroupsLoadFailed": "Die verfügbaren Benutzergruppen konnten nicht geladen werden. Versuchen Sie es erneut.",
+    "InstitutionNotEnabled": "SLSP Card ist für Ihre Institution noch nicht freigeschaltet. Bitte kontaktieren Sie den SLSP Support.",
+    "OperatorRoleRequired": "Ihrem Konto fehlt eine aktive Alma-Rolle, die zur Nutzung von SLSP Card berechtigt. Bitte kontaktieren Sie Ihre Alma-Administration."
   },
   "LibraryCardNumber": {
     "Add": "Hinzufügen",

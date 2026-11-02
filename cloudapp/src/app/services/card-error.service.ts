@@ -4,12 +4,32 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { CardApiError, CardErrorType } from '../models/card-api.model';
 
+export type AccessDenialReason =
+  'authentication' | 'institution' | 'role' | 'authorization';
+
+export function accessDenialReason(
+  type: CardErrorType,
+): AccessDenialReason | null {
+  switch (type) {
+    case 'AUTHENTICATION_FAILED':
+      return 'authentication';
+    case 'INSTITUTION_NOT_ENABLED':
+      return 'institution';
+    case 'OPERATOR_ROLE_REQUIRED':
+      return 'role';
+    case 'ACCESS_DENIED':
+      return 'authorization';
+    default:
+      return null;
+  }
+}
+
 export type CardErrorContext = 'general' | 'card-check' | 'group-load';
 
 export type CardErrorPresentation =
   | {
       readonly kind: 'access';
-      readonly reason: 'authentication' | 'authorization';
+      readonly reason: AccessDenialReason;
       readonly message: string;
     }
   | { readonly kind: 'warning'; readonly message: string }
@@ -24,6 +44,8 @@ const ERROR_KEYS: Record<CardErrorType, string> = {
   SYNC_PATRON_UNAVAILABLE: 'Errors.SyncPatronUnavailable',
   AUTHENTICATION_FAILED: 'Errors.AuthenticationFailed',
   ACCESS_DENIED: 'Errors.AccessDenied',
+  INSTITUTION_NOT_ENABLED: 'Errors.InstitutionNotEnabled',
+  OPERATOR_ROLE_REQUIRED: 'Errors.OperatorRoleRequired',
   INVALID_PATRON_ID: 'Errors.InvalidPatronId',
   PATRON_NOT_FOUND: 'Errors.PatronNotFound',
   INVALID_LIBRARY_CARD_NUMBER: 'Errors.InvalidLibraryCardNumber',
@@ -52,6 +74,8 @@ const ERROR_KINDS: Record<CardErrorType, 'access' | 'warning' | 'error'> = {
   SYNC_PATRON_UNAVAILABLE: 'warning',
   AUTHENTICATION_FAILED: 'access',
   ACCESS_DENIED: 'access',
+  INSTITUTION_NOT_ENABLED: 'access',
+  OPERATOR_ROLE_REQUIRED: 'access',
   INVALID_PATRON_ID: 'warning',
   PATRON_NOT_FOUND: 'warning',
   INVALID_LIBRARY_CARD_NUMBER: 'warning',
@@ -77,6 +101,8 @@ const SUPPORT_ID_TYPES: ReadonlySet<CardErrorType> = new Set([
   'SYNC_PATRON_UNAVAILABLE',
   'AUTHENTICATION_FAILED',
   'ACCESS_DENIED',
+  'INSTITUTION_NOT_ENABLED',
+  'OPERATOR_ROLE_REQUIRED',
   'PATRON_NOT_FOUND',
   'ALMA_REQUEST_REJECTED',
   'ALMA_FAILURE',
@@ -108,19 +134,13 @@ export class CardErrorService {
     const apiError = normalizeCardError(error);
     const message = this.localizedMessage(apiError, entityDescription, context);
     const kind = ERROR_KINDS[apiError.type];
+    const reason = accessDenialReason(apiError.type);
 
-    if (kind === 'access') {
-      return {
-        kind,
-        reason:
-          apiError.type === 'AUTHENTICATION_FAILED'
-            ? 'authentication'
-            : 'authorization',
-        message,
-      };
+    if (reason) {
+      return { kind: 'access', reason, message };
     }
 
-    return { kind, message };
+    return { kind: kind === 'warning' ? 'warning' : 'error', message };
   }
 
   private localizedMessage(
@@ -175,6 +195,11 @@ export function normalizeCardError(error: unknown): CardApiError {
   if (error instanceof HttpErrorResponse) {
     if (isHttpCardApiError(error.error, error.status)) {
       return error.error;
+    }
+
+    // JWT middleware can reject a session before the typed API mapper runs.
+    if (error.status === 401) {
+      return emptyError('AUTHENTICATION_FAILED');
     }
 
     if (error.status === 502) {
@@ -262,6 +287,8 @@ function errorStatus(type: CardErrorType): number {
     case 'AUTHENTICATION_FAILED':
       return 401;
     case 'ACCESS_DENIED':
+    case 'INSTITUTION_NOT_ENABLED':
+    case 'OPERATOR_ROLE_REQUIRED':
       return 403;
     case 'INVALID_PATRON_ID':
     case 'INVALID_LIBRARY_CARD_NUMBER':

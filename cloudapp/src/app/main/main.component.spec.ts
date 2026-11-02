@@ -102,10 +102,10 @@ describe('MainComponent', () => {
         Instructions2: 'Open the app',
         Instructions3: 'Select the user',
         AccessDenied: 'Access denied',
-        InstitutionDenied1: 'Institution unavailable ',
-        InstitutionDenied2: 'contact SLSP',
-        InstitutionDenied3: ' for help.',
-        NoRole: 'Required role missing',
+        InstitutionNotEnabled: 'Institution not enabled',
+        SessionVerificationFailed: 'Session could not be verified',
+        AccessCheckFailed: 'Access could not be checked',
+        ContactSupport: 'Contact SLSP Support',
         Fulfillment: 'Fulfillment Services Manager',
         UserManager: 'User Manager',
         GeneralSystem: 'General System Administrator',
@@ -125,6 +125,8 @@ describe('MainComponent', () => {
       Errors: {
         AuthenticationFailed: 'Authentication failed.',
         AccessDenied: 'Access denied.',
+        InstitutionNotEnabled: 'Institution not enabled. Contact SLSP Support.',
+        OperatorRoleRequired: 'Required role missing',
         InvalidPatronId: 'The selected patron cannot be loaded.',
         PatronNotFound:
           '{{entityDescription}} was not found in the Network Zone.',
@@ -436,7 +438,7 @@ describe('MainComponent', () => {
     );
   });
 
-  it('renders authentication failures as access state and preserves the support alert', async () => {
+  it('renders authentication failures once, with their support ID', async () => {
     const fixture = TestBed.createComponent(MainComponent);
 
     fixture.detectChanges();
@@ -453,13 +455,78 @@ describe('MainComponent', () => {
     fixture.detectChanges();
 
     expect(
-      fixture.nativeElement.querySelector('.institution-now-allowed'),
+      fixture.nativeElement.querySelector('.user-not-allowed'),
     ).not.toBeNull();
-    expect(alert.error).toHaveBeenCalledOnceWith(
-      'Authentication failed. <small class="slsp-support-reference">Support ID: support-401</small>',
-      { autoClose: false },
+    expect(alert.error).not.toHaveBeenCalled();
+    expect(fixture.nativeElement.textContent).toContain(
+      'Support ID: support-401',
     );
+    expect(fixture.nativeElement.textContent).not.toContain(
+      'Institution not enabled',
+    );
+    expect(fixture.nativeElement.querySelector('ul')).toBeNull();
     expect(state.clear).not.toHaveBeenCalled();
+  });
+
+  it('shows institution guidance without blaming roles or the session', () => {
+    const fixture = TestBed.createComponent(MainComponent);
+    authorization$.next({
+      status: 'denied',
+      reason: 'institution',
+      error: {
+        type: 'INSTITUTION_NOT_ENABLED',
+        errorId: 'institution-403',
+        messages: [],
+      },
+    });
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('h1').textContent).toContain(
+      'Institution not enabled',
+    );
+    expect(fixture.nativeElement.querySelector('ul')).toBeNull();
+    expect(fixture.nativeElement.querySelector('a').href).toContain(
+      'slsp.atlassian.net',
+    );
+    expect(fixture.nativeElement.textContent).not.toContain(
+      'Required role missing',
+    );
+    expect(fixture.nativeElement.textContent).toContain('institution-403');
+  });
+
+  it('does not describe a failed access check as a denied permission', () => {
+    const fixture = TestBed.createComponent(MainComponent);
+    authorization$.next({
+      status: 'error',
+      error: {
+        type: 'ALMA_UNAVAILABLE',
+        errorId: 'upstream-503',
+        messages: [],
+      },
+    });
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('h1').textContent).toContain(
+      'Access could not be checked',
+    );
+    expect(fixture.nativeElement.querySelector('ul')).toBeNull();
+    expect(fixture.nativeElement.textContent).not.toContain(
+      'Institution not enabled',
+    );
+  });
+
+  it('keeps generic access denial separate from a missing role', () => {
+    const fixture = TestBed.createComponent(MainComponent);
+    authorization$.next({
+      status: 'denied',
+      reason: 'authorization',
+      error: {
+        type: 'ACCESS_DENIED',
+        errorId: 'generic-403',
+        messages: [],
+      },
+    });
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('ul')).toBeNull();
+    expect(fixture.nativeElement.textContent).toContain('Access denied.');
   });
 
   it('owns and disposes the bounded auto-select effect with the component lifecycle', () => {
@@ -478,9 +545,9 @@ describe('MainComponent', () => {
 
     authorization$.next({
       status: 'denied',
-      reason: 'authorization',
+      reason: 'role',
       error: {
-        type: 'ACCESS_DENIED',
+        type: 'OPERATOR_ROLE_REQUIRED',
         errorId: 'support-403',
         messages: [],
       },
@@ -493,7 +560,7 @@ describe('MainComponent', () => {
       'Required role missing',
     );
     expect(fixture.nativeElement.textContent).toContain(
-      'Access denied. Support ID: support-403',
+      'Required role missing Support ID: support-403',
     );
     expect(
       fixture.nativeElement.querySelector('.slsp-support-reference')

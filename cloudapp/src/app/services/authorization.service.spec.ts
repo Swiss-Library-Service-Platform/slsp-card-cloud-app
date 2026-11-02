@@ -36,17 +36,16 @@ describe('AuthorizationService', () => {
   });
 
   const denials = [
-    [401, 'authentication'],
-    [403, 'authorization'],
+    [401, 'authentication', 'AUTHENTICATION_FAILED'],
+    [403, 'institution', 'INSTITUTION_NOT_ENABLED'],
+    [403, 'role', 'OPERATOR_ROLE_REQUIRED'],
+    [403, 'authorization', 'ACCESS_DENIED'],
   ] as const;
 
-  denials.forEach(([status, reason]) => {
+  denials.forEach(([status, reason, type]) => {
     it(`maps a typed HTTP ${status} to ${reason} denial with its support id`, (done) => {
       const error: CardApiError = {
-        type:
-          reason === 'authentication'
-            ? 'AUTHENTICATION_FAILED'
-            : 'ACCESS_DENIED',
+        type,
         errorId: `support-${status}`,
         messages: [],
       };
@@ -59,6 +58,24 @@ describe('AuthorizationService', () => {
         expect(result).toEqual({ status: 'denied', reason, error });
         done();
       });
+    });
+  });
+
+  it('recognizes an empty middleware 401 as an unverified session', (done) => {
+    backend.get.and.returnValue(
+      throwError(() => new HttpErrorResponse({ status: 401 })),
+    );
+    service.check().subscribe((result) => {
+      expect(result).toEqual({
+        status: 'denied',
+        reason: 'authentication',
+        error: {
+          type: 'AUTHENTICATION_FAILED',
+          errorId: '',
+          messages: [],
+        },
+      });
+      done();
     });
   });
 
@@ -104,7 +121,7 @@ describe('AuthorizationService', () => {
     });
   });
 
-  it('does not turn a malformed HTTP 401 body into an access denial', (done) => {
+  it('uses HTTP 401 for session guidance while discarding malformed details', (done) => {
     backend.get.and.returnValue(
       throwError(
         () =>
@@ -121,9 +138,10 @@ describe('AuthorizationService', () => {
 
     service.check().subscribe((result) => {
       expect(result).toEqual({
-        status: 'error',
+        status: 'denied',
+        reason: 'authentication',
         error: {
-          type: 'UNEXPECTED_FAILURE',
+          type: 'AUTHENTICATION_FAILED',
           errorId: '',
           messages: [],
         },

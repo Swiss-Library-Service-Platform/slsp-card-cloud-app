@@ -12,51 +12,40 @@
     <span>{{ 'Main.SandboxDescription' | translate }}</span>
   </div>
 
-  <div
-    *ngIf="
-      vm.authorization.status === 'denied' &&
-      vm.authorization.reason === 'authentication'
-    "
-    class="institution-now-allowed"
-  >
+  <div *ngIf="vm.authorization.status === 'denied'" class="user-not-allowed">
     <h1>
       <mat-icon inline="true">error</mat-icon>
-      {{ 'Welcome.AccessDenied' | translate }}
+      <ng-container [ngSwitch]="vm.authorization.reason">
+        <span *ngSwitchCase="'institution'">{{
+          'Welcome.InstitutionNotEnabled' | translate
+        }}</span>
+        <span *ngSwitchCase="'authentication'">{{
+          'Welcome.SessionVerificationFailed' | translate
+        }}</span>
+        <span *ngSwitchDefault>{{ 'Welcome.AccessDenied' | translate }}</span>
+      </ng-container>
     </h1>
-    <p>
-      {{ 'Welcome.InstitutionDenied1' | translate }}
-      <a href="https://slsp.ch/en/contact">
-        {{ 'Welcome.InstitutionDenied2' | translate }}
-      </a>
-      {{ 'Welcome.InstitutionDenied3' | translate }}
-    </p>
     <p [innerHTML]="vm.authorizationMessage"></p>
-  </div>
-
-  <div
-    *ngIf="
-      vm.authorization.status === 'denied' &&
-      vm.authorization.reason === 'authorization'
-    "
-    class="user-not-allowed"
-  >
-    <h1>
-      <mat-icon inline="true">error</mat-icon>
-      {{ 'Welcome.AccessDenied' | translate }}
-    </h1>
-    <p>{{ 'Welcome.NoRole' | translate }}</p>
-    <ul>
+    <p *ngIf="vm.authorization.reason === 'institution'">
+      <a
+        href="https://slsp.atlassian.net/servicedesk/customer/portal/1"
+        target="_blank"
+        rel="noopener"
+      >
+        {{ 'Welcome.ContactSupport' | translate }}
+      </a>
+    </p>
+    <ul *ngIf="vm.authorization.reason === 'role'">
       <li>{{ 'Welcome.Fulfillment' | translate }}</li>
       <li>{{ 'Welcome.UserManager' | translate }}</li>
       <li>{{ 'Welcome.GeneralSystem' | translate }}</li>
     </ul>
-    <p [innerHTML]="vm.authorizationMessage"></p>
   </div>
 
   <div *ngIf="vm.authorization.status === 'error'" class="user-not-allowed">
     <h1>
       <mat-icon inline="true">error</mat-icon>
-      {{ 'Welcome.AccessDenied' | translate }}
+      {{ 'Welcome.AccessCheckFailed' | translate }}
     </h1>
     <p [innerHTML]="vm.authorizationMessage"></p>
   </div>

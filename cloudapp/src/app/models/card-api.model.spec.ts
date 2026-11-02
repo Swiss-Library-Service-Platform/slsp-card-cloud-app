@@ -66,6 +66,8 @@ describe('Card API models', () => {
     SYNC_PATRON_UNAVAILABLE: true,
     AUTHENTICATION_FAILED: true,
     ACCESS_DENIED: true,
+    INSTITUTION_NOT_ENABLED: true,
+    OPERATOR_ROLE_REQUIRED: true,
     INVALID_PATRON_ID: true,
     PATRON_NOT_FOUND: true,
     INVALID_LIBRARY_CARD_NUMBER: true,
@@ -100,7 +102,7 @@ describe('Card API models', () => {
       messages: [],
     };
 
-    expect(Reflect.ownKeys(errorTypes)).toHaveSize(26);
+    expect(Reflect.ownKeys(errorTypes)).toHaveSize(28);
     expect(error).toEqual({
       type: 'STALE_ELEMENT_REFERENCE',
       errorId: 'error-id',

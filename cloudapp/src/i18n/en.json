@@ -12,14 +12,14 @@
     "Instructions2": "Open this Cloud App",
     "Instructions3": "Select the user",
     "AccessDenied": "Access denied",
-    "InstitutionDenied1": "Unfortunately your institution does not have the permission to use this app. Please ",
-    "InstitutionDenied2": "contact SLSP ",
-    "InstitutionDenied3": "if you have any questions.",
-    "NoRole": "Unfortunately you do not have the permission to use this app. In order to apply changes via this app, you need at least one of the following roles:",
     "Fulfillment": "Fulfillment Services Manager",
     "UserManager": "User Manager",
     "GeneralSystem": "General System Administrator",
-    "SelectUser": "Select a user:"
+    "SelectUser": "Select a user:",
+    "InstitutionNotEnabled": "Institution not enabled",
+    "SessionVerificationFailed": "Session could not be verified",
+    "AccessCheckFailed": "Access could not be checked",
+    "ContactSupport": "Contact SLSP Support"
   },
   "Main": {
     "AccountType": {
@@ -67,7 +67,9 @@
     "SyncRefreshFailed": "The update finished, but the latest account data could not be loaded. Refresh the account; do not repeat the update.",
     "SyncPatronUnavailable": "The patron is no longer available after synchronization. Select the current account in Alma.",
     "CardCheckFailed": "The card number could not be checked. Try again shortly.",
-    "GroupsLoadFailed": "Available user groups could not be loaded. Try again."
+    "GroupsLoadFailed": "Available user groups could not be loaded. Try again.",
+    "InstitutionNotEnabled": "SLSP Card has not yet been enabled for your institution. Please contact SLSP Support.",
+    "OperatorRoleRequired": "Your account does not have an active Alma role required to use SLSP Card. Please contact your Alma administrator."
   },
   "LibraryCardNumber": {
     "Add": "Add",

@@ -12,14 +12,14 @@
     "Instructions2": "Ouvrir cette Cloud App",
     "Instructions3": "Sélectionner l'utilisateur",
     "AccessDenied": "Accès refusé",
-    "InstitutionDenied1": "Malheureusement votre institution n'offre pas la permission d'utiliser cette application.",
-    "InstitutionDenied2": "Veuillez, s'il vous plaît, contacter SLSP ",
-    "InstitutionDenied3": "si vous avez des questions.",
-    "NoRole": "Malheureusement, vous n'avez pas la permission d'utiliser cette application. Pour effectuer des changements via SLSP Card, vous avez besoin d'au moins un des rôles suivants:",
     "Fulfillment": "Fulfillment Services Manager",
     "UserManager": "User Manager",
     "GeneralSystem": "General System Administrator",
-    "SelectUser": "Sélectionner un utilisateur:"
+    "SelectUser": "Sélectionner un utilisateur:",
+    "InstitutionNotEnabled": "Institution non activée",
+    "SessionVerificationFailed": "Impossible de vérifier la session",
+    "AccessCheckFailed": "Impossible de vérifier l’accès",
+    "ContactSupport": "Contacter le support SLSP"
   },
   "Main": {
     "AccountType": {
@@ -67,7 +67,9 @@
     "SyncRefreshFailed": "La mise à jour est terminée, mais les données actualisées du compte n’ont pas pu être chargées. Rechargez les données sans répéter la mise à jour.",
     "SyncPatronUnavailable": "Le compte n’est plus disponible après la synchronisation. Sélectionnez le compte actuel dans Alma.",
     "CardCheckFailed": "Le numéro de carte n’a pas pu être vérifié. Réessayez dans quelques instants.",
-    "GroupsLoadFailed": "Les groupes disponibles n’ont pas pu être chargés. Réessayez."
+    "GroupsLoadFailed": "Les groupes disponibles n’ont pas pu être chargés. Réessayez.",
+    "InstitutionNotEnabled": "SLSP Card n’est pas encore activé pour votre institution. Veuillez contacter le support SLSP.",
+    "OperatorRoleRequired": "Votre compte ne dispose pas d’un rôle Alma actif permettant d’utiliser SLSP Card. Veuillez contacter votre administrateur Alma."
   },
   "LibraryCardNumber": {
     "Add": "Ajouter",

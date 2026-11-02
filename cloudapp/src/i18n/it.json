@@ -12,14 +12,14 @@
     "Instructions2": "Apri questa Cloud App",
     "Instructions3": "Seleziona l'utente",
     "AccessDenied": "Accesso negato",
-    "InstitutionDenied1": "Purtroppo la tua istituzione non ha l'autorizzazione ad usare questa app. Per favore ",
-    "InstitutionDenied2": "contatta SLSP ",
-    "InstitutionDenied3": "se hai domande.",
-    "NoRole": "Purtroppo non sei autorizzato ad usare questa app. Per poter applicare modifiche via Library Card Management, devi avere almeno uno dei seguenti ruoli:",
     "Fulfillment": "Fulfillment Services Manager",
     "UserManager": "User Manager",
     "GeneralSystem": "General System Administrator",
-    "SelectUser": "Seleziona un utente:"
+    "SelectUser": "Seleziona un utente:",
+    "InstitutionNotEnabled": "Istituzione non abilitata",
+    "SessionVerificationFailed": "Impossibile verificare la sessione",
+    "AccessCheckFailed": "Impossibile verificare l’accesso",
+    "ContactSupport": "Contattare il supporto SLSP"
   },
   "Main": {
     "AccountType": {
@@ -67,7 +67,9 @@
     "SyncRefreshFailed": "L’aggiornamento è terminato, ma non è stato possibile caricare i dati aggiornati dell’account. Ricarica i dati senza ripetere l’aggiornamento.",
     "SyncPatronUnavailable": "L’account non è più disponibile dopo la sincronizzazione. Selezionare l’account attuale in Alma.",
     "CardCheckFailed": "Non è stato possibile verificare il numero di tessera. Riprova tra poco.",
-    "GroupsLoadFailed": "Non è stato possibile caricare i gruppi disponibili. Riprova."
+    "GroupsLoadFailed": "Non è stato possibile caricare i gruppi disponibili. Riprova.",
+    "InstitutionNotEnabled": "SLSP Card non è ancora abilitato per la tua istituzione. Contatta il supporto SLSP.",
+    "OperatorRoleRequired": "Il tuo account non dispone di un ruolo Alma attivo necessario per utilizzare SLSP Card. Contatta il tuo amministratore Alma."
   },
   "LibraryCardNumber": {
     "Add": "Aggiungere",
