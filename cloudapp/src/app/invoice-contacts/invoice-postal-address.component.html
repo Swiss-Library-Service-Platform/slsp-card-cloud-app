@@ -76,7 +76,7 @@
           'Settings.Required' | translate
         }}</mat-error>
         <mat-error *ngIf="form.controls.line1.hasError('maxlength')">{{
-          'Settings.TooLong' | translate
+          'Settings.TooLong' | translate: { max: 40 }
         }}</mat-error>
       </mat-form-field>
       <mat-form-field class="invoice-editor__field--wide">
@@ -85,7 +85,7 @@
         <mat-error
           data-error="too-long"
           *ngIf="form.controls.line2.hasError('maxlength')"
-          >{{ 'Settings.TooLong' | translate }}</mat-error
+          >{{ 'Settings.TooLong' | translate: { max: 40 } }}</mat-error
         >
       </mat-form-field>
       <mat-form-field class="invoice-editor__field--wide">
@@ -94,7 +94,7 @@
         <mat-error
           data-error="too-long"
           *ngIf="form.controls.line3.hasError('maxlength')"
-          >{{ 'Settings.TooLong' | translate }}</mat-error
+          >{{ 'Settings.TooLong' | translate: { max: 40 } }}</mat-error
         >
       </mat-form-field>
       <mat-form-field class="invoice-editor__field--wide">
@@ -103,7 +103,7 @@
         <mat-error
           data-error="too-long"
           *ngIf="form.controls.line4.hasError('maxlength')"
-          >{{ 'Settings.TooLong' | translate }}</mat-error
+          >{{ 'Settings.TooLong' | translate: { max: 40 } }}</mat-error
         >
       </mat-form-field>
       <mat-form-field>
@@ -115,7 +115,7 @@
         <mat-error
           data-error="too-long"
           *ngIf="form.controls.postalCode.hasError('maxlength')"
-          >{{ 'Settings.TooLong' | translate }}</mat-error
+          >{{ 'Settings.TooLong' | translate: { max: 7 } }}</mat-error
         >
       </mat-form-field>
       <mat-form-field>
@@ -127,7 +127,7 @@
         <mat-error
           data-error="too-long"
           *ngIf="form.controls.city.hasError('maxlength')"
-          >{{ 'Settings.TooLong' | translate }}</mat-error
+          >{{ 'Settings.TooLong' | translate: { max: 32 } }}</mat-error
         >
       </mat-form-field>
       <mat-form-field class="invoice-editor__field--wide">

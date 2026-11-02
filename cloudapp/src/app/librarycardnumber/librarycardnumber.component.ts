@@ -82,7 +82,11 @@ export class LibraryCardNumberComponent {
           this.state.replacePatron(patron, mutationContext);
           formDirective.resetForm();
         }),
-        this.feedback.handle('LibraryCardNumber.AddSuccess', this.inputError),
+        this.feedback.handle(
+          'LibraryCardNumber.AddSuccess',
+          this.inputError,
+          'card-check',
+        ),
         finalize(() => {
           this.loading = false;
         }),

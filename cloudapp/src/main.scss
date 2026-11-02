@@ -69,25 +69,37 @@
 
       box-sizing: border-box;
       display: grid;
-      grid-template-columns: auto minmax(0, 1fr) auto;
-      align-items: center;
+      grid-template-columns: 20px minmax(0, 1fr) 24px;
+      align-items: start;
       gap: var(--slsp-space-2);
       width: 100%;
       margin: 0 !important;
-      padding: var(--slsp-space-3) var(--slsp-space-3) !important;
-      border: 0 !important;
-      border-radius: 0 !important;
+      padding: var(--slsp-space-3) var(--slsp-space-3) var(--slsp-space-3) 14px !important;
+      border: 1px solid color-mix(in srgb, var(--slsp-alert-accent) 32%, white) !important;
+      border-radius: var(--slsp-radius) !important;
       box-shadow: inset 3px 0 var(--slsp-alert-accent);
       color: var(--slsp-text) !important;
       font-size: var(--slsp-font-size-title);
+      line-height: var(--slsp-line-height-body);
+
+      // Both icons are centered against the first text line.
+      &::before,
+      .close {
+        display: grid;
+        place-items: center;
+        height: calc(
+          var(--slsp-font-size-title) * var(--slsp-line-height-body)
+        );
+        margin: 0;
+      }
 
       &::before {
         content: var(--slsp-alert-icon);
         color: var(--slsp-alert-accent);
         font-family: 'Material Icons';
-        font-size: 1.1rem;
+        width: 20px;
+        font-size: 18px;
         line-height: 1;
-        transform: translateY(-1px);
       }
 
       > span {
@@ -100,10 +112,22 @@
         float: none;
         grid-column: 3;
         grid-row: 1;
-        margin: 0;
-        color: var(--slsp-alert-accent);
-        line-height: 1;
+        width: 24px;
+        padding: 0;
+        color: var(--slsp-text-secondary);
+        font-size: 0;
+        opacity: 1;
         text-shadow: none;
+        text-decoration: none;
+
+        &::before {
+          // Keep the SDK close label; the visual glyph is decorative.
+          content: 'close' / '';
+          font-family: 'Material Icons';
+          font-size: 18px;
+          font-weight: 400;
+          line-height: 1;
+        }
       }
     }
 

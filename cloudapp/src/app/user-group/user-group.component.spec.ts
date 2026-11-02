@@ -78,7 +78,7 @@ describe('UserGroupComponent', () => {
     translate.setTranslation('en', {
       Errors: {
         UnexpectedFailure: 'Unavailable',
-        AlmaRequestRejectedWithMessages: 'Alma rejected the request:',
+        GroupsLoadFailed: 'Available groups could not be loaded.',
         SupportId: 'Support ID: {{errorId}}',
       },
     });
@@ -99,10 +99,10 @@ describe('UserGroupComponent', () => {
       throwError(() => new Error('upstream')),
     );
     component.ngOnChanges();
-    expect(component.error).toBe('Unavailable');
+    expect(component.error).toBe('Available groups could not be loaded.');
     expect(component.canSave).toBeFalse();
   });
-  it('renders literal upstream messages and one support reference, and clears them when retrying', () => {
+  it('renders contextual guidance and one support reference, and clears them when retrying', () => {
     const supportId = 'fad72b4a-8761-4d60-b621-f767f08998a0';
     const pending = new Subject<{ eligibleGroups: [] }>();
     const translate = TestBed.inject(TranslateService);
@@ -135,7 +135,7 @@ describe('UserGroupComponent', () => {
     fixture.detectChanges();
     expect(
       fixture.nativeElement.querySelector('[role="alert"]').textContent,
-    ).toContain('Alma rejected the request:');
+    ).toContain('Available groups could not be loaded.');
     expect(
       fixture.nativeElement.querySelector('.slsp-support-reference')
         ?.textContent,

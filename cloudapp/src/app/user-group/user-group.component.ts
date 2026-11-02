@@ -152,7 +152,7 @@ export class UserGroupComponent implements OnChanges {
           ) {
             const apiError = normalizeCardError(error);
 
-            this.error = this.errors.message(apiError);
+            this.error = this.errors.message(apiError, undefined, 'group-load');
           }
         },
       });

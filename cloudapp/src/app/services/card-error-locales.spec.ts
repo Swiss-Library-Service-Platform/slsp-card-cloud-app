@@ -62,6 +62,46 @@ for (const [language, translations] of Object.entries({
       service = TestBed.inject(CardErrorService);
     });
 
+    it('uses translated task-specific recovery guidance', () => {
+      const failure = {
+        type: 'REGISTRATION_PLATFORM_UNAVAILABLE' as const,
+        errorId: '0123456789abcdef',
+        messages: [],
+      };
+      const card = service.message(failure, undefined, 'card-check');
+      const groups = service.message(failure, undefined, 'group-load');
+
+      expect(card).toContain(translations.Errors.CardCheckFailed);
+      expect(groups).toContain(translations.Errors.GroupsLoadFailed);
+
+      for (const message of [card, groups]) {
+        expect(message).not.toMatch(/Errors\.|\{\{/u);
+        expect(message).toContain('0123456789abcdef');
+      }
+      expect(
+        service.message(
+          { ...failure, type: 'ACCESS_DENIED' },
+          undefined,
+          'group-load',
+        ),
+      ).toContain(translations.Errors.AccessDenied);
+      expect(
+        service.message(
+          { ...failure, type: 'DUPLICATE_LIBRARY_CARD_NUMBER' },
+          undefined,
+          'card-check',
+        ),
+      ).toBe(translations.Errors.DuplicateLibraryCardNumber);
+      // A lost HTTP response does not prove that a write was never applied.
+      expect(
+        service.message(
+          { ...failure, type: 'DEPENDENCY_UNAVAILABLE' },
+          undefined,
+          'card-check',
+        ),
+      ).toBe(translations.Errors.DependencyUnavailable);
+    });
+
     it('renders every backend HTTP error using shipped translations', () => {
       for (const [type, status] of Object.entries(statuses)) {
         if (type === 'UPSTREAM_FAILURE' || type === 'DEPENDENCY_UNAVAILABLE') {

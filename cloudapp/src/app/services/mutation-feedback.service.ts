@@ -8,7 +8,11 @@ import {
   SUCCESS_ALERT_OPTIONS,
 } from '../alert-options';
 import { InlineMutationError } from './inline-mutation-error';
-import { CardErrorService, normalizeCardError } from './card-error.service';
+import {
+  CardErrorContext,
+  CardErrorService,
+  normalizeCardError,
+} from './card-error.service';
 
 @Injectable({ providedIn: 'root' })
 export class MutationFeedbackService {
@@ -19,6 +23,7 @@ export class MutationFeedbackService {
   public handle(
     successTranslationKey: string,
     inlineError?: InlineMutationError,
+    context: CardErrorContext = 'general',
   ): <T>(source: Observable<T>) => Observable<T> {
     return <T>(source: Observable<T>): Observable<T> =>
       source.pipe(
@@ -30,7 +35,11 @@ export class MutationFeedbackService {
         }),
         catchError((error: unknown) => {
           const apiError = normalizeCardError(error);
-          const presentation = this.cardErrors.presentation(apiError);
+          const presentation = this.cardErrors.presentation(
+            apiError,
+            undefined,
+            context,
+          );
 
           if (inlineError?.accept(apiError.type, presentation.message)) {
             return EMPTY;

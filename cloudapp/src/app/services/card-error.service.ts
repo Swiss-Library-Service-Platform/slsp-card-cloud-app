@@ -4,6 +4,8 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { CardApiError, CardErrorType } from '../models/card-api.model';
 
+export type CardErrorContext = 'general' | 'card-check' | 'group-load';
+
 export type CardErrorPresentation =
   | {
       readonly kind: 'access';
@@ -90,16 +92,21 @@ export class CardErrorService {
   private readonly translate = inject(TranslateService);
 
   // Render these messages through Angular’s HTML sanitization, as the SDK alerts do.
-  public message(error: unknown, entityDescription?: string): string {
-    return this.presentation(error, entityDescription).message;
+  public message(
+    error: unknown,
+    entityDescription?: string,
+    context: CardErrorContext = 'general',
+  ): string {
+    return this.presentation(error, entityDescription, context).message;
   }
 
   public presentation(
     error: unknown,
     entityDescription?: string,
+    context: CardErrorContext = 'general',
   ): CardErrorPresentation {
     const apiError = normalizeCardError(error);
-    const message = this.localizedMessage(apiError, entityDescription);
+    const message = this.localizedMessage(apiError, entityDescription, context);
     const kind = ERROR_KINDS[apiError.type];
 
     if (kind === 'access') {
@@ -119,13 +126,25 @@ export class CardErrorService {
   private localizedMessage(
     error: CardApiError,
     entityDescription: string | undefined,
+    context: CardErrorContext,
   ): string {
     const description = safeEntityDescription(entityDescription);
     const messages = error.messages.filter((detail) => detail.trim() !== '');
-    const key =
+    let key =
       error.type === 'ALMA_REQUEST_REJECTED' && messages.length > 0
         ? 'Errors.AlmaRequestRejectedWithMessages'
         : ERROR_KEYS[error.type];
+
+    if (context === 'group-load' && ERROR_KINDS[error.type] === 'error') {
+      key = 'Errors.GroupsLoadFailed';
+    } else if (
+      context === 'card-check' &&
+      (error.type === 'REGISTRATION_PLATFORM_FAILURE' ||
+        error.type === 'REGISTRATION_PLATFORM_UNAVAILABLE')
+    ) {
+      key = 'Errors.CardCheckFailed';
+    }
+
     const explanation = this.translate.instant(key, {
       entityDescription:
         description || this.translate.instant('Errors.SelectedPatron'),

@@ -243,6 +243,20 @@ describe('InvoicePostalAddressComponent', () => {
     expect(
       fixture.nativeElement.querySelectorAll('[data-error="too-long"]').length,
     ).toBe(5);
+
+    const messages = Array.from(
+      fixture.nativeElement.querySelectorAll(
+        '[data-error="too-long"]',
+      ) as NodeListOf<HTMLElement>,
+    ).map((element) => element.textContent?.trim());
+
+    expect(messages).toEqual([
+      'Use no more than 40 characters.',
+      'Use no more than 40 characters.',
+      'Use no more than 40 characters.',
+      'Use no more than 7 characters.',
+      'Use no more than 32 characters.',
+    ]);
     expect(api.setInvoicePostalAddress).not.toHaveBeenCalled();
   });
 
@@ -394,7 +408,7 @@ function invoiceTranslations(): object {
       City: 'City',
       Country: 'Country',
       Required: 'Required',
-      TooLong: 'Too long',
+      TooLong: 'Use no more than {{max}} characters.',
       InvalidCountry: 'Choose a country',
       SavePostalAddress: 'Save postal address',
       InvoicePostalSetSuccess: 'Postal address saved',
