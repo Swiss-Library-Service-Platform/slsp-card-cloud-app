@@ -18,6 +18,10 @@
       "https://cardproxy-test.swisscovery.network/",
       "https://cardproxy.swisscovery.network/",
       "https://api-eu.hosted.exlibrisgroup.com/"
-    ]
+    ],
+    "sandbox": {
+      "popups": true,
+      "popups-to-escape-sandbox": true
+    }
   }
 }
