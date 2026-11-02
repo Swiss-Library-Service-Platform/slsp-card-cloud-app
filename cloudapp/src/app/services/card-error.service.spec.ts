@@ -10,7 +10,7 @@ const ALL_CARD_ERROR_TYPES = [
   'ACCESS_DENIED',
   'INVALID_PATRON_ID',
   'PATRON_NOT_FOUND',
-  'INVALID_LIBRARY_CARD_FORMAT',
+  'INVALID_LIBRARY_CARD_NUMBER',
   'DUPLICATE_LIBRARY_CARD_NUMBER',
   'UNSUPPORTED_BLOCK',
   'BLOCK_COMMENT_REQUIRED',
@@ -39,7 +39,7 @@ describe('CardErrorService', () => {
         InvalidPatronId: 'The selected patron cannot be loaded.',
         PatronNotFound:
           '{{entityDescription}} was not found in the Network Zone.',
-        InvalidLibraryCardFormat: 'The card number format is invalid.',
+        InvalidLibraryCardNumber: 'This library card number is not valid.',
         DuplicateLibraryCardNumber: 'The card number is already in use.',
         UnsupportedBlock: 'The block is unsupported.',
         BlockCommentRequired: 'A block comment is required.',
@@ -68,24 +68,22 @@ describe('CardErrorService', () => {
     service = TestBed.inject(CardErrorService);
   });
 
-  it('explains blocked barcodes distinctly from malformed numbers', () => {
+  it('presents a rejected card number as a warning distinct from service failures', () => {
     TestBed.inject(TranslateService).setTranslation(
       'en',
       {
         Errors: {
-          BlockedLibraryCardNumber:
-            'This barcode has been blocked because it may also be assigned to another user.',
+          InvalidLibraryCardNumber: 'This library card number is not valid.',
         },
       },
       true,
     );
-
     expect(
       service.presentation(
         new HttpErrorResponse({
           status: 400,
           error: {
-            type: 'BLOCKED_LIBRARY_CARD_NUMBER',
+            type: 'INVALID_LIBRARY_CARD_NUMBER',
             errorId: 'support-123',
             messages: [],
           },
@@ -93,21 +91,8 @@ describe('CardErrorService', () => {
       ),
     ).toEqual({
       kind: 'warning',
-      message:
-        'This barcode has been blocked because it may also be assigned to another user.',
+      message: 'This library card number is not valid.',
     });
-    expect(
-      service.message(
-        new HttpErrorResponse({
-          status: 400,
-          error: {
-            type: 'INVALID_LIBRARY_CARD_FORMAT',
-            errorId: 'support-123',
-            messages: [],
-          },
-        }),
-      ),
-    ).toBe('The card number format is invalid.');
   });
 
   it('renders supplied Alma messages as literal text on separate lines with a short heading', () => {
@@ -246,7 +231,7 @@ describe('CardErrorService', () => {
     const warningTypes: readonly CardErrorType[] = [
       'INVALID_PATRON_ID',
       'PATRON_NOT_FOUND',
-      'INVALID_LIBRARY_CARD_FORMAT',
+      'INVALID_LIBRARY_CARD_NUMBER',
       'DUPLICATE_LIBRARY_CARD_NUMBER',
       'UNSUPPORTED_BLOCK',
       'BLOCK_COMMENT_REQUIRED',

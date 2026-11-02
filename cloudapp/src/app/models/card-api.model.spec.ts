@@ -68,8 +68,7 @@ describe('Card API models', () => {
     ACCESS_DENIED: true,
     INVALID_PATRON_ID: true,
     PATRON_NOT_FOUND: true,
-    INVALID_LIBRARY_CARD_FORMAT: true,
-    BLOCKED_LIBRARY_CARD_NUMBER: true,
+    INVALID_LIBRARY_CARD_NUMBER: true,
     DUPLICATE_LIBRARY_CARD_NUMBER: true,
     UNSUPPORTED_BLOCK: true,
     BLOCK_COMMENT_REQUIRED: true,
@@ -101,7 +100,7 @@ describe('Card API models', () => {
       messages: [],
     };
 
-    expect(Reflect.ownKeys(errorTypes)).toHaveSize(27);
+    expect(Reflect.ownKeys(errorTypes)).toHaveSize(26);
     expect(error).toEqual({
       type: 'STALE_ELEMENT_REFERENCE',
       errorId: 'error-id',

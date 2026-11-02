@@ -78,7 +78,7 @@
           <mat-label>{{ 'Main.LibraryCardNumber' | translate }}</mat-label>
           <input matInput formControlName="newLibraryCardNumber" />
           <mat-error *ngIf="numberForm.invalid">
-            {{ 'LibraryCardNumber.FomatError' | translate }}
+            {{ 'LibraryCardNumber.Required' | translate }}
           </mat-error>
         </mat-form-field>
         <button

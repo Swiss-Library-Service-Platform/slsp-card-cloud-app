@@ -128,7 +128,7 @@ describe('MainComponent', () => {
         InvalidPatronId: 'The selected patron cannot be loaded.',
         PatronNotFound:
           '{{entityDescription}} was not found in the Network Zone.',
-        InvalidLibraryCardFormat: 'The card number format is invalid.',
+        InvalidLibraryCardNumber: 'This library card number is not valid.',
         DuplicateLibraryCardNumber: 'The card number is already in use.',
         UnsupportedBlock: 'The block is unsupported.',
         BlockCommentRequired: 'A block comment is required.',

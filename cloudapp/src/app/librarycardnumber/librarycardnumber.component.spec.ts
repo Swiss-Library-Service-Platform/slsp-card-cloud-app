@@ -119,14 +119,15 @@ describe('LibraryCardNumberComponent', () => {
         Remove: 'Remove',
         Sure: 'Remove this exact number?',
         RemoveSuccess: 'Card removed',
-        RemoveError: 'Card removal failed',
-        FomatError: 'Required card number',
-        AddError: 'Card addition failed',
+        Required: 'Required card number',
         AddSuccess: 'Card added',
         ManagedIdentifier: 'Managed identifier',
       },
       Main: { Cards: 'Cards', LibraryCardNumber: 'Card Number' },
       Errors: {
+        InvalidLibraryCardNumber: 'This library card number is not valid.',
+        RegistrationPlatformUnavailable:
+          'The Registration Platform is unavailable.',
         DuplicateLibraryCardNumber: 'This card number is already in use.',
         UnexpectedFailure: 'An unexpected error occurred.',
         SelectedPatron: 'The selected patron',
@@ -331,6 +332,36 @@ describe('LibraryCardNumberComponent', () => {
     expect(state.replacePatron).not.toHaveBeenCalled();
     expect(component.loading).toBeFalse();
   });
+
+  for (const [type, status, kind] of [
+    ['INVALID_LIBRARY_CARD_NUMBER', 400, 'warn'],
+    ['REGISTRATION_PLATFORM_UNAVAILABLE', 503, 'error'],
+  ] as const) {
+    it(`retains input and releases loading after ${type}`, () => {
+      api.addLibraryCardNumber.and.returnValue(
+        throwError(
+          () =>
+            new HttpErrorResponse({
+              status,
+              error: { type, errorId: 'support-card', messages: [] },
+            }),
+        ),
+      );
+
+      const form = jasmine.createSpyObj<FormGroupDirective>(
+        'FormGroupDirective',
+        ['resetForm'],
+      );
+
+      component.numberForm.setValue({ newLibraryCardNumber: '1234567G' });
+      component.add(form);
+      expect(alert[kind]).toHaveBeenCalledTimes(1);
+      expect(component.numberForm.value.newLibraryCardNumber).toBe('1234567G');
+      expect(form.resetForm).not.toHaveBeenCalled();
+      expect(state.replacePatron).not.toHaveBeenCalled();
+      expect(component.loading).toBeFalse();
+    });
+  }
 
   it('presents a duplicate-card backend conflict without a support id', () => {
     api.addLibraryCardNumber.and.returnValue(
