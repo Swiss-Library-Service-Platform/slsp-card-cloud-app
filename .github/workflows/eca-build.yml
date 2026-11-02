@@ -49,9 +49,6 @@ jobs:
       - name: Install dependencies
         run: npm ci --no-audit
 
-      - name: Install Cloud App CLI
-        run: npm install --global @exlibris/exl-cloudapp-cli@2.0.2
-
       - name: Build Cloud App
         run: npm run build
 
