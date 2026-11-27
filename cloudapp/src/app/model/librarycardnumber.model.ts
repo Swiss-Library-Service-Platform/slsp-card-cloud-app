@@ -70,6 +70,8 @@ export class Librarycardnumber {
         /^T\-[A-Z\d]*\d{2,}[A-Z\d]*$/i, /^(T[A-Z\d]*\d{2,}[A-Z\d]*|202\d{7})$/i,
         // HSG staff library card numbers. See https://task.slsp.ch/browse/SUPPORT-4486
         /^62991200\d{8}$/i,
+        // HSG guest library card numbers. See https://slsp.atlassian.net/browse/SUPPORT-43509
+        /^\d{7}G$/i,
         // FHNW library card numbers. See https://task.slsp.ch/browse/SUPPORT-7471
         /^N\d{8,9}$/i,
         // OST library card numbers. See https://task.slsp.ch/browse/SUPPORT-7935
