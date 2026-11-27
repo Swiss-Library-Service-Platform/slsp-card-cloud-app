@@ -5,6 +5,18 @@ describe('Librarycardnumer', () => {
     expect(new Librarycardnumber()).toBeTruthy();
   });
 
+  ['2601013G', '2601013g', '2600000G', '2602000G'].forEach(value => {
+    it(`accepts HSG guest card ${value} (SUPPORT-43509)`, () => {
+      expect(Librarycardnumber.isValidLibraryCardNumber(value)).toBe(true);
+    });
+  });
+
+  ['260101G', '26010130G', '2601013GG', '2601013X', '26010G3', '2601013G!'].forEach(value => {
+    it(`rejects malformed HSG guest card ${value}`, () => {
+      expect(Librarycardnumber.isValidLibraryCardNumber(value)).toBe(false);
+    });
+  });
+
   ['E1207001', 'E1208000', 'E1209000', 'E1210001', 'E1211000', 'E1212329', 'E1212330', 'E1212358', 'E1212359', 'E1212499', 'E1212500', 'e1207001', 'E-1209000', 'e-1210001', 'e-1212329', 'e-1212358', 'e-1212359', 'e-1212500'].forEach(value => {
     it(`blocks ${value} (SUPPORT-43463)`, () => {
       expect(Librarycardnumber.isBlockedLibraryCardNumber(value)).toBe(true);
